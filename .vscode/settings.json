@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Karinderya.slnx"
+    "dotnet.defaultSolution": "Karinderya_New_Repository.slnx"
 }

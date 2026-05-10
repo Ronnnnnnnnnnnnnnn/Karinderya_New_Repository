@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   description: Mas puti to
   thumbnail: {fileID: -540205433, guid: 306f38bcdfff29e46a25fb83bb2e10fa, type: 3}
-  gameModel: {fileID: 0}
+  gameModel: {fileID: 724823251424536309, guid: 421e335850e6cbb4bbaa83c010f7031c, type: 3}

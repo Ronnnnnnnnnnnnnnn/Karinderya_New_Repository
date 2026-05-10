@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7602054db2f0c8e44b4a5754085c9b7e, type: 3}
   m_Name: Carrot Seed
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
-  description: Seeds to grow carrots
+  description: Seeds to grow carrots. This took 3 hours to grow
   thumbnail: {fileID: -861978453, guid: f7f69b477b81b1943aaa77ccd8287c29, type: 3}
   gameModel: {fileID: 4172067954325629747, guid: f870e85f6713b9f40a62bebe4126007c, type: 3}
-  daysToGrow: 1
+  daysToGrow: 0.125
   cropToYield: {fileID: 11400000, guid: d23daf02d633c3a4ba2a19a80e9005e5, type: 2}
   seedling: {fileID: 8412223010250019043, guid: 71ed69981d1a630489905c12bfcf0fec, type: 3}

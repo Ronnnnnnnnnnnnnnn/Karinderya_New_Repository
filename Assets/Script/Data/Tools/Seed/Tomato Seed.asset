@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7602054db2f0c8e44b4a5754085c9b7e, type: 3}
   m_Name: Tomato Seed
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
-  description: Seed to grow tomato
+  description: Seed to grow tomato. This took 3 hours to grow
   thumbnail: {fileID: 294423878, guid: 533b94f18d4d74e4b87e530b6aad669c, type: 3}
-  gameModel: {fileID: 0}
-  daysToGrow: 1
+  gameModel: {fileID: 4172067954325629747, guid: f870e85f6713b9f40a62bebe4126007c, type: 3}
+  daysToGrow: 0.125
   cropToYield: {fileID: 11400000, guid: 761200b7bd70c5e46827a6f8ccae0e5f, type: 2}
+  seedling: {fileID: 8412223010250019043, guid: c2fa5a4dbced9fe45a641a53580b9956, type: 3}

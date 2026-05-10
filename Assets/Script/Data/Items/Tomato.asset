@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   description: red fruit? vegetable?
   thumbnail: {fileID: 294423878, guid: 533b94f18d4d74e4b87e530b6aad669c, type: 3}
-  gameModel: {fileID: 0}
+  gameModel: {fileID: 2274651781382113895, guid: 7de115040ff8d3449b6935f87697ba48, type: 3}

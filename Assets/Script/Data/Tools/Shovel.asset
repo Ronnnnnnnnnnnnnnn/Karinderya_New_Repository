@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d6526a08b58c694d80c3976c18f48ed, type: 3}
-  m_Name: Hoe
+  m_Name: Shovel
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
-  description: for tilling the land
-  thumbnail: {fileID: 2131584038, guid: f68ead6667d24124b9f7d4efa59c58b1, type: 3}
-  gameModel: {fileID: 919132149155446097, guid: 46147e98a17d5e4469d948b2cbb24539, type: 3}
-  toolType: 0
+  description: Clear land
+  thumbnail: {fileID: 0}
+  gameModel: {fileID: 0}
+  toolType: 2

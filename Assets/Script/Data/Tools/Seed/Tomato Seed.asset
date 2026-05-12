@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
   description: Seed to grow tomato. This took 3 hours to grow
   thumbnail: {fileID: 294423878, guid: 533b94f18d4d74e4b87e530b6aad669c, type: 3}
-  gameModel: {fileID: 4172067954325629747, guid: f870e85f6713b9f40a62bebe4126007c, type: 3}
+  gameModel: {fileID: 0}
   daysToGrow: 0.125
-  cropToYield: {fileID: 11400000, guid: 761200b7bd70c5e46827a6f8ccae0e5f, type: 2}
-  seedling: {fileID: 8412223010250019043, guid: c2fa5a4dbced9fe45a641a53580b9956, type: 3}
+  cropToYield: {fileID: 11400000, guid: d8db7257847a5564e9d88afc0356da68, type: 2}
+  seedling: {fileID: 7007357791264644090, guid: 2b33dec3be981664aab9026e636a3c46, type: 3}
+  regrowable: 1
+  daysToRegrow: 0.125

@@ -8,6 +8,8 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler,  IPointerExitH
 {
     ItemData itemToDisplay;
 
+    int quantity;
+
     public Image itemDisplayImage;
 
     public enum InventoryType
@@ -17,13 +19,15 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler,  IPointerExitH
     public InventoryType inventoryType;
     
     int slotIndex;
-    public void Display(ItemData itemToDisplay)
+    public void Display(ItemSlotData itemSlots)
    {
+    itemToDisplay = itemSlots.itemData;
+
+    quantity = itemSlots.quantity;
+
     if(itemToDisplay != null)
     {
         itemDisplayImage.sprite = itemToDisplay.thumbnail;
-
-        this.itemToDisplay = itemToDisplay;
 
         itemDisplayImage.gameObject.SetActive(true);
 

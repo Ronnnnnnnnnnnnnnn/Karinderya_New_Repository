@@ -77,10 +77,10 @@ public class Movement : MonoBehaviour
 
     public void Interact()
     {
-        /*if(InventoryManager.Instance.equippedItem != null)
+        if(InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Item))
         {
             return;
-        }*/
+        }
 
         if (Input.GetButtonDown("Fire1"))
         {
@@ -105,7 +105,7 @@ public class Movement : MonoBehaviour
 
     public void ItemInteract()
     {
-        if (InventoryManager.Instance.equippedItem != null)
+        if(InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Item))
         {
             InventoryManager.Instance.HandToInventory(InventorySlot.InventoryType.Item);
             return;

@@ -19,15 +19,15 @@ public class InventoryManager  : MonoBehaviour
     }
     [Header("Tools")]
 
-    public ItemData[] tools = new ItemData[8];
+    [SerializeField]private ItemSlotData[] toolSlots = new ItemSlotData[8];
 
-    public ItemData equippedTool = null;
+    [SerializeField]private ItemSlotData equippedToolSlot = null;
 
     [Header("Items")]
     
-    public ItemData[] items = new ItemData[8];
+    [SerializeField]private ItemSlotData[] itemSlots = new ItemSlotData[8];
 
-    public ItemData equippedItem  = null;
+    [SerializeField]private ItemSlotData equippedItemSlot  = null;
 
     public Transform handPoint;
 
@@ -35,21 +35,21 @@ public class InventoryManager  : MonoBehaviour
     {
         if(InventoryType == InventorySlot.InventoryType.Item)
         {
-            ItemData itemToEquip = items[slotIndex];
+            ItemSlotData itemToEquip = itemSlots[slotIndex];
 
-            items[slotIndex] = equippedItem;
+            itemSlots[slotIndex] = equippedItemSlot;
 
-            equippedItem = itemToEquip;
+            equippedItemSlot = itemToEquip;
 
             RenderHand();
 
         }else
         {
-            ItemData toolToEquip = tools[slotIndex];
+            ItemSlotData toolToEquip = toolSlots[slotIndex];
 
-            tools[slotIndex] = equippedTool;
+            toolSlots[slotIndex] = equippedToolSlot;
 
-            equippedTool = toolToEquip;
+            equippedToolSlot = toolToEquip;
         }
 
         UIManager.Instance.RenderInventory();
@@ -57,15 +57,16 @@ public class InventoryManager  : MonoBehaviour
 
     public void HandToInventory(InventorySlot.InventoryType InventoryType)
     {
+        /*
         if(InventoryType == InventorySlot.InventoryType.Item)
         {
-            for(int i = 0; i < items.Length; i++)
+            for(int i = 0; i < itemSlots.Length; i++)
             {
-                if(items[i] == null)
+                if(itemSlots[i] == null)
                 {
-                    items[i] = equippedItem;
+                    itemSlots[i] = equippedItemSlot;
 
-                    equippedItem = null;
+                    equippedItemSlot = null;
 
                     break;
                 }
@@ -75,19 +76,19 @@ public class InventoryManager  : MonoBehaviour
 
         }else
         {
-             for(int i = 0; i < tools.Length; i++)
+             for(int i = 0; i < toolSlots.Length; i++)
             {
-                if(tools[i] == null)
+                if(toolSlots[i] == null)
                 {
-                    tools[i] = equippedTool;
+                    toolSlots[i] = equippedToolSlot;
 
-                    equippedTool = null;
+                    equippedToolSlot = null;
 
                     break;
                 }
             }
         }
-        UIManager.Instance.RenderInventory();
+        UIManager.Instance.RenderInventory();*/
     }
 
         public void RenderHand()
@@ -103,24 +104,112 @@ public class InventoryManager  : MonoBehaviour
             Destroy(handPoint.GetChild(0).gameObject);
         }
 
-        if (equippedItem == null)
+        if (equippedItemSlot == null)
         {
             return;
         }
 
-        if (equippedItem.gameModel == null)
+        if (equippedItemSlot.itemData.gameModel == null)
         {
-            Debug.LogError("ItemData gameModel is missing!");
+            Debug.LogError("ItemSlotData gameModel is missing!");
             return;
         }
 
-        GameObject obj = Instantiate(equippedItem.gameModel, handPoint);
+        GameObject obj = Instantiate(GetEquippedSlotItem(InventorySlot.InventoryType.Item).gameModel, handPoint);
 
         obj.transform.localPosition = Vector3.zero;
         obj.transform.localRotation = Quaternion.identity;
         obj.transform.localScale = Vector3.one;
     }
+#region Get and Checks
+    public ItemData GetEquippedSlotItem(InventorySlot.InventoryType inventoryType)
+    {
+        if(inventoryType == InventorySlot.InventoryType.Item)
+        {
+            return equippedItemSlot.itemData;
+        }
+        return equippedToolSlot.itemData;
+    }
 
+    public ItemSlotData GetEquippedSlot(InventorySlot.InventoryType inventoryType)
+    {
+        if(inventoryType == InventorySlot.InventoryType.Item)
+        {
+            return equippedItemSlot;
+        }
+        return equippedToolSlot;
+    }
+
+    public ItemSlotData[] GetInventorySlots(InventorySlot.InventoryType inventoryType)
+    {
+        if(inventoryType == InventorySlot.InventoryType.Item)
+        {
+            return itemSlots;
+        }
+        return toolSlots;
+    }
+
+    public bool SlotEquipped(InventorySlot.InventoryType inventoryType)
+    {
+        if(inventoryType == InventorySlot.InventoryType.Item)
+        {
+            return equippedItemSlot != null;
+        }
+        return equippedToolSlot != null;
+    }
+
+    public bool IsTool(ItemData item)
+    {
+        EquipmentData equipment = item as EquipmentData;
+
+        if(equipment != null)
+        {
+            return true;
+        }
+
+        SeedData seed = item as SeedData;
+
+        return seed != null;
+    }
+#endregion
+
+    public void  EquipEmptySlot(ItemData item)
+    {
+        if(IsTool(item))
+            {
+                equippedItemSlot = new ItemSlotData(item);
+            }else
+            {
+                equippedToolSlot = new ItemSlotData(item);
+            } 
+    }
+
+    private void OnValidate()
+    {
+        ValidateInventorySlot(equippedToolSlot);
+
+        ValidateInventorySlot(equippedItemSlot);
+
+        ValidateInventorySlot(itemSlots);
+
+        ValidateInventorySlot(toolSlots);
+    }
+
+    void ValidateInventorySlot(ItemSlotData slot)
+    {
+        if(slot.itemData != null && slot.quantity == 0)
+        {
+            slot.quantity = 1;
+        }
+    }
+     
+    void ValidateInventorySlot(ItemSlotData[] array)
+    {
+        foreach (ItemSlotData slot in array)
+        {
+            ValidateInventorySlot(slot);
+        }
+    }
     void Start()
     {
         

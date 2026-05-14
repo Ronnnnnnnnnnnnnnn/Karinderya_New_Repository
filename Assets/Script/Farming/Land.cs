@@ -64,7 +64,7 @@ public class Land : MonoBehaviour, ITimeTracker
     {
         ItemData toolSlots = InventoryManager.Instance.GetEquippedSlotItem(InventorySlot.InventoryType.Tool);
 
-        if(toolSlots == null)
+        if(!InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Tool))
         {
             return;
         }
@@ -109,6 +109,8 @@ public class Land : MonoBehaviour, ITimeTracker
             cropPlanted = cropObject.GetComponent<CropBehaviour>();
 
             cropPlanted.Plant(seedTool);
+
+            InventoryManager.Instance.ConsumeItem(InventoryManager.Instance.GetEquippedSlot(InventorySlot.InventoryType.Tool));
         }
     }
 

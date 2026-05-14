@@ -27,6 +27,13 @@ public class ItemSlotData
         ValidateQuantity();
     }
 
+    public ItemSlotData(ItemSlotData slotToClone)
+    {
+        itemData = slotToClone.itemData;
+
+        quantity = slotToClone.quantity;
+    }
+
     public void AddQuantity()
     {
         AddQuantity(1);
@@ -44,6 +51,11 @@ public class ItemSlotData
         ValidateQuantity();
     }
 
+    public bool Stackable(ItemSlotData slotToCompare)
+    {
+        return slotToCompare.itemData == itemData;
+    }
+
     private void ValidateQuantity()
     {
         if(quantity <= 0 || itemData == null)
@@ -56,5 +68,10 @@ public class ItemSlotData
     {
         itemData = null;
         quantity = 0;
+    }
+
+    public bool isEmpty()
+    {
+        return itemData == null;
     }
 }

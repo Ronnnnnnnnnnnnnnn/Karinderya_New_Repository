@@ -8,7 +8,7 @@ public class InteractableObject : MonoBehaviour
 
     public virtual void Pickup()
     {
-        InventoryManager.Instance.EquipEmptySlot(item);
+        InventoryManager.Instance.EquipHandSlot(item);
         
         InventoryManager.Instance.RenderHand();
 

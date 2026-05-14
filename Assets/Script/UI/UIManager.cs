@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour, ITimeTracker
 
     public Image toolEquipSlot;
 
+    public Text toolQuantityText;
+
     public Text timeText;
 
     public Text dateText;
@@ -76,12 +78,20 @@ public class UIManager : MonoBehaviour, ITimeTracker
 
         ItemData equippedTool = InventoryManager.Instance.GetEquippedSlotItem(InventorySlot.InventoryType.Tool);
 
+        toolQuantityText.text = "";
 
         if (equippedTool!= null)
         {
             toolEquipSlot.sprite = equippedTool.thumbnail;
 
             toolEquipSlot.gameObject.SetActive(true);
+
+            int quantity = InventoryManager.Instance.GetEquippedSlot(InventorySlot.InventoryType.Tool).quantity;
+
+            if(quantity > 1)
+            {
+                toolQuantityText.text = quantity.ToString();
+            }
 
             return;
         }

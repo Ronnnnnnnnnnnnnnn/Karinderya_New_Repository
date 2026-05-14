@@ -12,6 +12,8 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler,  IPointerExitH
 
     public Image itemDisplayImage;
 
+    public Text quantityText;
+
     public enum InventoryType
     {
         Item, Tool
@@ -19,15 +21,23 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler,  IPointerExitH
     public InventoryType inventoryType;
     
     int slotIndex;
+    
     public void Display(ItemSlotData itemSlots)
    {
     itemToDisplay = itemSlots.itemData;
 
     quantity = itemSlots.quantity;
 
+    quantityText.text = "";
+
     if(itemToDisplay != null)
     {
         itemDisplayImage.sprite = itemToDisplay.thumbnail;
+
+        if(quantity > 1)
+        {
+            quantityText.text = quantity.ToString();
+        }
 
         itemDisplayImage.gameObject.SetActive(true);
 

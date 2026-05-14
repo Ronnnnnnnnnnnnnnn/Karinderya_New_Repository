@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySlot
   itemDisplayImage: {fileID: 1179684202335928182}
+  quantityText: {fileID: 5635046619955541587}
   inventoryType: 1
 --- !u!114 &591765212222134647
 MonoBehaviour:

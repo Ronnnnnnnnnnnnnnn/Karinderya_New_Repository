@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RegrowableHarvestBehaviour : InteractableObject
 {
-    CropBehaviour parentCrop;
+    CropBehaviour parentCrop; 
 
     public void SetParent(CropBehaviour parentCrop)
     {
@@ -14,10 +14,10 @@ public class RegrowableHarvestBehaviour : InteractableObject
     public override void Pickup()
     {
         InventoryManager.Instance.EquipHandSlot(item);
-        
+
         InventoryManager.Instance.RenderHand();
 
         parentCrop.Regrow();
-        
+
     }
 }

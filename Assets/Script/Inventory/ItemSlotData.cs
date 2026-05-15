@@ -5,60 +5,53 @@ using UnityEngine;
 [System.Serializable]
 public class ItemSlotData
 {
-   public ItemData itemData;
-   
-   public int quantity;
+    public ItemData itemData;
+    public int quantity;
 
     public ItemSlotData(ItemData itemData, int quantity)
     {
         this.itemData = itemData;
-
         this.quantity = quantity;
-
         ValidateQuantity();
     }
 
     public ItemSlotData(ItemData itemData)
     {
         this.itemData = itemData;
-
         quantity = 1;
-
         ValidateQuantity();
     }
 
-    public ItemSlotData(ItemSlotData slotToClone)
+    public ItemSlotData (ItemSlotData slotToClone)
     {
         itemData = slotToClone.itemData;
-
-        quantity = slotToClone.quantity;
+        quantity = slotToClone.quantity; 
     }
 
     public void AddQuantity()
     {
-        AddQuantity(1);
+        AddQuantity(1); 
     }
 
     public void AddQuantity(int amountToAdd)
     {
-        quantity += amountToAdd;
+        quantity += amountToAdd; 
     }
 
     public void Remove()
     {
-        quantity --;
-
+        quantity--;
         ValidateQuantity();
     }
 
     public bool Stackable(ItemSlotData slotToCompare)
     {
-        return slotToCompare.itemData == itemData;
+        return slotToCompare.itemData == itemData; 
     }
 
     private void ValidateQuantity()
     {
-        if(quantity <= 0 || itemData == null)
+        if (quantity <= 0 || itemData == null)
         {
             Empty();
         }
@@ -70,8 +63,8 @@ public class ItemSlotData
         quantity = 0;
     }
 
-    public bool isEmpty()
+    public bool IsEmpty()
     {
-        return itemData == null;
+        return itemData == null; 
     }
 }

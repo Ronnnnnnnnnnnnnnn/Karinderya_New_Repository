@@ -73,7 +73,7 @@ public class CropBehaviour : MonoBehaviour
         }
     }
 
-    public void Wilted()
+    public void Wither()
     {
         health--;
 

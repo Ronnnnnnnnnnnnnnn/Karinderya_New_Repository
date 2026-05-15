@@ -77,10 +77,10 @@ public class Movement : MonoBehaviour
 
     public void Interact()
     {
-        if(InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Item))
+        /*if(InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Item))
         {
             return;
-        }
+        }*/
 
         if (Input.GetButtonDown("Fire1"))
         {
@@ -176,5 +176,3 @@ public class Movement : MonoBehaviour
     #endregion
 
 }
-
-

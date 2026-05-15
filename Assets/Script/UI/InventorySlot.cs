@@ -4,67 +4,66 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlot : MonoBehaviour, IPointerEnterHandler,  IPointerExitHandler, IPointerClickHandler
+public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     ItemData itemToDisplay;
-
-    int quantity;
+    int quantity; 
 
     public Image itemDisplayImage;
-
-    public Text quantityText;
+    public Text quantityText; 
 
     public enum InventoryType
     {
         Item, Tool
     }
     public InventoryType inventoryType;
-    
-    int slotIndex;
-    
-    public void Display(ItemSlotData itemSlots)
-   {
-    itemToDisplay = itemSlots.itemData;
 
-    quantity = itemSlots.quantity;
+    int slotIndex; 
 
-    quantityText.text = "";
-
-    if(itemToDisplay != null)
+    public void Display(ItemSlotData itemSlot)
     {
-        itemDisplayImage.sprite = itemToDisplay.thumbnail;
+        itemToDisplay = itemSlot.itemData;
+        quantity = itemSlot.quantity;
 
-        if(quantity > 1)
+        quantityText.text = "";
+
+        if(itemToDisplay != null)
         {
-            quantityText.text = quantity.ToString();
+            itemDisplayImage.sprite = itemToDisplay.thumbnail;
+            
+            if(quantity > 1)
+            {
+                quantityText.text = quantity.ToString();
+            }
+
+            itemDisplayImage.gameObject.SetActive(true);
+
+            return; 
         }
 
-        itemDisplayImage.gameObject.SetActive(true);
+        itemDisplayImage.gameObject.SetActive(false);
 
-        return;
+        
     }
-
-    itemDisplayImage.gameObject.SetActive(false);
-
-   }
 
     public virtual void OnPointerClick(PointerEventData eventData)
     {
-       InventoryManager.Instance.InventoryToHand(slotIndex, inventoryType);
-    } 
-
-    public void AssignIndex(int index)
-    {
-        this.slotIndex = index;
+        InventoryManager.Instance.InventoryToHand(slotIndex, inventoryType);
     }
 
+    public void AssignIndex(int slotIndex)
+    {
+        this.slotIndex = slotIndex;
+    }
+
+
     public void OnPointerEnter(PointerEventData eventData)
-   {
+    {
         UIManager.Instance.DisplayItemInfo(itemToDisplay);
-   }
+    }
 
     public void OnPointerExit(PointerEventData eventData)
-   {
-       UIManager.Instance.DisplayItemInfo(null);
-   }
+    {
+        UIManager.Instance.DisplayItemInfo(null);
+    }
 }

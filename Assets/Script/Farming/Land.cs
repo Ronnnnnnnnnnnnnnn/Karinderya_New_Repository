@@ -4,20 +4,21 @@ using UnityEngine;
 
 public class Land : MonoBehaviour, ITimeTracker
 {
-    public enum LandStatus { Soil, Farmland, Watered }
+    public enum LandStatus
+    {
+        Soil, Farmland, Watered
+    }
 
-    public LandStatus landStatus = LandStatus.Soil;
+    public LandStatus landStatus;
 
     public Material soilMat, farmlandMat, wateredMat;
-
     new Renderer renderer;
 
     public GameObject select;
 
     GameTimestamp timeWatered;
 
-    [Header ("Crops")]
-    
+    [Header("Crops")]
     public GameObject cropPrefab;
 
     CropBehaviour cropPlanted = null;
@@ -25,8 +26,10 @@ public class Land : MonoBehaviour, ITimeTracker
     void Start()
     {
         renderer = GetComponent<Renderer>();
+
         SwitchLandStatus(LandStatus.Soil);
-        if (select != null) select.SetActive(false);
+
+        Select(false);
 
         TimeManager.Instance.RegisterTracker(this);
     }
@@ -35,41 +38,43 @@ public class Land : MonoBehaviour, ITimeTracker
     {
         landStatus = statusToSwitch;
 
-        Material mat = soilMat;
+        Material materialToSwitch = soilMat; 
+
         switch (statusToSwitch)
         {
-            case LandStatus.Soil: 
-            mat = soilMat; 
-            break;
+            case LandStatus.Soil:
+                materialToSwitch = soilMat;
+                break;
             case LandStatus.Farmland:
-            mat = farmlandMat; 
-            break;
+                materialToSwitch = farmlandMat;
+                break;
+
             case LandStatus.Watered:
-            mat = wateredMat; 
-            timeWatered = TimeManager.Instance.GetGameTimestamp();
-            break;
+                materialToSwitch = wateredMat;
+
+                timeWatered = TimeManager.Instance.GetGameTimestamp(); 
+                break; 
+
         }
 
-        if (renderer != null && mat != null)
-            renderer.material = mat;
+        renderer.material = materialToSwitch; 
     }
 
     public void Select(bool toggle)
     {
-        if (select != null)
-            select.SetActive(toggle);
+        select.SetActive(toggle);
     }
 
     public void Interact()
     {
-        ItemData toolSlots = InventoryManager.Instance.GetEquippedSlotItem(InventorySlot.InventoryType.Tool);
+        ItemData toolSlot = InventoryManager.Instance.GetEquippedSlotItem(InventorySlot.InventoryType.Tool);
 
-        if(!InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Tool))
+        if (!InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Tool))
         {
-            return;
+            return; 
         }
 
-        EquipmentData equipmentTool = toolSlots as EquipmentData;
+        EquipmentData equipmentTool = toolSlot as EquipmentData; 
 
         if(equipmentTool != null)
         {
@@ -78,39 +83,36 @@ public class Land : MonoBehaviour, ITimeTracker
             switch (toolType)
             {
                 case EquipmentData.ToolType.Hoe:
-
-                SwitchLandStatus(LandStatus.Farmland);
-                break;
-
+                    SwitchLandStatus(LandStatus.Farmland);
+                    break;
                 case EquipmentData.ToolType.WateringCan:
-
-                SwitchLandStatus(LandStatus.Watered);
-                break;
+                    SwitchLandStatus(LandStatus.Watered);
+                    break;
 
                 case EquipmentData.ToolType.Shovel:
 
-                if(cropPlanted != null)
-                {
-                    Destroy(cropPlanted.gameObject);
-                }
-                break;
-            } 
-            return;
+                    if(cropPlanted != null)
+                    {
+                        Destroy(cropPlanted.gameObject);
+                    }
+                    break; 
+            }
+
+            return; 
         }
 
-        SeedData seedTool = toolSlots as SeedData;
+        SeedData seedTool = toolSlot as SeedData; 
 
         if(seedTool != null && landStatus != LandStatus.Soil && cropPlanted == null)
         {
             GameObject cropObject = Instantiate(cropPrefab, transform);
-
-            cropObject.transform.position = new Vector3(transform.position.x, 0f, transform.position.z);
+            cropObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 
             cropPlanted = cropObject.GetComponent<CropBehaviour>();
-
             cropPlanted.Plant(seedTool);
 
             InventoryManager.Instance.ConsumeItem(InventoryManager.Instance.GetEquippedSlot(InventorySlot.InventoryType.Tool));
+
         }
     }
 
@@ -119,14 +121,14 @@ public class Land : MonoBehaviour, ITimeTracker
         if(landStatus == LandStatus.Watered)
         {
             float hoursElapsed = GameTimestamp.CompareTimestamps(timeWatered, timestamp);
-            Debug.Log(hoursElapsed + "hours since this was watered");
+            Debug.Log(hoursElapsed + " hours since this was watered");
 
             if(cropPlanted != null)
             {
                 cropPlanted.Grow();
             }
 
-            if(hoursElapsed > 1.5)
+            if(hoursElapsed > 3)
             {
                 SwitchLandStatus(LandStatus.Farmland);
             }
@@ -134,9 +136,9 @@ public class Land : MonoBehaviour, ITimeTracker
 
         if(landStatus != LandStatus.Watered && cropPlanted != null)
         {
-            if(cropPlanted.cropState != CropBehaviour.CropState.Seed)
+            if (cropPlanted.cropState != CropBehaviour.CropState.Seed)
             {
-
+                cropPlanted.Wither();
             }
         }
     }

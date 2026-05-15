@@ -6,8 +6,9 @@ using UnityEngine;
 public class ItemData : ScriptableObject
 {
     public string description;
-
     public Sprite thumbnail;
-
+    public string itemName;
     public GameObject gameModel;
+
 }
+

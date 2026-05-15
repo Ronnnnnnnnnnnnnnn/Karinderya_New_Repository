@@ -8,25 +8,24 @@ public class Movement : MonoBehaviour
     [Header("References")]
     public Transform orientation;
     public Transform playerObj;
-    CharacterController controller;
     public Transform handPoint;
+
+    private CharacterController controller;
 
     [Header("Movement")]
     public float moveSpeed = 5f;
-
     public float jumpStrength = 1.5f;
 
     [Header("Physics")]
-    public float gravity = -9.8f; 
+    public float gravity = -9.8f;
     public float groundedForce = -2f;
+
     private Vector3 _velocity;
 
     [Header("Raycast")]
     [SerializeField] float raycastDistance = 6f;
-    [SerializeField] LayerMask pushableLayer;
-    Ray ray;
 
-    #region Built in Methods
+    private Ray ray;
 
     PlayerInteraction playerInteraction;
 
@@ -41,28 +40,43 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
-        ray = Camera.main.ScreenPointToRay(screenCenter);
+        // Create ray from camera forward
+        ray = new Ray(
+            Camera.main.transform.position,
+            Camera.main.transform.forward
+        );
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        // Draw ray for debugging
+        Debug.DrawRay(ray.origin, ray.direction * raycastDistance, Color.red);
+
+        // Jump
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             ApplyJump();
         }
-        Debug.DrawRay(ray.origin, ray.direction * raycastDistance, Color.red);
-        
-    Interact();
 
-        if(Input.GetKey(KeyCode.RightBracket))
+        // Interactions
+        Interact();
+
+        // Time test
+        if (Input.GetKey(KeyCode.RightBracket))
         {
             TimeManager.Instance.Tick();
         }
+    }
+
+    void FixedUpdate()
+    {
+        ApplyMovement();
+        ApplyGravity();
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Item"))
         {
-            selectedInteractable = other.GetComponent<InteractableObject>();
+            selectedInteractable =
+                other.GetComponent<InteractableObject>();
         }
     }
 
@@ -73,21 +87,22 @@ public class Movement : MonoBehaviour
             selectedInteractable = null;
         }
     }
-        
+
+    // =========================
+    // INTERACTION
+    // =========================
 
     public void Interact()
     {
-        if(InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Item))
-        {
-            return;
-        }
-
+        // LEFT CLICK
         if (Input.GetButtonDown("Fire1"))
         {
-            Debug.Log("Clicked");
+            Debug.Log("LEFT CLICK");
 
-            if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, ~0))
+            if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
             {
+                Debug.Log("HIT: " + hit.collider.name);
+
                 Land land = hit.collider.GetComponent<Land>();
 
                 if (land != null)
@@ -96,63 +111,100 @@ public class Movement : MonoBehaviour
                 }
             }
         }
-        
-        if(Input.GetButtonDown("Fire2"))
-            {
-                ItemInteract();
-            }
+
+        // E KEY
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            ItemInteract();
+        }
     }
 
-    public void ItemInteract()
+  public void ItemInteract()
+{
+    Debug.Log("E PRESSED");
+
+    if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
     {
-        if(InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Item))
+        Debug.Log("RAY HIT: " + hit.collider.name);
+
+        // =========================
+        // POT INTERACTION
+        // =========================
+
+        Pot pot = hit.collider.GetComponent<Pot>();
+
+        if (pot != null)
         {
-            InventoryManager.Instance.HandToInventory(InventorySlot.InventoryType.Item);
+            // TAKE COOKED FOOD
+            if (pot.HasCookedFood())
+            {
+                ItemData cookedFood = pot.TakeItem();
+
+                InventoryManager.Instance.equippedItem = cookedFood;
+
+                InventoryManager.Instance.RenderHand();
+
+                Debug.Log("Picked up cooked food!");
+
+                return;
+            }
+
+            Debug.Log("Pot has no cooked food yet.");
             return;
         }
 
-        if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, ~0))
+        CustomerOrder customer =
+    hit.collider.GetComponentInParent<CustomerOrder>();
+
+if(customer != null)
+{
+    customer.TryServe();
+    return;
+}
+        // =========================
+        // NORMAL ITEM PICKUP
+        // =========================
+
+        InteractableObject item =
+            hit.collider.GetComponentInParent<InteractableObject>();
+
+        if (item != null)
         {
-            Debug.Log("Hit: " + hit.collider.name);
+            Debug.Log("PICKED UP: " + item.name);
 
-            InteractableObject item =
-                hit.collider.GetComponent<InteractableObject>();
-
-            if (item != null)
-            {
-                Debug.Log("Picked up: " + item.name);
-                item.Pickup();
-            }
+            item.Pickup();
+        }
+        else
+        {
+            Debug.Log("NO INTERACTABLE OBJECT FOUND");
         }
     }
-
-    void FixedUpdate()
+    else
     {
-        ApplyMovement();
-        ApplyGravity();
+        Debug.Log("RAY HIT NOTHING");
     }
+}
 
-    void LateUpdate()
-    {
-        
-    }
-    #endregion
-
-    #region Movement Methods
+    // =========================
+    // MOVEMENT
+    // =========================
 
     void ApplyMovement()
     {
-        float x;
-        float z;
-    
-            x = Input.GetAxisRaw("Horizontal");
-            z = Input.GetAxisRaw("Vertical");
-       
+        float x = Input.GetAxisRaw("Horizontal");
+        float z = Input.GetAxisRaw("Vertical");
 
-        Vector3 moveDir = orientation.forward * z + orientation.right * x;
-        moveDir.y = 0;
+        Vector3 moveDir =
+            orientation.forward * z +
+            orientation.right * x;
 
-        controller.Move(moveDir.normalized * moveSpeed * Time.deltaTime);
+        moveDir.y = 0f;
+
+        controller.Move(
+            moveDir.normalized *
+            moveSpeed *
+            Time.deltaTime
+        );
     }
 
     void ApplyGravity()
@@ -169,12 +221,10 @@ public class Movement : MonoBehaviour
 
     public void ApplyJump()
     {
-        if(!controller.isGrounded) return;
-        _velocity.y = Mathf.Sqrt(jumpStrength * -2f * gravity);
+        if (!controller.isGrounded)
+            return;
+
+        _velocity.y =
+            Mathf.Sqrt(jumpStrength * -2f * gravity);
     }
-
-    #endregion
-
 }
-
-

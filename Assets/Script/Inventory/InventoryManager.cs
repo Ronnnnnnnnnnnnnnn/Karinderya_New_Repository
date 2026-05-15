@@ -5,7 +5,7 @@ using UnityEngine;
 public class InventoryManager  : MonoBehaviour
 {
     public static InventoryManager Instance {get; private set; }
-
+    public ItemData equippedItem;
     private void Awake()
     {
         if(Instance != null && Instance != this)
@@ -117,19 +117,30 @@ public class InventoryManager  : MonoBehaviour
 
         GameObject obj = Instantiate(GetEquippedSlotItem(InventorySlot.InventoryType.Item).gameModel, handPoint);
 
-        obj.transform.localPosition = Vector3.zero;
-        obj.transform.localRotation = Quaternion.identity;
+        obj.transform.localPosition = new Vector3(0.3f, -0.3f, 0.7f);
+        obj.transform.localRotation = Quaternion.Euler(0f, 90f, 90f);
         obj.transform.localScale = Vector3.one;
     }
 #region Get and Checks
-    public ItemData GetEquippedSlotItem(InventorySlot.InventoryType inventoryType)
+   public ItemData GetEquippedSlotItem(InventorySlot.InventoryType inventoryType)
+{
+    if (inventoryType == InventorySlot.InventoryType.Item)
     {
-        if(inventoryType == InventorySlot.InventoryType.Item)
+        if (equippedItemSlot == null)
         {
-            return equippedItemSlot.itemData;
+            return null;
         }
-        return equippedToolSlot.itemData;
+
+        return equippedItemSlot.itemData;
     }
+
+    if (equippedToolSlot == null)
+    {
+        return null;
+    }
+
+    return equippedToolSlot.itemData;
+}
 
     public ItemSlotData GetEquippedSlot(InventorySlot.InventoryType inventoryType)
     {
@@ -173,16 +184,21 @@ public class InventoryManager  : MonoBehaviour
     }
 #endregion
 
-    public void  EquipEmptySlot(ItemData item)
+   public void EquipEmptySlot(ItemData item)
+{
+    if (IsTool(item))
     {
-        if(IsTool(item))
-            {
-                equippedItemSlot = new ItemSlotData(item);
-            }else
-            {
-                equippedToolSlot = new ItemSlotData(item);
-            } 
+        equippedToolSlot = new ItemSlotData(item);
     }
+    else
+    {
+        equippedItemSlot = new ItemSlotData(item);
+    }
+
+    RenderHand();
+
+    UIManager.Instance.RenderInventory();
+}
 
     private void OnValidate()
     {

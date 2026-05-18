@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Shovel
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
   description: Clear land
-  thumbnail: {fileID: 0}
-  gameModel: {fileID: 0}
+  thumbnail: {fileID: 108248497, guid: 938ebd4802d2103468f1aeadb665a8a4, type: 3}
+  gameModel: {fileID: 919132149155446097, guid: f70e1029cfca7f345bb5649a513ad077, type: 3}
   toolType: 2

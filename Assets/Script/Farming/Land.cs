@@ -156,8 +156,6 @@ public class Land : MonoBehaviour, ITimeTracker
         {
             timerText.text = plantedSeed != null ? GetRemainingTime() : "";
         }
-
-        Debug.Log("Timer running: " + GetRemainingTime());
     }
 
     public string GetRemainingTime()

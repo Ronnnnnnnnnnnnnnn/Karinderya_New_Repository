@@ -14,8 +14,6 @@ public class PlayerInteraction : MonoBehaviour
 
     public GameObject interactUI;
 
-    public TextMeshProUGUI plantTimerUI;
-
     void Start()
     {
         movement = transform.parent.GetComponent<Movement>();
@@ -26,30 +24,9 @@ public class PlayerInteraction : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f));
         RaycastHit hit;
 
-        bool hitLand = false;
-
         if (Physics.Raycast(ray, out hit, 6f))
         {
-            if (hit.collider.CompareTag("Land"))
-            {
-                Land land = hit.collider.GetComponent<Land>();
-
-                SelectLand(land);
-
-                hitLand = true;
-
-                if (plantTimerUI != null && land != null)
-                {
-                    plantTimerUI.gameObject.SetActive(true);
-                    plantTimerUI.text = land.GetRemainingTime();
-                }
-            }
-        }
-
-        if (!hitLand)
-        {
-            if (plantTimerUI != null)
-                plantTimerUI.gameObject.SetActive(false);
+            OnInteractableHit(hit);
         }
     }
 
@@ -61,12 +38,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             Land land = other.GetComponent<Land>();
             SelectLand(land);
-
-            if (plantTimerUI != null && land != null)
-        {
-            plantTimerUI.gameObject.SetActive(true);
-            plantTimerUI.text = land.GetRemainingTime();
-        }
             return; 
         }
 
@@ -91,8 +62,8 @@ public class PlayerInteraction : MonoBehaviour
             selectedLand.Select(false);
             selectedLand = null;
 
-                if (plantTimerUI != null)
-                    plantTimerUI.gameObject.SetActive(false);
+            if(interactUI != null)
+                interactUI.SetActive(false);
         }
     }
 

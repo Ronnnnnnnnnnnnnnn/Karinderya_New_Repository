@@ -92,12 +92,8 @@ public class Movement : MonoBehaviour
     // INTERACTION
     // =========================
 
-   public void Interact()
-{
-    // LEFT CLICK
-    if (Input.GetButtonDown("Fire1"))
+    public void Interact()
     {
-<<<<<<< Updated upstream
         // LEFT CLICK
         if (Input.GetButtonDown("Fire1"))
         {
@@ -108,73 +104,13 @@ public class Movement : MonoBehaviour
                 Debug.Log("HIT: " + hit.collider.name);
 
                 Land land = hit.collider.GetComponent<Land>();
-=======
-        Debug.Log("LEFT CLICK");
 
-        if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
-        {
-            Debug.Log("HIT: " + hit.collider.name);
-
-            // =========================
-            // POT INTERACTION
-            // =========================
-
-            Pot pot =
-                hit.collider.GetComponent<Pot>();
-
-            if(pot != null)
-            {
-                pot.AddIngredient();
-                return;
-            }
->>>>>>> Stashed changes
-
-            // =========================
-            // CUSTOMER INTERACTION
-            // =========================
-
-            CustomerAI customer =
-                hit.collider.GetComponentInParent<CustomerAI>();
-
-            if(customer != null)
-            {
-                BuffetContainer buffet =
-                    FindObjectOfType<BuffetContainer>();
-
-                if(buffet != null)
+                if (land != null)
                 {
-                    customer.ServeCustomer(buffet);
+                    land.Interact();
                 }
-
-                return;
-            }
-
-            // =========================
-            // BUFFET INTERACTION
-            // =========================
-
-            BuffetContainer buffetContainer =
-                hit.collider.GetComponent<BuffetContainer>();
-
-            if(buffetContainer != null)
-            {
-                buffetContainer.AddFood();
-                return;
-            }
-
-            // =========================
-            // LAND INTERACTION
-            // =========================
-
-            Land land =
-                hit.collider.GetComponent<Land>();
-
-            if (land != null)
-            {
-                land.Interact();
             }
         }
-<<<<<<< Updated upstream
 
         // E KEY
         if (Input.GetKeyDown(KeyCode.E))
@@ -188,17 +124,6 @@ public class Movement : MonoBehaviour
     Debug.Log("E PRESSED");
 
     if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance))
-=======
-    }
-
-    // RIGHT CLICK / EQUIVALENT PICKUP
-    if(Input.GetButtonDown("Fire2"))
-    {
-        ItemInteract();
-    }
-}
-    public void ItemInteract()
->>>>>>> Stashed changes
     {
         Debug.Log("RAY HIT: " + hit.collider.name);
 

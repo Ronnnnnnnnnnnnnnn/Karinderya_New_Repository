@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Land : MonoBehaviour, ITimeTracker
 {
@@ -22,6 +23,12 @@ public class Land : MonoBehaviour, ITimeTracker
     public GameObject cropPrefab;
 
     CropBehaviour cropPlanted = null;
+
+    [Header("Plant Timer UI")]
+    public TextMeshProUGUI timerText;
+
+    SeedData plantedSeed;
+    GameTimestamp plantTime;
 
     void Start()
     {
@@ -111,6 +118,9 @@ public class Land : MonoBehaviour, ITimeTracker
             cropPlanted = cropObject.GetComponent<CropBehaviour>();
             cropPlanted.Plant(seedTool);
 
+            plantedSeed = seedTool;
+            plantTime = TimeManager.Instance.GetGameTimestamp();
+
             InventoryManager.Instance.ConsumeItem(InventoryManager.Instance.GetEquippedSlot(InventorySlot.InventoryType.Tool));
 
         }
@@ -141,5 +151,30 @@ public class Land : MonoBehaviour, ITimeTracker
                 cropPlanted.Wither();
             }
         }
+
+        if (timerText != null)
+        {
+            timerText.text = plantedSeed != null ? GetRemainingTime() : "";
+        }
+
+        Debug.Log("Timer running: " + GetRemainingTime());
+    }
+
+    public string GetRemainingTime()
+    {
+        if (plantedSeed == null)
+            return "";
+
+        float daysPassed = GameTimestamp.CompareTimestamps(
+            plantTime,
+            TimeManager.Instance.GetGameTimestamp()
+        );
+
+        float remaining = plantedSeed.daysToGrow - daysPassed;
+
+        if (remaining <= 0)
+            return "Fully Grown!";
+
+        return Mathf.CeilToInt(remaining * 24) + " hours left";
     }
 }

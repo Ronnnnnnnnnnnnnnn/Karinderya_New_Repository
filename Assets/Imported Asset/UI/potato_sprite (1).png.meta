@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6d0de5b029972dd469db4b86773d696e
+guid: f3fb0becd9dc31d489c0332a8b1922c8
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -43,11 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-<<<<<<< Updated upstream:Assets/Imported Asset/Sprite/Giniling_Sprite.png.meta
-  spriteMode: 2
-=======
   spriteMode: 1
->>>>>>> Stashed changes:Assets/Imported Asset/UI/Giniling_Sprite.png.meta
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0

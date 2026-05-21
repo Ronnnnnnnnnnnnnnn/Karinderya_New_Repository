@@ -103,10 +103,10 @@ public class Land : MonoBehaviour, ITimeTracker
 
         SeedData seedTool = toolSlot as SeedData; 
 
-        if(seedTool != null && landStatus != LandStatus.Soil && cropPlanted == null)
+        if(seedTool != null && landStatus == LandStatus.Farmland && cropPlanted == null)
         {
             GameObject cropObject = Instantiate(cropPrefab, transform);
-            cropObject.transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            cropObject.transform.localPosition =  new Vector3(0f, 0.5f, 0f);
 
             cropPlanted = cropObject.GetComponent<CropBehaviour>();
             cropPlanted.Plant(seedTool);

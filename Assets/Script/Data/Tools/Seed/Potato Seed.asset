@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
   description: Seed to grow potato. This took 3 hours to grow
   thumbnail: {fileID: -1680940468, guid: c9a5430e11b0f714f91dc06fa7920a67, type: 3}
-  gameModel: {fileID: 0}
+  gameModel: {fileID: 8792448630162995384, guid: 22cac02b2f4921247a3c9cbfd51a18ad, type: 3}
   daysToGrow: 0.125
   cropToYield: {fileID: 11400000, guid: 479c298d5d4a39c4fab99baaad38e9e9, type: 2}
   seedling: {fileID: 7007357791264644090, guid: 99afe4a93f7009c4184d895cd47b8689, type: 3}

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
   description: Seeds to grow carrots. This took 3 hours to grow
   thumbnail: {fileID: -861978453, guid: f7f69b477b81b1943aaa77ccd8287c29, type: 3}
-  gameModel: {fileID: 0}
+  gameModel: {fileID: 8792448630162995384, guid: 22cac02b2f4921247a3c9cbfd51a18ad, type: 3}
   daysToGrow: 0.125
   cropToYield: {fileID: 11400000, guid: d23daf02d633c3a4ba2a19a80e9005e5, type: 2}
   seedling: {fileID: 8503867007417135164, guid: 73aab0fff2cd3c5489d4e8d686638e34, type: 3}

@@ -64,6 +64,18 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -4945019478258168598, guid: 99e4b14d3e8f9d441b4bf6130a4e76c4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4945019478258168598, guid: 99e4b14d3e8f9d441b4bf6130a4e76c4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.03850266
+      objectReference: {fileID: 0}
+    - target: {fileID: -4945019478258168598, guid: 99e4b14d3e8f9d441b4bf6130a4e76c4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 99e4b14d3e8f9d441b4bf6130a4e76c4, type: 3}
       propertyPath: m_Name
       value: tomato sappling

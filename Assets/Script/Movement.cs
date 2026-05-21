@@ -21,16 +21,9 @@ public class Movement : MonoBehaviour
     public float groundedForce = -2f;
     private Vector3 _velocity;
 
-    [Header("Raycast")]
-    [SerializeField] float raycastDistance = 6f;
-    [SerializeField] LayerMask pushableLayer;
-    Ray ray;
-
     #region Built in Methods
 
     PlayerInteraction playerInteraction;
-
-    InteractableObject selectedInteractable = null;
 
     void Start()
     {
@@ -41,6 +34,8 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
+        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f));
+
         Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
         ray = Camera.main.ScreenPointToRay(screenCenter);
 
@@ -48,9 +43,8 @@ public class Movement : MonoBehaviour
         {
             ApplyJump();
         }
-        Debug.DrawRay(ray.origin, ray.direction * raycastDistance, Color.red);
-        
-    Interact();
+
+        Interact();
 
         if(Input.GetKey(KeyCode.RightBracket))
         {
@@ -58,72 +52,17 @@ public class Movement : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Item"))
-        {
-            selectedInteractable = other.GetComponent<InteractableObject>();
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Item"))
-        {
-            selectedInteractable = null;
-        }
-    }
-        
-
     public void Interact()
     {
-        /*if(InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Item))
-        {
-            return;
-        }*/
-
         if (Input.GetButtonDown("Fire1"))
         {
-            Debug.Log("Clicked");
-
-            if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, ~0))
-            {
-                Land land = hit.collider.GetComponent<Land>();
-
-                if (land != null)
-                {
-                    land.Interact();
-                }
-            }
+            playerInteraction.Interact();
         }
         
-        if(Input.GetButtonDown("Fire2"))
+        if(Input.GetKeyDown(KeyCode.E))
             {
-                ItemInteract();
+                playerInteraction.ItemInteract();
             }
-    }
-
-    public void ItemInteract()
-    {
-        if(InventoryManager.Instance.SlotEquipped(InventorySlot.InventoryType.Item))
-        {
-            InventoryManager.Instance.HandToInventory(InventorySlot.InventoryType.Item);
-            return;
-        }
-
-        if (Physics.Raycast(ray, out RaycastHit hit, raycastDistance, ~0))
-        {
-            Debug.Log("Hit: " + hit.collider.name);
-
-            InteractableObject item =
-                hit.collider.GetComponent<InteractableObject>();
-
-            if (item != null)
-            {
-                Debug.Log("Picked up: " + item.name);
-                item.Pickup();
-            }
-        }
     }
 
     void FixedUpdate()

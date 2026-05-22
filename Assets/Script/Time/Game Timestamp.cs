@@ -84,11 +84,11 @@ public class GameTimestamp
     }
     public static float HoursToMinutes(float hour)
     {
-        return hour * 60;
+        return hour * 60f;
     }
     public static float DaysToHours(float days)
     {
-        return days * 24;
+        return days * 24f;
     
     }
     public static int SeasonsToDays(Season season)

@@ -5,6 +5,7 @@ using TMPro;
 
 public class Land : MonoBehaviour, ITimeTracker
 {
+    public int id; 
     public enum LandStatus
     {
         Soil, Farmland, Watered
@@ -41,6 +42,30 @@ public class Land : MonoBehaviour, ITimeTracker
         TimeManager.Instance.RegisterTracker(this);
     }
 
+    public void LoadLandData(LandStatus statusToSwitch, GameTimestamp lastWatered)
+    {
+        landStatus = statusToSwitch;
+        timeWatered = lastWatered;
+
+        Material materialToSwitch = soilMat;
+
+        switch (statusToSwitch)
+        {
+            case LandStatus.Soil:
+                materialToSwitch = soilMat;
+                break;
+            case LandStatus.Farmland:
+                materialToSwitch = farmlandMat;
+                break;
+
+            case LandStatus.Watered:
+                materialToSwitch = wateredMat;
+                break;
+
+        }
+        renderer.material = materialToSwitch;
+    }
+
     public void SwitchLandStatus(LandStatus statusToSwitch)
     {
         landStatus = statusToSwitch;
@@ -65,6 +90,8 @@ public class Land : MonoBehaviour, ITimeTracker
         }
 
         renderer.material = materialToSwitch; 
+
+        LandManager.Instance.OnLandStateChange(id, landStatus, timeWatered);
     }
 
     public void Select(bool toggle)
@@ -93,14 +120,18 @@ public class Land : MonoBehaviour, ITimeTracker
                     SwitchLandStatus(LandStatus.Farmland);
                     break;
                 case EquipmentData.ToolType.WateringCan:
+
+                if(landStatus != LandStatus.Soil)
+                {
                     SwitchLandStatus(LandStatus.Watered);
+                }  
                     break;
 
                 case EquipmentData.ToolType.Shovel:
 
                     if(cropPlanted != null)
                     {
-                        Destroy(cropPlanted.gameObject);
+                        cropPlanted.RemoveCrop();
                     }
                     break; 
             }
@@ -112,11 +143,9 @@ public class Land : MonoBehaviour, ITimeTracker
 
         if(seedTool != null && landStatus == LandStatus.Farmland && cropPlanted == null)
         {
-            GameObject cropObject = Instantiate(cropPrefab, transform);
-            cropObject.transform.localPosition =  new Vector3(0f, 0.5f, 0f);
+            SpawnCrop();
 
-            cropPlanted = cropObject.GetComponent<CropBehaviour>();
-            cropPlanted.Plant(seedTool);
+            cropPlanted.Plant(id, seedTool);
 
             plantedSeed = seedTool;
             plantTime = TimeManager.Instance.GetGameTimestamp();
@@ -124,6 +153,15 @@ public class Land : MonoBehaviour, ITimeTracker
             InventoryManager.Instance.ConsumeItem(InventoryManager.Instance.GetEquippedSlot(InventorySlot.InventoryType.Tool));
 
         }
+    }
+
+    public CropBehaviour SpawnCrop()
+    {
+        GameObject cropObject = Instantiate(cropPrefab, transform);
+        cropObject.transform.position = new Vector3(transform.position.x, 0.1f, transform.position.z);
+
+        cropPlanted = cropObject.GetComponent<CropBehaviour>();
+        return cropPlanted; 
     }
 
     public void ClockUpdate(GameTimestamp timestamp)

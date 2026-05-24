@@ -262,6 +262,48 @@ public class InventoryManager : MonoBehaviour
     }
     #endregion
 
+    public void AddItem(ItemData item)
+    {
+        ItemSlotData newItem = new ItemSlotData(item);
+
+        if(IsTool(item))
+        {
+            if(StackItemToInventory(newItem, toolSlots))
+            {
+                UIManager.Instance.RenderInventory();
+                return;
+            }
+
+            for(int i = 0; i < toolSlots.Length; i++)
+            {
+                if(toolSlots[i].IsEmpty())
+                {
+                    toolSlots[i] = newItem;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if(StackItemToInventory(newItem, itemSlots))
+            {
+                UIManager.Instance.RenderInventory();
+                return;
+            }
+
+            for(int i = 0; i < itemSlots.Length; i++)
+            {
+                if(itemSlots[i].IsEmpty())
+                {
+                    itemSlots[i] = newItem;
+                    break;
+                }
+            }
+        }
+
+        UIManager.Instance.RenderInventory();
+    }
+
     void Start()
     {
         

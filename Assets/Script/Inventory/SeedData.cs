@@ -12,8 +12,10 @@ public class SeedData : ItemData
     public GameObject seedling;
 
     [Header("Regrowable")]
-
     public bool regrowable;
-
     public float daysToRegrow;
+
+    [Header("Shop")]
+    public int buyPrice = 10;
+    public int sellPrice = 5;
 }

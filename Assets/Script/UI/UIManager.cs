@@ -23,9 +23,15 @@ public class UIManager : MonoBehaviour, ITimeTracker
     public HandInventorySlot itemHandSlot;
 
     public InventorySlot[] itemSlots;
-
+   
     public Text itemNameText;
     public Text itemDescriptionText; 
+
+    [Header("Currency")]
+    public Text coinText;
+
+    [Header("Shop")]
+    public GameObject shopPanel;
 
 
     private void Awake()
@@ -46,6 +52,8 @@ public class UIManager : MonoBehaviour, ITimeTracker
         AssignSlotIndexes();
 
         TimeManager.Instance.RegisterTracker(this); 
+
+        UpdateCoinUI(CurrencyManager.Instance.coins);
     }
 
     public void AssignSlotIndexes()
@@ -104,6 +112,11 @@ public class UIManager : MonoBehaviour, ITimeTracker
         RenderInventory();
     }
 
+    public void ToggleShop()
+    {
+        shopPanel.SetActive(!shopPanel.activeSelf);
+    }
+
     public void DisplayItemInfo(ItemData data)
     {
         if(data == null)
@@ -140,5 +153,10 @@ public class UIManager : MonoBehaviour, ITimeTracker
 
         dateText.text = season + " " + day + " (" + dayOfTheWeek +")";
 
+    }
+
+    public void UpdateCoinUI(int amount)
+    {
+        coinText.text = "₱ " + amount.ToString();
     }
 }

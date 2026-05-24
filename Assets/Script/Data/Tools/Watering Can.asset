@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d6526a08b58c694d80c3976c18f48ed, type: 3}
   m_Name: Watering Can
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
-  description: For watering land
+  description: For watering land. Land will dry up in 3 hours.
   thumbnail: {fileID: -148208011, guid: e81a2319c353f7e4a9ed63d7e9de6e43, type: 3}
   gameModel: {fileID: 919132149155446097, guid: dd82b1f7e2b5ee74ebdb36d9a83252a7, type: 3}
+  handScale: {x: 1, y: 1, z: 1}
   toolType: 1

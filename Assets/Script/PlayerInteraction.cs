@@ -27,6 +27,14 @@ public class PlayerInteraction : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 6f))
         {
             OnInteractableHit(hit);
+        }else
+        {
+            if(selectedLand != null)
+            {
+                selectedLand.Select(false);
+                selectedLand.ShowTimer(false);
+                selectedLand = null;
+            }
         }
     }
 
@@ -67,15 +75,19 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-        void SelectLand(Land land)
+    void SelectLand(Land land)
     {
-        if (selectedLand != null)
+        if(selectedLand != null && selectedLand != land)
         {
             selectedLand.Select(false);
+            selectedLand.ShowTimer(false);
         }
-        
-        selectedLand = land; 
+
+        selectedLand = land;
         land.Select(true);
+
+        land.ShowTimer(true);
+        land.UpdateTimerUI();
     }
 
     public void Interact()

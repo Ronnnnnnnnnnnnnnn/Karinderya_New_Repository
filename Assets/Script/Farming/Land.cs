@@ -25,8 +25,9 @@ public class Land : MonoBehaviour, ITimeTracker
 
     CropBehaviour cropPlanted = null;
 
-    [Header("Plant Timer UI")]
+    [Header("Water Timer UI")]
     public TextMeshProUGUI timerText;
+    public GameObject timerUI;
 
     SeedData plantedSeed;
     GameTimestamp plantTime;
@@ -147,9 +148,6 @@ public class Land : MonoBehaviour, ITimeTracker
 
             cropPlanted.Plant(id, seedTool);
 
-            plantedSeed = seedTool;
-            plantTime = TimeManager.Instance.GetGameTimestamp();
-
             InventoryManager.Instance.ConsumeItem(InventoryManager.Instance.GetEquippedSlot(InventorySlot.InventoryType.Tool));
 
         }
@@ -158,7 +156,7 @@ public class Land : MonoBehaviour, ITimeTracker
     public CropBehaviour SpawnCrop()
     {
         GameObject cropObject = Instantiate(cropPrefab, transform);
-        cropObject.transform.position = new Vector3(transform.position.x, 0.1f, transform.position.z);
+        cropObject.transform.position = new Vector3(transform.position.x, 0.150f, transform.position.z);
 
         cropPlanted = cropObject.GetComponent<CropBehaviour>();
         return cropPlanted; 
@@ -189,28 +187,50 @@ public class Land : MonoBehaviour, ITimeTracker
                 cropPlanted.Wither();
             }
         }
+    }
 
-        if (timerText != null)
+    public void ShowTimer(bool show)
+    {
+        if(timerUI != null)
+            timerUI.SetActive(show);
+    }
+
+    public void UpdateTimerUI()
+    {
+        if (timerText == null) return;
+
+        if (cropPlanted != null &&
+            cropPlanted.cropState == CropBehaviour.CropState.Harvestable)
         {
-            timerText.text = plantedSeed != null ? GetRemainingTime() : "";
+            timerText.text = "Ready to Harvest!";
+            return;
+        }
+
+        if (landStatus == LandStatus.Watered)
+        {
+            float elapsed =
+                GameTimestamp.CompareTimestamps(
+                    timeWatered,
+                    TimeManager.Instance.GetGameTimestamp());
+
+            float remaining = 4f - elapsed;
+
+            if (remaining < 0)
+                remaining = 0;
+
+            timerText.text = "Water again in " + remaining.ToString("0.0") + "hours";
+        }
+        else
+        {
+            timerText.text = "";
         }
     }
 
-    public string GetRemainingTime()
+    void Update()
     {
-        if (plantedSeed == null)
-            return "";
-
-        float daysPassed = GameTimestamp.CompareTimestamps(
-            plantTime,
-            TimeManager.Instance.GetGameTimestamp()
-        );
-
-        float remaining = plantedSeed.daysToGrow - daysPassed;
-
-        if (remaining <= 0)
-            return "Fully Grown!";
-
-        return Mathf.CeilToInt(remaining * 24) + " hours left";
+        if(timerUI != null && timerUI.activeSelf)
+        {
+            UpdateTimerUI();
+        }
     }
 }

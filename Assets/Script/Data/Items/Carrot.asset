@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af1a77966140ce4ea11d19f95fcbd63, type: 3}
   m_Name: Carrot
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  description: Orange Vegetable Bunny's love
+  description: 'Orange Vegetable Bunny''s love. '
   thumbnail: {fileID: 502187069, guid: 97b53ec3a03a07348a614cfe40824dee, type: 3}
   gameModel: {fileID: 5685254854135071624, guid: 3f5282ee568fa7b46ac0c52932e112de, type: 3}
+  handScale: {x: 0.5, y: 0.5, z: 0.5}

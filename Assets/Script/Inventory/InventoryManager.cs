@@ -30,6 +30,8 @@ public class InventoryManager : MonoBehaviour
     
     [SerializeField] private ItemSlotData equippedItemSlot = null;
 
+    public Vector3 handItemScale = Vector3.one;
+
     public Transform handPoint; 
 
     public void InventoryToHand(int slotIndex, InventorySlot.InventoryType inventoryType)
@@ -123,16 +125,21 @@ public class InventoryManager : MonoBehaviour
 
     public void RenderHand()
     {
-        if(handPoint.childCount > 0)
+        if (handPoint.childCount > 0)
         {
             Destroy(handPoint.GetChild(0).gameObject);
         }
 
-        if(SlotEquipped(InventorySlot.InventoryType.Item))
+        if (SlotEquipped(InventorySlot.InventoryType.Item))
         {
-            Instantiate(GetEquippedSlotItem(InventorySlot.InventoryType.Item).gameModel, handPoint);
+            ItemData itemData = GetEquippedSlotItem(InventorySlot.InventoryType.Item);
+
+            GameObject item = Instantiate(itemData.gameModel, handPoint);
+
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+            item.transform.localScale = itemData.handScale;
         }
-        
     }
 
     #region Gets and Checks

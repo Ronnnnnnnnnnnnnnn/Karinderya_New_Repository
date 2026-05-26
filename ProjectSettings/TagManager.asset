@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Land
   - Item
+  - Pot
+  - Customer
+  - Buffet
   layers:
   - Default
   - TransparentFX

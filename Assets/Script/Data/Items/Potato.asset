@@ -12,7 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1af1a77966140ce4ea11d19f95fcbd63, type: 3}
   m_Name: Potato
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  description: Mas puti to
+  itemName: 
+  description: Patatas
   thumbnail: {fileID: -540205433, guid: 306f38bcdfff29e46a25fb83bb2e10fa, type: 3}
+  itemSprite: {fileID: -540205433, guid: 306f38bcdfff29e46a25fb83bb2e10fa, type: 3}
   gameModel: {fileID: 724823251424536309, guid: 421e335850e6cbb4bbaa83c010f7031c, type: 3}
   handScale: {x: 0.5, y: 0.5, z: 0.5}
+  isIngredient: 1
+  isDish: 0
+  isServing: 0
+  cookedDish: {fileID: 0}
+  servingVersion: {fileID: 0}

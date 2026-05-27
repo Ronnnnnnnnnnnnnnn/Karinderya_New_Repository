@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 486c1fa7691809e499ac87d85c3030b9, type: 3}
   m_Name: Dinengdeng
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
-  dishName: Dinengdeng
-  dishSprite: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
-  cookedDish: {fileID: 0}
-  requiredIngredients:
+  recipeName: Dinengdeng
+  ingredients:
   - {fileID: 11400000, guid: 3883ed80ebec1184e8e32f6f47d97aac, type: 2}
   - {fileID: 11400000, guid: c24ebe783a9af05478e2c306529ea531, type: 2}
+  - {fileID: 11400000, guid: 761200b7bd70c5e46827a6f8ccae0e5f, type: 2}
+  resultDish: {fileID: 11400000, guid: 5f6233e55f1fb0943a8197a8cd86e6d0, type: 2}
   cookTime: 20

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomerSpawner : MonoBehaviour
@@ -7,14 +6,17 @@ public class CustomerSpawner : MonoBehaviour
     [Header("Customer")]
     public GameObject customerPrefab;
 
+    [Header("Points")]
     public Transform spawnPoint;
 
     public Transform counterPoint;
 
     public Transform exitPoint;
 
+    public Transform lookPoint;
+
     [Header("Orders")]
-    public List<ItemData> possibleOrders;
+    public ItemData[] possibleOrders;
 
     [Header("Spawn")]
     public float spawnDelay = 10f;
@@ -23,128 +25,100 @@ public class CustomerSpawner : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(SpawnRoutine());
-
         Debug.Log("[SPAWNER] Started");
+
+        StartCoroutine(SpawnLoop());
     }
 
-    IEnumerator SpawnRoutine()
+    IEnumerator SpawnLoop()
     {
         while(true)
         {
+            yield return new WaitForSeconds(
+                spawnDelay
+            );
+
+            // ONLY SPAWN IF NONE EXISTS
             if(!customerExists)
             {
                 SpawnCustomer();
             }
-
-            yield return new WaitForSeconds(
-                spawnDelay
-            );
         }
     }
 
     void SpawnCustomer()
     {
+        customerExists = true;
+
         Debug.Log(
             "[SPAWNER] Spawning customer"
         );
 
-        if(customerPrefab == null)
-        {
-            Debug.LogError(
-                "[SPAWNER] Customer Prefab missing!"
-            );
-
-            return;
-        }
-
-        GameObject customer =
+        GameObject customerObj =
             Instantiate(
                 customerPrefab,
                 spawnPoint.position,
-                spawnPoint.rotation
+                Quaternion.identity
             );
 
-        customerExists = true;
-
-        StartCoroutine(
-            WaitForCustomerDestroy(customer)
-        );
-
-        // =========================
-        // AI
-        // =========================
+        // =====================================
+        // CUSTOMER AI
+        // =====================================
 
         CustomerAI ai =
-            customer.GetComponent<CustomerAI>();
+            customerObj.GetComponent<CustomerAI>();
 
-        if(ai == null)
+        if(ai != null)
         {
-            Debug.LogError(
-                "[SPAWNER] CustomerAI missing!"
-            );
+            ai.counterPoint = counterPoint;
 
-            return;
+            ai.exitPoint = exitPoint;
+
+            ai.lookPoint = lookPoint;
+
+            ai.spawner = this;
+
+            Transform npcModel =
+                customerObj.transform.Find("npc");
+
+            if(npcModel != null)
+            {
+                ai.visualModel = npcModel;
+            }
         }
 
-        ai.counterPoint = counterPoint;
-
-        ai.exitPoint = exitPoint;
-
-        // =========================
-        // ORDER
-        // =========================
+        // =====================================
+        // CUSTOMER ORDER
+        // =====================================
 
         CustomerOrder order =
-            customer.GetComponent<CustomerOrder>();
+            customerObj.GetComponent<CustomerOrder>();
 
-        if(order == null)
+        if(order != null &&
+            possibleOrders.Length > 0)
         {
-            Debug.LogError(
-                "[SPAWNER] CustomerOrder missing!"
-            );
-
-            return;
-        }
-
-        if(possibleOrders.Count <= 0)
-        {
-            Debug.LogError(
-                "[SPAWNER] No orders assigned!"
-            );
-
-            return;
-        }
-
-        ItemData randomOrder =
-            possibleOrders[
+            int randomIndex =
                 Random.Range(
                     0,
-                    possibleOrders.Count
-                )
-            ];
+                    possibleOrders.Length
+                );
 
-        order.SetOrder(randomOrder);
-
-        Debug.Log(
-            "[SPAWNER] Order Assigned: " +
-            randomOrder.itemName
-        );
+            order.SetOrder(
+                possibleOrders[randomIndex]
+            );
+        }
     }
 
-    IEnumerator WaitForCustomerDestroy(
-        GameObject customer
-    )
-    {
-        while(customer != null)
-        {
-            yield return null;
-        }
+    // =========================================
+    // CUSTOMER LEFT
+    // =========================================
 
+    public void CustomerLeft()
+    {
         customerExists = false;
 
         Debug.Log(
-            "[SPAWNER] Customer slot free"
+            "[SPAWNER] Customer cleared"
         );
     }
 }

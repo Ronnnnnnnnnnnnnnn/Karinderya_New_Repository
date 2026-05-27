@@ -7,27 +7,43 @@ public class CustomerAI : MonoBehaviour
 
     public Transform exitPoint;
 
+    public Transform lookPoint;
+
     [Header("Movement")]
     public float moveSpeed = 2f;
 
     public float stoppingDistance = 0.2f;
 
+    [Header("Visual")]
+    public Transform visualModel;
+
+    [HideInInspector]
+    public CustomerSpawner spawner;
+
     Animator anim;
 
     Transform targetPoint;
 
-    bool leaving = false;
+    bool leaving;
 
-    bool isMoving = false;
+    bool reachedCounter;
+
+    bool isMoving;
+
+    CustomerOrder order;
 
     void Start()
     {
-        anim = GetComponent<Animator>();
+        anim =
+            GetComponentInChildren<Animator>();
+
+        order =
+            GetComponent<CustomerOrder>();
 
         targetPoint = counterPoint;
 
         Debug.Log(
-            "[AI] Moving to counter"
+            "[AI] Walking to counter"
         );
     }
 
@@ -42,7 +58,7 @@ public class CustomerAI : MonoBehaviour
     }
 
     // =====================================================
-    // MOVEMENT
+    // MOVE
     // =====================================================
 
     void MoveToTarget()
@@ -56,17 +72,61 @@ public class CustomerAI : MonoBehaviour
         float distance =
             direction.magnitude;
 
-        // STOP
+        // =========================================
+        // REACHED TARGET
+        // =========================================
+
         if(distance <= stoppingDistance)
         {
             isMoving = false;
 
+            UpdateAnimation();
+
+            // FACE COUNTER ONLY AFTER ARRIVING
+            if(!leaving &&
+                lookPoint != null)
+            {
+                Vector3 lookDir =
+                    lookPoint.position -
+                    transform.position;
+
+                lookDir.y = 0f;
+
+                transform.rotation =
+                    Quaternion.LookRotation(
+                        lookDir
+                    );
+            }
+
+            // ARRIVED COUNTER
+            if(!reachedCounter &&
+                !leaving)
+            {
+                reachedCounter = true;
+
+                Debug.Log(
+                    "[AI] Reached counter"
+                );
+
+                NotificationManager.Instance.ShowMessage(
+                    "Customer At Counter!"
+                );
+
+                if(order != null)
+                {
+                    order.StartWaiting();
+                }
+
+                return;
+            }
+
             // EXIT COMPLETE
             if(leaving)
             {
-                Debug.Log(
-                    "[AI] Customer exited"
-                );
+                if(spawner != null)
+                {
+                    spawner.CustomerLeft();
+                }
 
                 Destroy(gameObject);
             }
@@ -74,25 +134,34 @@ public class CustomerAI : MonoBehaviour
             return;
         }
 
+        // =========================================
+        // MOVING
+        // =========================================
+
         isMoving = true;
 
-        // ROTATE
-        transform.forward =
-            direction.normalized;
+        direction.Normalize();
+
+        // FACE MOVEMENT DIRECTION
+        transform.forward = direction;
 
         // MOVE
         transform.position +=
-            direction.normalized *
+            direction *
             moveSpeed *
             Time.deltaTime;
     }
 
     // =====================================================
-    // HAPPY LEAVE
+    // HAPPY
     // =====================================================
 
     public void LeaveHappy()
     {
+        NotificationManager.Instance.ShowMessage(
+            "Customer Happy!"
+        );
+
         Debug.Log(
             "[AI] Leaving happy"
         );
@@ -103,11 +172,15 @@ public class CustomerAI : MonoBehaviour
     }
 
     // =====================================================
-    // ANGRY LEAVE
+    // ANGRY
     // =====================================================
 
     public void LeaveAngry()
     {
+        NotificationManager.Instance.ShowMessage(
+            "Customer Angry!"
+        );
+
         Debug.Log(
             "[AI] Leaving angry"
         );
@@ -124,25 +197,11 @@ public class CustomerAI : MonoBehaviour
     void UpdateAnimation()
     {
         if(anim == null)
-        {
-            Debug.LogWarning(
-                "[AI] Animator missing!"
-            );
-
             return;
-        }
-
-        float speedValue =
-            isMoving ? 1f : 0f;
 
         anim.SetFloat(
             "Speed",
-            speedValue
-        );
-
-        Debug.Log(
-            "[AI] Animation Speed: " +
-            speedValue
+            isMoving ? 1f : 0f
         );
     }
 }

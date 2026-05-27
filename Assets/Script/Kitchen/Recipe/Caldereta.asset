@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 486c1fa7691809e499ac87d85c3030b9, type: 3}
   m_Name: Caldereta
   m_EditorClassIdentifier: Assembly-CSharp::RecipeData
-  dishName: Caldereta
-  dishSprite: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
-  cookedDish: {fileID: 0}
-  requiredIngredients:
+  recipeName: Caldereta
+  ingredients:
   - {fileID: 11400000, guid: d23daf02d633c3a4ba2a19a80e9005e5, type: 2}
   - {fileID: 11400000, guid: c24ebe783a9af05478e2c306529ea531, type: 2}
+  - {fileID: 11400000, guid: 479c298d5d4a39c4fab99baaad38e9e9, type: 2}
+  resultDish: {fileID: 11400000, guid: 255cce0cb596673459f7a00e91627554, type: 2}
   cookTime: 10

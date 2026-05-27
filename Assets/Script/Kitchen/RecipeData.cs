@@ -1,18 +1,16 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Cooking/Recipe")]
+[CreateAssetMenu(menuName = "Recipe/New Recipe")]
 public class RecipeData : ScriptableObject
 {
-    [Header("Dish")]
-    public string dishName;
-
-    public Sprite dishSprite;
-
-    public ItemData cookedDish;
+    [Header("Recipe Name")]
+    public string recipeName;
 
     [Header("Ingredients")]
-    public List<ItemData> requiredIngredients;
+    public ItemData[] ingredients;
+
+    [Header("Result Dish")]
+    public ItemData resultDish;
 
     [Header("Cooking")]
     public float cookTime = 10f;

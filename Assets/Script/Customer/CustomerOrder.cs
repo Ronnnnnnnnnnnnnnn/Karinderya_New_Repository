@@ -16,6 +16,8 @@ public class CustomerOrder : MonoBehaviour
 
     bool served;
 
+    bool waitingStarted;
+
     [Header("UI")]
     public TextMeshPro orderText;
 
@@ -24,29 +26,31 @@ public class CustomerOrder : MonoBehaviour
     [Header("Angry")]
     public Color angryColor = Color.red;
 
-    Renderer rend;
+    Renderer[] renderers;
 
     CustomerAI ai;
 
     void Start()
     {
-        timer = patienceTime;
-
         ai = GetComponent<CustomerAI>();
 
-        rend = GetComponentInChildren<Renderer>();
+        // GET ALL RENDERERS SAFELY
+        renderers =
+            GetComponentsInChildren<Renderer>();
 
         UpdateVisuals();
 
         Debug.Log(
-            "[CUSTOMER] Waiting for: " +
-            requestedServing.itemName
+            "[CUSTOMER] Spawned"
         );
     }
 
     void Update()
     {
         if(served)
+            return;
+
+        if(!waitingStarted)
             return;
 
         timer -= Time.deltaTime;
@@ -57,6 +61,25 @@ public class CustomerOrder : MonoBehaviour
         {
             LeaveAngry();
         }
+    }
+
+    // =====================================================
+    // START WAITING
+    // =====================================================
+
+    public void StartWaiting()
+    {
+        waitingStarted = true;
+
+        timer = patienceTime;
+
+        NotificationManager.Instance.ShowMessage(
+            "Customer Waiting!"
+        );
+
+        Debug.Log(
+            "[CUSTOMER] Started waiting"
+        );
     }
 
     // =====================================================
@@ -81,16 +104,19 @@ public class CustomerOrder : MonoBehaviour
 
     public void TryServe()
     {
-        Debug.Log("[CUSTOMER] TryServe");
-
         if(served)
             return;
 
-        // PLAYER MUST HOLD ITEM
+        if(!waitingStarted)
+            return;
+
+        // HOLDING NOTHING
         if(!InventoryManager.Instance.SlotEquipped(
             InventorySlot.InventoryType.Item))
         {
-            Debug.Log("[CUSTOMER] No held item");
+            NotificationManager.Instance.ShowMessage(
+                "Hold A Dish!"
+            );
 
             return;
         }
@@ -101,26 +127,18 @@ public class CustomerOrder : MonoBehaviour
             );
 
         if(heldItem == null)
-        {
-            Debug.Log("[CUSTOMER] Held item null");
-
             return;
-        }
-
-        Debug.Log(
-            "[CUSTOMER] Player holding: " +
-            heldItem.itemName
-        );
-
-        Debug.Log(
-            "[CUSTOMER] Wants: " +
-            requestedServing.itemName
-        );
 
         // WRONG FOOD
         if(heldItem != requestedServing)
         {
-            Debug.Log("[CUSTOMER] Wrong order");
+            NotificationManager.Instance.ShowMessage(
+                "Wrong Dish!"
+            );
+
+            Debug.Log(
+                "[CUSTOMER] Wrong food"
+            );
 
             return;
         }
@@ -134,24 +152,18 @@ public class CustomerOrder : MonoBehaviour
 
         served = true;
 
-        // GIVE COINS
-        if(CurrencyManager.Instance != null)
-        {
-            CurrencyManager.Instance.AddCoins(
-                rewardCoins
-            );
-
-            Debug.Log(
-                "[CUSTOMER] Rewarded Coins: " +
-                rewardCoins
-            );
-        }
-
-        Debug.Log(
-            "[CUSTOMER] Correct order served"
+        CurrencyManager.Instance.AddCoins(
+            rewardCoins
         );
 
-        // HAPPY LEAVE
+        NotificationManager.Instance.ShowMessage(
+            "+" + rewardCoins + " Coins!"
+        );
+
+        Debug.Log(
+            "[CUSTOMER] Served correctly"
+        );
+
         if(ai != null)
         {
             ai.LeaveHappy();
@@ -164,11 +176,22 @@ public class CustomerOrder : MonoBehaviour
 
     void LeaveAngry()
     {
-        Debug.Log("[CUSTOMER] LEFT ANGRY");
+        NotificationManager.Instance.ShowMessage(
+            "Customer Angry!"
+        );
 
-        if(rend != null)
+        Debug.Log(
+            "[CUSTOMER] LEFT ANGRY"
+        );
+
+        // SAFE RENDERER LOOP
+        foreach(Renderer rend in renderers)
         {
-            rend.material.color = angryColor;
+            if(rend != null)
+            {
+                rend.material.color =
+                    angryColor;
+            }
         }
 
         if(ai != null)
@@ -176,7 +199,7 @@ public class CustomerOrder : MonoBehaviour
             ai.LeaveAngry();
         }
 
-        Destroy(this);
+        enabled = false;
     }
 
     // =====================================================
@@ -185,6 +208,9 @@ public class CustomerOrder : MonoBehaviour
 
     void UpdateVisuals()
     {
+        if(requestedServing == null)
+            return;
+
         if(orderText != null)
         {
             orderText.text =
@@ -197,6 +223,10 @@ public class CustomerOrder : MonoBehaviour
                 requestedServing.itemSprite;
         }
     }
+
+    // =====================================================
+    // TIMER UI
+    // =====================================================
 
     void UpdateTimerUI()
     {

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7602054db2f0c8e44b4a5754085c9b7e, type: 3}
+  m_Name: Talong Seed
+  m_EditorClassIdentifier: Assembly-CSharp::SeedData
+  itemName: Buto ng Talong
+  description: Buto ng Talong. Tatlong oras bago tumubo
+  thumbnail: {fileID: -73138466, guid: f453f52d1a454e3458c292d900db47f1, type: 3}
+  itemSprite: {fileID: -73138466, guid: f453f52d1a454e3458c292d900db47f1, type: 3}
+  gameModel: {fileID: 8792448630162995384, guid: 22cac02b2f4921247a3c9cbfd51a18ad, type: 3}
+  handScale: {x: 1, y: 1, z: 1}
+  isIngredient: 0
+  isDish: 0
+  isServing: 0
+  cookedDish: {fileID: 0}
+  servingVersion: {fileID: 0}
+  daysToGrow: 0
+  cropToYield: {fileID: 11400000, guid: b64d1c4f40004504c97240ae6554dead, type: 2}
+  seedling: {fileID: 3699918654475473860, guid: e8496b5c6393c894286e31b9c7b92542, type: 3}
+  regrowable: 1
+  daysToRegrow: 0
+  buyPrice: 10
+  sellPrice: 5

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7602054db2f0c8e44b4a5754085c9b7e, type: 3}
+  m_Name: Sitaw Seed
+  m_EditorClassIdentifier: Assembly-CSharp::SeedData
+  itemName: Buto ng Sitaw
+  description: Buto ng sitaw. Tatlong oras bago tumubo
+  thumbnail: {fileID: 21300000, guid: 1a3b8fb9a5e013f48bb9a101ff8a41c1, type: 3}
+  itemSprite: {fileID: 21300000, guid: 1a3b8fb9a5e013f48bb9a101ff8a41c1, type: 3}
+  gameModel: {fileID: 8792448630162995384, guid: 22cac02b2f4921247a3c9cbfd51a18ad, type: 3}
+  handScale: {x: 1, y: 1, z: 1}
+  isIngredient: 0
+  isDish: 0
+  isServing: 0
+  cookedDish: {fileID: 0}
+  servingVersion: {fileID: 0}
+  daysToGrow: 0
+  cropToYield: {fileID: 11400000, guid: 5f16957a4f5134848a462fd67a76c94d, type: 2}
+  seedling: {fileID: 3699918654475473860, guid: 355712f3677988e4d8273f2a16e19116, type: 3}
+  regrowable: 1
+  daysToRegrow: 0
+  buyPrice: 10
+  sellPrice: 5

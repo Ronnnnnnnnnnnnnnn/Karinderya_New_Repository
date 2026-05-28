@@ -26990,7 +26990,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -43.179996, y: 19.970797}
+  m_AnchoredPosition: {x: -43.17993, y: 19.970825}
   m_SizeDelta: {x: 160, y: 74}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &302335741
@@ -45517,9 +45517,9 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 414586466}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.8527098, y: 1.8527098, z: 1.8527098}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 838253384}
@@ -45527,8 +45527,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -275, y: -820}
-  m_SizeDelta: {x: 55.7816, y: 53.9348}
+  m_AnchoredPosition: {x: -80, y: -75}
+  m_SizeDelta: {x: 160, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &414586468
 MonoBehaviour:
@@ -45654,8 +45654,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 953259766, guid: bb21e59741db66d4d96490b309a90151, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -249933,17 +249933,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
   itemIndex: {fileID: 11400000, guid: 80f749bb6d4f07044a6eb3b4eee8c838, type: 2}
   toolSlots:
-  - itemData: {fileID: 11400000, guid: 8298fea38075aa34c95676857e28799a, type: 2}
+  - itemData: {fileID: 11400000, guid: 2524396d357bd35418c68bf8b6a1d2d1, type: 2}
     quantity: 1
   - itemData: {fileID: 11400000, guid: b59d49c1a87911d48937dbd849cca5b4, type: 2}
     quantity: 1
-  - itemData: {fileID: 11400000, guid: 2524396d357bd35418c68bf8b6a1d2d1, type: 2}
+  - itemData: {fileID: 0}
     quantity: 1
-  - itemData: {fileID: 11400000, guid: 3d5975738633e564b8c65577e3c6f594, type: 2}
-    quantity: 6
-  - itemData: {fileID: 11400000, guid: 0c06f66c9fc19874c9bd11d5463ba8b4, type: 2}
+  - itemData: {fileID: 0}
+    quantity: 0
+  - itemData: {fileID: 0}
     quantity: 5
-  - itemData: {fileID: 11400000, guid: 08f83cc863b51b64d89b9c92283e8671, type: 2}
+  - itemData: {fileID: 0}
     quantity: 31
   - itemData: {fileID: 0}
     quantity: 0
@@ -249953,11 +249953,11 @@ MonoBehaviour:
     itemData: {fileID: 11400000, guid: 8298fea38075aa34c95676857e28799a, type: 2}
     quantity: 1
   itemSlots:
-  - itemData: {fileID: 11400000, guid: d23daf02d633c3a4ba2a19a80e9005e5, type: 2}
+  - itemData: {fileID: 0}
     quantity: 1
-  - itemData: {fileID: 11400000, guid: 479c298d5d4a39c4fab99baaad38e9e9, type: 2}
+  - itemData: {fileID: 0}
     quantity: 1
-  - itemData: {fileID: 11400000, guid: 761200b7bd70c5e46827a6f8ccae0e5f, type: 2}
+  - itemData: {fileID: 0}
     quantity: 1
   - itemData: {fileID: 0}
     quantity: 0
@@ -250063,8 +250063,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   seedsForSale:
+  - {fileID: 11400000, guid: a2e43e716ef3f4547bfed8cda4c438e1, type: 2}
   - {fileID: 11400000, guid: 0c06f66c9fc19874c9bd11d5463ba8b4, type: 2}
+  - {fileID: 11400000, guid: f7458105b5c47034e82bb1ece99bd15f, type: 2}
+  - {fileID: 11400000, guid: 93daa84a63b424042b00422bbb7b9dc1, type: 2}
   - {fileID: 11400000, guid: 08f83cc863b51b64d89b9c92283e8671, type: 2}
+  - {fileID: 11400000, guid: c6f9dd286a8325d40b474c6880ab8bad, type: 2}
+  - {fileID: 11400000, guid: 1da797af674c52048abc8eef5668e89d, type: 2}
   - {fileID: 11400000, guid: 3d5975738633e564b8c65577e3c6f594, type: 2}
   shopContainer: {fileID: 1789959244}
   shopSlotPrefab: {fileID: 5048004415718076150, guid: 1976fb022c26d894aaa21654e3376514, type: 3}

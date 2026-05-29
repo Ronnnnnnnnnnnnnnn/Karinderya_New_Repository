@@ -23,7 +23,7 @@ MonoBehaviour:
   isServing: 0
   cookedDish: {fileID: 0}
   servingVersion: {fileID: 0}
-  daysToGrow: 0
+  daysToGrow: 0.125
   cropToYield: {fileID: 11400000, guid: 37270c4d01f651d409d712104c7bf755, type: 2}
   seedling: {fileID: 3699918654475473860, guid: 20e09791cf630304eb7b3c05391fb538, type: 3}
   regrowable: 0

@@ -22,20 +22,12 @@ public class PlayerInteraction : MonoBehaviour
 
     void Start()
     {
-        movement =
-            transform.parent.GetComponent<Movement>();
+        movement = transform.parent.GetComponent<Movement>();
     }
 
     void Update()
     {
-        Ray ray =
-            Camera.main.ScreenPointToRay(
-                new Vector3(
-                    Screen.width / 2f,
-                    Screen.height / 2f
-                )
-            );
-
+        Ray ray = Camera.main.ScreenPointToRay( new Vector3(Screen.width / 2f,Screen.height / 2f));
         RaycastHit hit;
 
         if(Physics.Raycast(ray, out hit, 6f))
@@ -62,8 +54,7 @@ public class PlayerInteraction : MonoBehaviour
 
         if(other.CompareTag("Land"))
         {
-            Land land =
-                other.GetComponent<Land>();
+            Land land = other.GetComponent<Land>();
 
             SelectLand(land);
 
@@ -76,8 +67,7 @@ public class PlayerInteraction : MonoBehaviour
 
         if(other.CompareTag("Item"))
         {
-            selectedInteractable =
-                other.GetComponent<InteractableObject>();
+            selectedInteractable = other.GetComponent<InteractableObject>();
 
             ShowUI();
 
@@ -90,10 +80,9 @@ public class PlayerInteraction : MonoBehaviour
 
         if(other.CompareTag("Pot"))
         {
-            selectedPot =
-                other.GetComponent<Pot>();
+            selectedPot = other.GetComponent<Pot>();
 
-            ShowUI();
+            HideUI();
 
             Debug.Log("[INTERACT] Looking at Pot");
 
@@ -109,7 +98,7 @@ public class PlayerInteraction : MonoBehaviour
             selectedBuffet =
                 other.GetComponent<BuffetContainer>();
 
-            ShowUI();
+            HideUI();
 
             Debug.Log("[INTERACT] Looking at Buffet");
 
@@ -125,7 +114,7 @@ public class PlayerInteraction : MonoBehaviour
             selectedCustomer =
                 other.GetComponent<CustomerOrder>();
 
-            ShowUI();
+            HideUI();
 
             Debug.Log("[INTERACT] Looking at Customer");
 
@@ -153,6 +142,8 @@ public class PlayerInteraction : MonoBehaviour
         {
             selectedLand.Select(false);
 
+            selectedLand.ShowTimer(false);
+
             selectedLand = null;
         }
 
@@ -174,7 +165,7 @@ public class PlayerInteraction : MonoBehaviour
 
         land.Select(true);
 
-        ShowUI();
+        land.ShowTimer(true);
     }
 
     // =====================================================

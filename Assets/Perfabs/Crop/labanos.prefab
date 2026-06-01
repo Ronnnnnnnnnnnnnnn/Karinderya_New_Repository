@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f992e7a7ee30954d9e7fcac2b8fe35e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 251.8309
+      value: 251.8608
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4f992e7a7ee30954d9e7fcac2b8fe35e, type: 3}
       propertyPath: m_LocalPosition.z
@@ -51,6 +51,14 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 4f992e7a7ee30954d9e7fcac2b8fe35e, type: 3}
       propertyPath: m_Name
       value: labanos
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029525369266837727, guid: 4f992e7a7ee30954d9e7fcac2b8fe35e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029525369266837727, guid: 4f992e7a7ee30954d9e7fcac2b8fe35e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -29,19 +29,19 @@ public class BuffetContainer : MonoBehaviour
     {
         Debug.Log("[BUFFET] Interacted");
 
-        // INSERT DISH
+        // Put dish inside buffet
         if(storedDish == null)
         {
             InsertDish();
             return;
         }
 
-        // TAKE SERVING
+        // Take serving
         GiveServing();
     }
 
     // =====================================================
-    // INSERT COOKED DISH
+    // INSERT DISH
     // =====================================================
 
     void InsertDish()
@@ -61,9 +61,10 @@ public class BuffetContainer : MonoBehaviour
         if(heldItem == null)
             return;
 
+        // Optional: only allow dishes
         if(!heldItem.isDish)
         {
-            Debug.Log("[BUFFET] Held item not dish");
+            Debug.Log("[BUFFET] Item is not a dish");
             return;
         }
 
@@ -78,7 +79,7 @@ public class BuffetContainer : MonoBehaviour
         );
 
         Debug.Log(
-            "[BUFFET] Stored: " +
+            "[BUFFET] Stored " +
             storedDish.itemName
         );
 
@@ -91,33 +92,24 @@ public class BuffetContainer : MonoBehaviour
 
     void GiveServing()
     {
+        if(storedDish == null)
+            return;
+
         if(servings <= 0)
         {
-            Debug.Log("[BUFFET] Empty");
-
             EmptyBuffet();
-
-            return;
-        }
-
-        if(storedDish.servingVersion == null)
-        {
-            Debug.LogError(
-                "[BUFFET] Serving Version Missing"
-            );
-
             return;
         }
 
         InventoryManager.Instance.AddItem(
-            storedDish.servingVersion
+            storedDish
         );
 
         servings--;
 
         Debug.Log(
             "[BUFFET] Serving Given: " +
-            storedDish.servingVersion.itemName
+            storedDish.itemName
         );
 
         if(servings <= 0)
@@ -129,16 +121,16 @@ public class BuffetContainer : MonoBehaviour
     }
 
     // =====================================================
-    // EMPTY
+    // EMPTY BUFFET
     // =====================================================
 
     void EmptyBuffet()
     {
-        Debug.Log("[BUFFET] Container Empty");
-
         storedDish = null;
 
         servings = 0;
+
+        Debug.Log("[BUFFET] Empty");
 
         UpdateVisuals();
     }
@@ -149,7 +141,6 @@ public class BuffetContainer : MonoBehaviour
 
     void UpdateVisuals()
     {
-        // TEXT
         if(servingsText != null)
         {
             if(storedDish == null)
@@ -163,7 +154,6 @@ public class BuffetContainer : MonoBehaviour
             }
         }
 
-        // SPRITE
         if(dishRenderer != null)
         {
             if(storedDish == null)

@@ -16,8 +16,8 @@ MonoBehaviour:
   description: Bakla, Anong sinasabi mo tungkol sa akin?
   thumbnail: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
   itemSprite: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
-  gameModel: {fileID: 0}
-  handScale: {x: 1, y: 1, z: 1}
+  gameModel: {fileID: 4885859709778863364, guid: 1caa4fe8af201e44ebf7f0b769edc9d0, type: 3}
+  handScale: {x: 0.02, y: 0.02, z: 0.02}
   isIngredient: 0
   isDish: 1
   isServing: 0

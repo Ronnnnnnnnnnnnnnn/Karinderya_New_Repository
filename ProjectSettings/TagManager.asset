@@ -9,6 +9,7 @@ TagManager:
   - Pot
   - Customer
   - Buffet
+  - Meat
   layers:
   - Default
   - TransparentFX

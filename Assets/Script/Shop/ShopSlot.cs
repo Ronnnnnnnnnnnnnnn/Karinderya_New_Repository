@@ -34,11 +34,11 @@ public class ShopSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        UIManager.Instance.DisplayItemInfo(seedData);
+        ShopUIManager.Instance.DisplayShopItem(seedData);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        UIManager.Instance.DisplayItemInfo(null);
+        ShopUIManager.Instance.ClearShopItem();
     }
 }

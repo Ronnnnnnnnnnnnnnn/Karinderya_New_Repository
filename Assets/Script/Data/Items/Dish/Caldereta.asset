@@ -16,8 +16,8 @@ MonoBehaviour:
   description: Wow! Next Level Bro!
   thumbnail: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
   itemSprite: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
-  gameModel: {fileID: 0}
-  handScale: {x: 1, y: 1, z: 1}
+  gameModel: {fileID: 4885859709778863364, guid: 7097334beab66954b84ee407b95fdc0a, type: 3}
+  handScale: {x: 0.02, y: 0.02, z: 0.02}
   isIngredient: 0
   isDish: 1
   isServing: 0

@@ -12,11 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7602054db2f0c8e44b4a5754085c9b7e, type: 3}
   m_Name: Tomato Seed
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
+  itemName: 
   description: Seed to grow tomato. This took 3 hours to grow
-  thumbnail: {fileID: 294423878, guid: 533b94f18d4d74e4b87e530b6aad669c, type: 3}
+  thumbnail: {fileID: -1899848791, guid: 5cf09de431aebcc40b22c263712ddd21, type: 3}
+  itemSprite: {fileID: -1899848791, guid: 5cf09de431aebcc40b22c263712ddd21, type: 3}
   gameModel: {fileID: 8792448630162995384, guid: 22cac02b2f4921247a3c9cbfd51a18ad, type: 3}
+  handScale: {x: 1, y: 1, z: 1}
+  isIngredient: 0
+  isDish: 0
+  isServing: 0
+  cookedDish: {fileID: 0}
+  servingVersion: {fileID: 0}
   daysToGrow: 0.125
   cropToYield: {fileID: 11400000, guid: d8db7257847a5564e9d88afc0356da68, type: 2}
   seedling: {fileID: 3699918654475473860, guid: cbf67a872d68e464e90bbfcb14a1b889, type: 3}
   regrowable: 1
   daysToRegrow: 0.125
+  buyPrice: 10
+  sellPrice: 5

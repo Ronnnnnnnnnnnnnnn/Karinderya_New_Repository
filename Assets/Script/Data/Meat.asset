@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Bust it down
   thumbnail: {fileID: 21300000, guid: 55597d86d1b9a734f9f07e7e58556155, type: 3}
   itemSprite: {fileID: 21300000, guid: 55597d86d1b9a734f9f07e7e58556155, type: 3}
-  gameModel: {fileID: 919132149155446097, guid: 74069340a2ed7354ba979ef4d8a934d8, type: 3}
+  gameModel: {fileID: 1028074700096581099, guid: 2c8c7b990a9a6ba428ff16ebfbb88de7, type: 3}
   handScale: {x: 1, y: 1, z: 1}
   isIngredient: 1
   isDish: 0

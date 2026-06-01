@@ -80,7 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ebc4f298036e354bb26d9c7a8665dc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InteractableObject
-  item: {fileID: 0}
+  item: {fileID: 11400000, guid: 622860c270976194bb722154d6f5b80d, type: 2}
 --- !u!64 &7674190901982099719
 MeshCollider:
   m_ObjectHideFlags: 0

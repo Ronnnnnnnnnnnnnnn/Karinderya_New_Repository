@@ -1,21 +1,22 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
-using System.Collections;
 
 public class NotificationManager : MonoBehaviour
 {
     public static NotificationManager Instance;
 
     [Header("UI")]
-    public TextMeshProUGUI notificationText;
+    public TMP_Text notificationText;
 
-    public float messageDuration = 2f;
+    [Header("Settings")]
+    public float displayTime = 3f;
 
     Coroutine currentRoutine;
 
-    void Awake()
+    private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
         }
@@ -25,29 +26,43 @@ public class NotificationManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        if(notificationText != null)
+        {
+            notificationText.text = "";
+            notificationText.gameObject.SetActive(false);
+        }
+    }
+
     public void ShowMessage(string message)
     {
+        if(notificationText == null)
+        {
+            Debug.LogWarning("[NOTIFICATION] Missing notification text reference.");
+            return;
+        }
+
         if(currentRoutine != null)
         {
             StopCoroutine(currentRoutine);
         }
 
-        currentRoutine =
-            StartCoroutine(
-                ShowRoutine(message)
-            );
+        currentRoutine = StartCoroutine(
+            ShowRoutine(message)
+        );
     }
 
     IEnumerator ShowRoutine(string message)
     {
         notificationText.gameObject.SetActive(true);
-
         notificationText.text = message;
 
-        yield return new WaitForSeconds(
-            messageDuration
-        );
+        yield return new WaitForSeconds(displayTime);
 
+        notificationText.text = "";
         notificationText.gameObject.SetActive(false);
+
+        currentRoutine = null;
     }
 }

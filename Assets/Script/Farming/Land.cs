@@ -147,10 +147,17 @@ public class Land : MonoBehaviour, ITimeTracker
             SpawnCrop();
 
             cropPlanted.Plant(id, seedTool);
+            plantedSeed = seedTool;
 
             InventoryManager.Instance.ConsumeItem(InventoryManager.Instance.GetEquippedSlot(InventorySlot.InventoryType.Tool));
 
+            ShowTimer(true);
         }
+    }
+
+    public CropBehaviour GetPlantedCrop()
+    {
+        return cropPlanted;
     }
 
     public CropBehaviour SpawnCrop()
@@ -197,33 +204,25 @@ public class Land : MonoBehaviour, ITimeTracker
 
     public void UpdateTimerUI()
     {
-        if (timerText == null) return;
+        if (timerText == null)
+            return;
 
-        if (cropPlanted != null &&
-            cropPlanted.cropState == CropBehaviour.CropState.Harvestable)
+        if (cropPlanted != null)
         {
-            timerText.text = "Ready to Harvest!";
+            if (cropPlanted.cropState == CropBehaviour.CropState.Harvestable)
+            {
+                timerText.text = "Ready!";
+                return;
+            }
+
+            float remaining = cropPlanted.GetRemainingGrowSeconds();
+            int mins = Mathf.FloorToInt(remaining / 60f);
+            int secs = Mathf.FloorToInt(remaining % 60f);
+            timerText.text = mins + ":" + secs.ToString("00");
             return;
         }
 
-        if (landStatus == LandStatus.Watered)
-        {
-            float elapsed =
-                GameTimestamp.CompareTimestamps(
-                    timeWatered,
-                    TimeManager.Instance.GetGameTimestamp());
-
-            float remaining = 4f - elapsed;
-
-            if (remaining < 0)
-                remaining = 0;
-
-            timerText.text = "Water again in " + remaining.ToString("0.0") + "hours";
-        }
-        else
-        {
-            timerText.text = "";
-        }
+        timerText.text = "";
     }
 
     void Update()

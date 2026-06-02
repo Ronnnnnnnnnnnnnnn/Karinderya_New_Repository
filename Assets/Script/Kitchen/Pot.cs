@@ -4,7 +4,13 @@ using TMPro;
 
 public class Pot : MonoBehaviour
 {
-    [Header("Recipe")]
+    [Header("Recipes")]
+    public RecipeData[] availableRecipes;
+
+    [Header("Fallback catalog (all dishes)")]
+    public RecipeBookCatalog recipeCatalog;
+
+    [Header("Legacy single recipe")]
     public RecipeData recipe;
 
     [Header("Cooking")]
@@ -27,8 +33,7 @@ public class Pot : MonoBehaviour
     [Header("Ingredient Counter")]
     public TextMeshPro ingredientText;
 
-    int currentIngredientCount;
-
+    RecipeData activeRecipe;
     ItemData cookedDish;
 
     void Start()
@@ -36,122 +41,78 @@ public class Pot : MonoBehaviour
         HideDish();
         HideTimer();
         UpdateIngredientText();
+
+        if (recipeCatalog == null)
+        {
+            RecipeBookCatalog[] catalogs = Resources.FindObjectsOfTypeAll<RecipeBookCatalog>();
+            if (catalogs.Length > 0)
+                recipeCatalog = catalogs[0];
+        }
+    }
+
+    public RecipeData[] GetRecipes()
+    {
+        if (availableRecipes != null && availableRecipes.Length > 0)
+            return availableRecipes;
+
+        if (recipeCatalog != null && recipeCatalog.recipes != null && recipeCatalog.recipes.Length > 0)
+            return recipeCatalog.recipes;
+
+        if (recipe != null)
+            return new RecipeData[] { recipe };
+
+        return new RecipeData[0];
+    }
+
+    public bool CanStartCooking()
+    {
+        return !cooking && !cooked;
     }
 
     public void Interact()
     {
-        if(cooked)
+        if (cooked)
         {
             GiveDish();
             return;
         }
 
-        if(cooking)
+        if (cooking)
             return;
-
-        AddIngredient();
     }
 
-    void AddIngredient()
+    public bool TryStartCooking(RecipeData recipeToCook)
     {
-        if(recipe == null)
-        {
-            NotificationManager.Instance.ShowMessage(
-                "No Recipe Assigned!"
-            );
+        if (!CanStartCooking() || recipeToCook == null)
+            return false;
 
-            Debug.LogError(
-                "[POT] No Recipe Assigned!"
-            );
+        if (!InventoryManager.Instance.HasItems(recipeToCook.ingredients))
+            return false;
 
-            return;
-        }
+        InventoryManager.Instance.ConsumeItems(recipeToCook.ingredients);
+        activeRecipe = recipeToCook;
 
-        if(!InventoryManager.Instance.SlotEquipped(
-            InventorySlot.InventoryType.Item))
-        {
-            NotificationManager.Instance.ShowMessage(
-                "Hold an ingredient first!"
-            );
+        if (ingredientText != null)
+            ingredientText.gameObject.SetActive(false);
 
-            return;
-        }
-
-        ItemData heldItem =
-            InventoryManager.Instance.GetEquippedSlotItem(
-                InventorySlot.InventoryType.Item
-            );
-
-        if(heldItem == null)
-            return;
-
-        bool ingredientAccepted = false;
-
-        foreach(ItemData ingredient in recipe.ingredients)
-        {
-            if(heldItem == ingredient)
-            {
-                ingredientAccepted = true;
-
-                currentIngredientCount++;
-
-                UpdateIngredientText();
-
-                InventoryManager.Instance.ConsumeItem(
-                    InventoryManager.Instance.GetEquippedSlot(
-                        InventorySlot.InventoryType.Item
-                    )
-                );
-
-                NotificationManager.Instance.ShowMessage(
-                    ingredient.itemName + " Added"
-                );
-
-                Debug.Log(
-                    "[POT] Ingredient Added"
-                );
-
-                break;
-            }
-        }
-
-        if(!ingredientAccepted)
-        {
-            NotificationManager.Instance.ShowMessage(
-                "Wrong Ingredient!"
-            );
-
-            return;
-        }
-
-        if(currentIngredientCount >= recipe.ingredients.Length)
-        {
-            StartCoroutine(CookRoutine());
-        }
+        StartCoroutine(CookRoutine());
+        return true;
     }
 
     IEnumerator CookRoutine()
     {
         cooking = true;
 
-        if(ingredientText != null)
-        {
-            ingredientText.gameObject.SetActive(false);
-        }
-
-        float timer = cookTime;
+        float duration = activeRecipe != null ? activeRecipe.cookTime : cookTime;
+        float timer = duration;
 
         ShowTimer();
 
-        while(timer > 0)
+        while (timer > 0)
         {
-            int rounded =
-                Mathf.CeilToInt(timer);
-
+            int rounded = Mathf.CeilToInt(timer);
             UpdateTimerSprite(rounded);
-
             yield return new WaitForSeconds(1f);
-
             timer--;
         }
 
@@ -161,69 +122,47 @@ public class Pot : MonoBehaviour
     void FinishCooking()
     {
         cooking = false;
-
         cooked = true;
-
-        cookedDish = recipe.resultDish;
+        cookedDish = activeRecipe != null ? activeRecipe.resultDish : null;
 
         HideTimer();
-
         ShowDish();
 
-        NotificationManager.Instance.ShowMessage(
-            recipe.resultDish.itemName +
-            " Cooked!"
-        );
-
-        Debug.Log(
-            "[POT] Finished Cooking"
-        );
+        string dishName = cookedDish != null ? cookedDish.itemName : "Dish";
+        NotificationManager.Instance.ShowMessage(dishName + " Cooked!");
     }
 
     void GiveDish()
     {
-        InventoryManager.Instance.AddItem(
-            cookedDish
-        );
+        if (cookedDish == null)
+            return;
 
-        NotificationManager.Instance.ShowMessage(
-            cookedDish.itemName +
-            " Taken"
-        );
+        InventoryManager.Instance.AddItem(cookedDish);
+        NotificationManager.Instance.ShowMessage(cookedDish.itemName + " Taken");
 
         cooked = false;
-
-        currentIngredientCount = 0;
-
+        activeRecipe = null;
         cookedDish = null;
 
         HideDish();
-
         UpdateIngredientText();
 
-        if(ingredientText != null)
-        {
+        if (ingredientText != null)
             ingredientText.gameObject.SetActive(true);
-        }
     }
 
     void ShowDish()
     {
-        if(dishRenderer == null)
+        if (dishRenderer == null || cookedDish == null)
             return;
 
-        if(recipe == null)
-            return;
-
-        dishRenderer.sprite =
-            recipe.resultDish.itemSprite;
-
+        dishRenderer.sprite = cookedDish.itemSprite;
         dishRenderer.gameObject.SetActive(true);
     }
 
     void HideDish()
     {
-        if(dishRenderer == null)
+        if (dishRenderer == null)
             return;
 
         dishRenderer.gameObject.SetActive(false);
@@ -231,55 +170,52 @@ public class Pot : MonoBehaviour
 
     void ShowTimer()
     {
-        if(timerRenderer == null)
-            return;
-
-        timerRenderer.gameObject.SetActive(true);
+        if (timerRenderer != null)
+            timerRenderer.gameObject.SetActive(true);
     }
 
     void HideTimer()
     {
-        if(timerRenderer == null)
-            return;
-
-        timerRenderer.gameObject.SetActive(false);
+        if (timerRenderer != null)
+            timerRenderer.gameObject.SetActive(false);
     }
 
     void UpdateTimerSprite(int number)
     {
-        if(timerRenderer == null)
+        if (timerRenderer == null || numberSprites == null)
             return;
 
-        if(number < 0 ||
-           number >= numberSprites.Length)
-        {
+        if (number < 0 || number >= numberSprites.Length)
             return;
-        }
 
-        timerRenderer.sprite =
-            numberSprites[number];
+        timerRenderer.sprite = numberSprites[number];
     }
 
     void UpdateIngredientText()
     {
-        if(ingredientText == null)
+        if (ingredientText == null)
             return;
 
-        if(recipe == null)
+        RecipeData[] recipes = GetRecipes();
+
+        if (recipes.Length == 0)
         {
             ingredientText.text = "NO RECIPE";
             return;
         }
 
-        if(recipe.ingredients == null)
+        if (cooking)
         {
-            ingredientText.text = "NO INGREDIENTS";
+            ingredientText.text = "COOKING";
             return;
         }
 
-        ingredientText.text =
-            currentIngredientCount +
-            "/" +
-            recipe.ingredients.Length;
+        if (cooked)
+        {
+            ingredientText.text = "DONE";
+            return;
+        }
+
+        ingredientText.text = "Press E";
     }
 }

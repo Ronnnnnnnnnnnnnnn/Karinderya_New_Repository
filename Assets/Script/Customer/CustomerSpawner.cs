@@ -32,17 +32,17 @@ public class CustomerSpawner : MonoBehaviour
 
     IEnumerator SpawnLoop()
     {
-        while(true)
+        while (true)
         {
-            yield return new WaitForSeconds(
-                spawnDelay
-            );
+            float delay = spawnDelay;
 
-            // ONLY SPAWN IF NONE EXISTS
-            if(!customerExists)
-            {
+            if (PlayerProgression.Instance != null)
+                delay = PlayerProgression.Instance.GetSpawnDelay();
+
+            yield return new WaitForSeconds(delay);
+
+            if (!customerExists)
                 SpawnCustomer();
-            }
         }
     }
 
@@ -94,18 +94,17 @@ public class CustomerSpawner : MonoBehaviour
         CustomerOrder order =
             customerObj.GetComponent<CustomerOrder>();
 
-        if(order != null &&
-            possibleOrders.Length > 0)
+        if (order != null && possibleOrders.Length > 0)
         {
-            int randomIndex =
-                Random.Range(
-                    0,
-                    possibleOrders.Length
-                );
+            ItemData chosen;
 
-            order.SetOrder(
-                possibleOrders[randomIndex]
-            );
+            if (PlayerProgression.Instance != null)
+                chosen = PlayerProgression.Instance.PickWeightedOrder(possibleOrders);
+            else
+                chosen = possibleOrders[Random.Range(0, possibleOrders.Length)];
+
+            if (chosen != null)
+                order.SetOrder(chosen);
         }
     }
 

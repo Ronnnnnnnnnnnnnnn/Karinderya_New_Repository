@@ -113,8 +113,17 @@ public class LandManager : MonoBehaviour
     }
 #endregion
 
-    void Update()
+    public List<CropBehaviour> GetActiveCrops()
     {
-        
+        var crops = new List<CropBehaviour>();
+
+        foreach (Land land in landPlots)
+        {
+            CropBehaviour crop = land.GetPlantedCrop();
+            if (crop != null)
+                crops.Add(crop);
+        }
+
+        return crops;
     }
 }

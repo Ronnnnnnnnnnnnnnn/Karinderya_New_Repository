@@ -78,15 +78,18 @@ public class PlayerInteraction : MonoBehaviour
         // POT
         // =========================
 
-        if(other.CompareTag("Pot"))
+        Pot pot = other.GetComponentInParent<Pot>();
+
+        if (pot != null || other.CompareTag("Pot"))
         {
-            selectedPot = other.GetComponent<Pot>();
+            selectedPot = pot != null ? pot : other.GetComponent<Pot>();
 
-            HideUI();
-
-            Debug.Log("[INTERACT] Looking at Pot");
-
-            return;
+            if (selectedPot != null)
+            {
+                ShowUI();
+                Debug.Log("[INTERACT] Looking at Pot");
+                return;
+            }
         }
 
         // =========================
@@ -219,7 +222,18 @@ public class PlayerInteraction : MonoBehaviour
     {
         Debug.Log("[PLAYER] Pickup Key");
 
-        // PUT AWAY HELD ITEM
+        if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen)
+        {
+            CookingUIManager.Instance.CloseAll();
+            return;
+        }
+
+        if (selectedPot != null)
+        {
+            CookingUIManager.EnsureInstance().OpenRecipeBook(selectedPot);
+            return;
+        }
+
         if(InventoryManager.Instance.SlotEquipped(
             InventorySlot.InventoryType.Item))
         {
@@ -230,7 +244,6 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // PICKUP WORLD ITEM
         if(selectedInteractable != null)
         {
             selectedInteractable.Pickup();

@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1af1a77966140ce4ea11d19f95fcbd63, type: 3}
-  m_Name: Caldereta
+  m_Name: Sinigang
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Kaldereta
-  description: Wow! Next Level Bro!
-  thumbnail: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
-  itemSprite: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
-  gameModel: {fileID: 4885859709778863364, guid: 7097334beab66954b84ee407b95fdc0a, type: 3}
-  handScale: {x: 0.02, y: 0.02, z: 0.02}
+  itemName: Sinigang
+  description: Serving portion for customers.
+  thumbnail: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
+  itemSprite: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
+  gameModel: {fileID: 0}
+  handScale: {x: 1, y: 1, z: 1}
   isIngredient: 0
   isDish: 0
   isServing: 1
-  cookedDish: {fileID: 11400000, guid: 255cce0cb596673459f7a00e91627554, type: 2}
+  cookedDish: {fileID: 0}
   servingVersion: {fileID: 0}

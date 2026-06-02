@@ -105,16 +105,28 @@ public class UIManager : MonoBehaviour, ITimeTracker
         }
     }
 
+    public bool IsMenuOpen =>
+        (inventoryPanel != null && inventoryPanel.activeSelf) ||
+        (shopPanel != null && shopPanel.activeSelf);
+
     public void ToggleInventoryPanel()
     {
         inventoryPanel.SetActive(!inventoryPanel.activeSelf);
-
         RenderInventory();
+        RefreshCursorState();
     }
 
     public void ToggleShop()
     {
         shopPanel.SetActive(!shopPanel.activeSelf);
+        RefreshCursorState();
+    }
+
+    public void RefreshCursorState()
+    {
+        CameraMovement cameraMovement = FindObjectOfType<CameraMovement>();
+        if (cameraMovement != null)
+            cameraMovement.RefreshCursorState();
     }
 
     public void DisplayItemInfo(ItemData data)

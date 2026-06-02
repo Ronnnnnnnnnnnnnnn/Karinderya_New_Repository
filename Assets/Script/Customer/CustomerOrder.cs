@@ -152,9 +152,10 @@ public class CustomerOrder : MonoBehaviour
 
         served = true;
 
-        CurrencyManager.Instance.AddCoins(
-            rewardCoins
-        );
+        CurrencyManager.Instance.AddCoins(rewardCoins);
+
+        if (PlayerProgression.Instance != null)
+            PlayerProgression.Instance.OnDishServed(rewardCoins);
 
         NotificationManager.Instance.ShowMessage(
             "+" + rewardCoins + " Coins!"

@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1af1a77966140ce4ea11d19f95fcbd63, type: 3}
-  m_Name: Caldereta
+  m_Name: Giniling
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Kaldereta
-  description: Wow! Next Level Bro!
+  itemName: Giniling
+  description: Ground meat with vegetables.
   thumbnail: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
   itemSprite: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
-  gameModel: {fileID: 4885859709778863364, guid: 7097334beab66954b84ee407b95fdc0a, type: 3}
-  handScale: {x: 0.02, y: 0.02, z: 0.02}
+  gameModel: {fileID: 0}
+  handScale: {x: 1, y: 1, z: 1}
   isIngredient: 0
-  isDish: 0
-  isServing: 1
-  cookedDish: {fileID: 11400000, guid: 255cce0cb596673459f7a00e91627554, type: 2}
-  servingVersion: {fileID: 0}
+  isDish: 1
+  isServing: 0
+  cookedDish: {fileID: 0}
+  servingVersion: {fileID: 11400000, guid: b2e5f6a70348596c1d4e8f9a0b1c2d3e, type: 2}

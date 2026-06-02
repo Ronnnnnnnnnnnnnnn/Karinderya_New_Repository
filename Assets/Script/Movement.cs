@@ -45,6 +45,7 @@ public class Movement : MonoBehaviour
         }
 
         Interact();
+        HandleMenuShortcuts();
 
         if(Input.GetKey(KeyCode.RightBracket))
         {
@@ -54,15 +55,29 @@ public class Movement : MonoBehaviour
 
     public void Interact()
     {
+        if (PauseMenu.Pause)
+            return;
+
         if (Input.GetButtonDown("Fire1"))
-        {
             playerInteraction.Interact();
-        }
-        
-        if(Input.GetKeyDown(KeyCode.E))
-            {
-                playerInteraction.ItemInteract();
-            }
+
+        if (Input.GetKeyDown(KeyCode.E))
+            playerInteraction.ItemInteract();
+    }
+
+    void HandleMenuShortcuts()
+    {
+        if (PauseMenu.Pause || UIManager.Instance == null)
+            return;
+
+        if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.I))
+            UIManager.Instance.ToggleInventoryPanel();
+
+        if (Input.GetKeyDown(KeyCode.B))
+            UIManager.Instance.ToggleShop();
     }
 
     void FixedUpdate()

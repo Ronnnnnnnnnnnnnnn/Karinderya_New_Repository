@@ -30,6 +30,14 @@ public class CropBehaviour : MonoBehaviour
 
     public CropState cropState;
 
+    [Header("Real-Time Growth")]
+    public float maxGrowSeconds = 180f;
+
+    float plantRealTime;
+    bool useRealTimeGrowth = true;
+
+    public SeedData SeedToGrow => seedToGrow;
+
    public void Plant(int landID, SeedData seedToGrow)
     {
         LoadCrop(landID, seedToGrow, CropState.Seed, 0, 0);
@@ -51,7 +59,8 @@ public class CropBehaviour : MonoBehaviour
         maxGrowth = GameTimestamp.HoursToMinutes(hoursToGrow);
 
         this.growth = growth;
-        this.health = health; 
+        this.health = health;
+        plantRealTime = Time.time;
 
         if (seedToGrow.regrowable)
         {
@@ -61,7 +70,46 @@ public class CropBehaviour : MonoBehaviour
         }
 
         SwitchState(cropState);
+    }
 
+    void Update()
+    {
+        if (!useRealTimeGrowth || seedToGrow == null)
+            return;
+
+        if (cropState == CropState.Harvestable || cropState == CropState.Wilted)
+            return;
+
+        float progress = Mathf.Clamp01((Time.time - plantRealTime) / maxGrowSeconds);
+
+        if (progress >= 1f && cropState != CropState.Harvestable)
+        {
+            SwitchState(CropState.Harvestable);
+            LandManager.Instance.OnCropStateChange(landID, cropState, growth, health);
+            return;
+        }
+
+        CropState targetState = CropState.Seed;
+        if (progress >= 0.5f)
+            targetState = CropState.Seedling;
+
+        if (targetState != cropState && cropState != CropState.Harvestable)
+            SwitchState(targetState);
+    }
+
+    public float GetRemainingGrowSeconds()
+    {
+        if (cropState == CropState.Harvestable)
+            return 0f;
+
+        if (!useRealTimeGrowth)
+        {
+            float remaining = maxGrowth - growth;
+            return Mathf.Clamp(remaining * (maxGrowSeconds / Mathf.Max(maxGrowth, 1f)), 0f, maxGrowSeconds);
+        }
+
+        float elapsed = Time.time - plantRealTime;
+        return Mathf.Clamp(maxGrowSeconds - elapsed, 0f, maxGrowSeconds);
     }
 
     public void Grow()

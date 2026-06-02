@@ -33,29 +33,48 @@ public class CameraMovement : MonoBehaviour
 #region Movement Methods
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
+        if (Input.GetKeyDown(KeyCode.P) && !ShouldUseFreeCursor())
             isCursorLocked = !isCursorLocked;
+
+        RefreshCursorState();
+    }
+
+    public void RefreshCursorState()
+    {
+        if (ShouldUseFreeCursor())
+        {
+            EnableCursor();
+            return;
         }
 
         if (isCursorLocked)
-        {
             DisableCursor();
-        }
         else
-        {
             EnableCursor();
-        }
+    }
+
+    bool ShouldUseFreeCursor()
+    {
+        if (PauseMenu.Pause)
+            return true;
+
+        if (UIManager.Instance != null && UIManager.Instance.IsMenuOpen)
+            return true;
+
+        if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen)
+            return true;
+
+        return false;
     }
 
     void LateUpdate()
     {
-        float mouseX;
-        float mouseY;
-            
-            mouseX = Input.GetAxisRaw("Mouse X");
-            mouseY = Input.GetAxisRaw("Mouse Y");
-        
+        if (ShouldUseFreeCursor())
+            return;
+
+        float mouseX = Input.GetAxisRaw("Mouse X");
+        float mouseY = Input.GetAxisRaw("Mouse Y");
+
         yRot += mouseX;
         xRot -= mouseY;
 

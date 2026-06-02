@@ -262,6 +262,78 @@ public class InventoryManager : MonoBehaviour
     }
     #endregion
 
+    public int CountItem(ItemData item)
+    {
+        if (item == null)
+            return 0;
+
+        int count = 0;
+
+        if (equippedItemSlot != null && !equippedItemSlot.IsEmpty() && equippedItemSlot.itemData == item)
+            count += equippedItemSlot.quantity;
+
+        foreach (ItemSlotData slot in itemSlots)
+        {
+            if (!slot.IsEmpty() && slot.itemData == item)
+                count += slot.quantity;
+        }
+
+        return count;
+    }
+
+    public bool HasItems(ItemData[] items)
+    {
+        if (items == null)
+            return true;
+
+        foreach (ItemData item in items)
+        {
+            if (item == null)
+                continue;
+
+            if (CountItem(item) < 1)
+                return false;
+        }
+
+        return true;
+    }
+
+    public void ConsumeItems(ItemData[] items)
+    {
+        if (items == null)
+            return;
+
+        foreach (ItemData item in items)
+        {
+            if (item == null)
+                continue;
+
+            ConsumeOneFromInventory(item);
+        }
+
+        RenderHand();
+        if (UIManager.Instance != null)
+            UIManager.Instance.RenderInventory();
+    }
+
+    void ConsumeOneFromInventory(ItemData item)
+    {
+        if (equippedItemSlot != null && !equippedItemSlot.IsEmpty() && equippedItemSlot.itemData == item)
+        {
+            ConsumeItem(equippedItemSlot);
+            return;
+        }
+
+        for (int i = 0; i < itemSlots.Length; i++)
+        {
+            if (!itemSlots[i].IsEmpty() && itemSlots[i].itemData == item)
+            {
+                ConsumeItem(itemSlots[i]);
+                return;
+            }
+        }
+    }
+
     public void AddItem(ItemData item)
     {
         ItemSlotData newItem = new ItemSlotData(item);

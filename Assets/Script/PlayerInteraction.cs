@@ -225,11 +225,13 @@ public class PlayerInteraction : MonoBehaviour
         if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen)
         {
             CookingUIManager.Instance.CloseAll();
+            HideUI();
             return;
         }
 
         if (selectedPot != null)
         {
+            HideUI();
             CookingUIManager.EnsureInstance().OpenRecipeBook(selectedPot);
             return;
         }
@@ -240,14 +242,14 @@ public class PlayerInteraction : MonoBehaviour
             InventoryManager.Instance.HandToInventory(
                 InventorySlot.InventoryType.Item
             );
-
+            HideUI();
             return;
         }
 
         if(selectedInteractable != null)
         {
             selectedInteractable.Pickup();
-
+            HideUI();
             return;
         }
     }
@@ -258,8 +260,16 @@ public class PlayerInteraction : MonoBehaviour
 
     void ShowUI()
     {
-        if(interactUI != null)
+        if (interactUI != null)
         {
+            // Don't show if recipe canvas is open
+            if (CookingUIManager.Instance != null &&
+                CookingUIManager.Instance.IsOpen)
+            {
+                interactUI.SetActive(false);
+                return;
+            }
+
             interactUI.SetActive(true);
         }
     }

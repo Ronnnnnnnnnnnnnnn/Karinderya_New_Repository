@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Sinigang
   description: Serving portion for customers.
-  thumbnail: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
-  itemSprite: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
+  thumbnail: {fileID: -1507796425, guid: e68b04b7b8a9f7048a25a0df51d4b523, type: 3}
+  itemSprite: {fileID: -1507796425, guid: e68b04b7b8a9f7048a25a0df51d4b523, type: 3}
   gameModel: {fileID: 0}
   handScale: {x: 1, y: 1, z: 1}
   isIngredient: 0

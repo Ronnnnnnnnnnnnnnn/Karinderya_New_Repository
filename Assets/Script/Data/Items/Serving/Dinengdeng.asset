@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Dinengdeng
   description: Bakla, Anong sinasabi mo tungkol sa akin?
-  thumbnail: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
-  itemSprite: {fileID: 21300000, guid: ecad5ba45761d824bab656d53d9504d8, type: 3}
+  thumbnail: {fileID: 99082561, guid: f32bf71387ecce7429590db8dc3a835c, type: 3}
+  itemSprite: {fileID: 99082561, guid: f32bf71387ecce7429590db8dc3a835c, type: 3}
   gameModel: {fileID: 0}
   handScale: {x: 1, y: 1, z: 1}
   isIngredient: 0

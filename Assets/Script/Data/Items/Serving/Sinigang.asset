@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Serving portion for customers.
   thumbnail: {fileID: -1507796425, guid: e68b04b7b8a9f7048a25a0df51d4b523, type: 3}
   itemSprite: {fileID: -1507796425, guid: e68b04b7b8a9f7048a25a0df51d4b523, type: 3}
-  gameModel: {fileID: 0}
+  gameModel: {fileID: 4885859709778863364, guid: 1ef2b59fbceb8d24b814a7cddfeeb58a, type: 3}
   handScale: {x: 1, y: 1, z: 1}
   isIngredient: 0
   isDish: 0

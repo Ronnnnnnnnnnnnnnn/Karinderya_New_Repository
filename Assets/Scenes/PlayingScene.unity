@@ -151976,8 +151976,11 @@ MonoBehaviour:
   exitPoint: {fileID: 1669678739}
   lookPoint: {fileID: 1099712310}
   possibleOrders:
-  - {fileID: 11400000, guid: 255cce0cb596673459f7a00e91627554, type: 2}
-  - {fileID: 11400000, guid: 5f6233e55f1fb0943a8197a8cd86e6d0, type: 2}
+  - {fileID: 11400000, guid: 15ee5986744a5174d906e5a8682a123e, type: 2}
+  - {fileID: 11400000, guid: 8d97b8ee485e6bc45a2253c0198fae84, type: 2}
+  - {fileID: 11400000, guid: c3f6a7b81459607d2e5f9a0b1c2d3e4f, type: 2}
+  - {fileID: 11400000, guid: b2e5f6a70348596c1d4e8f9a0b1c2d3e, type: 2}
+  - {fileID: 11400000, guid: d4a7b8c92560718e3f6a0b1c2d3e4f5a, type: 2}
   spawnDelay: 10
 --- !u!4 &1452126975
 Transform:
@@ -189645,7 +189648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 267d1d34af8d3384b97fb09c4f756e60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffetContainer
-  storedDish: {fileID: 11400000, guid: 15ee5986744a5174d906e5a8682a123e, type: 2}
+  storedDish: {fileID: 11400000, guid: 255cce0cb596673459f7a00e91627554, type: 2}
   servings: 0
   maxServings: 10
   dishRenderer: {fileID: 1395724616}
@@ -250998,19 +251001,19 @@ MonoBehaviour:
     quantity: 1
   itemSlots:
   - itemData: {fileID: 11400000, guid: d23daf02d633c3a4ba2a19a80e9005e5, type: 2}
-    quantity: 1
+    quantity: 2
   - itemData: {fileID: 11400000, guid: 479c298d5d4a39c4fab99baaad38e9e9, type: 2}
-    quantity: 1
+    quantity: 2
   - itemData: {fileID: 11400000, guid: 3883ed80ebec1184e8e32f6f47d97aac, type: 2}
-    quantity: 1
+    quantity: 2
+  - itemData: {fileID: 11400000, guid: 5d702a453776a8b40b42919a5f7a0e3a, type: 2}
+    quantity: 2
   - itemData: {fileID: 11400000, guid: 5d702a453776a8b40b42919a5f7a0e3a, type: 2}
     quantity: 1
-  - itemData: {fileID: 0}
-    quantity: 0
-  - itemData: {fileID: 0}
-    quantity: 0
-  - itemData: {fileID: 0}
-    quantity: 0
+  - itemData: {fileID: 11400000, guid: 47dc3bce62c596b45a1a5a96b0d29cfa, type: 2}
+    quantity: 1
+  - itemData: {fileID: 11400000, guid: ef409663231c1b444b349ce8496df7c7, type: 2}
+    quantity: 1
   - itemData: {fileID: 0}
     quantity: 0
   equippedItemSlot:

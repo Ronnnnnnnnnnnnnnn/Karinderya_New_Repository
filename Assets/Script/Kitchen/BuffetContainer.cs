@@ -101,9 +101,14 @@ public class BuffetContainer : MonoBehaviour
             return;
         }
 
-        InventoryManager.Instance.AddItem(
-            storedDish
-        );
+        if (storedDish.servingVersion != null)
+        {
+            InventoryManager.Instance.AddItem(storedDish.servingVersion);
+        }
+        else
+        {
+            InventoryManager.Instance.AddItem(storedDish);
+        }
 
         servings--;
 

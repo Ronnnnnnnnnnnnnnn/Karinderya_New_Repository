@@ -12,6 +12,10 @@ public class CustomerOrder : MonoBehaviour
     [Header("Patience")]
     public float patienceTime = 60f;
 
+    [Tooltip("Percentage of reward deducted when customer leaves.")]
+    [Range(0f, 1f)]
+    public float compensationRate = 0.5f;
+
     float timer;
 
     bool served;
@@ -177,25 +181,27 @@ public class CustomerOrder : MonoBehaviour
 
     void LeaveAngry()
     {
+        NotificationManager.Instance.ShowMessage("Customer Angry!");
+
+        int compensation = Mathf.RoundToInt(rewardCoins * 0.5f);
+
+        CurrencyManager.Instance.AddCoins(-compensation);
+
         NotificationManager.Instance.ShowMessage(
-            "Customer Angry!"
+            "-" + compensation + " Coins (Compensation)"
         );
 
-        Debug.Log(
-            "[CUSTOMER] LEFT ANGRY"
-        );
+        Debug.Log("[CUSTOMER] LEFT ANGRY. Lost " + compensation + " coins.");
 
-        // SAFE RENDERER LOOP
-        foreach(Renderer rend in renderers)
+        foreach (Renderer rend in renderers)
         {
-            if(rend != null)
+            if (rend != null)
             {
-                rend.material.color =
-                    angryColor;
+                rend.material.color = angryColor;
             }
         }
 
-        if(ai != null)
+        if (ai != null)
         {
             ai.LeaveAngry();
         }

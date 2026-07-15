@@ -70,15 +70,12 @@ public class CurrencyManager : MonoBehaviour
     {
         coins += amount;
 
-        Debug.Log(
-            "[MONEY] Added Coins: " +
-            amount
-        );
+        // Prevent negative coins
+        if (coins < 0)
+            coins = 0;
 
-        Debug.Log(
-            "[MONEY] Total Coins: " +
-            coins
-        );
+        Debug.Log("[MONEY] Added Coins: " + amount);
+        Debug.Log("[MONEY] Total Coins: " + coins);
 
         UIManager.Instance.UpdateCoinUI(coins);
     }

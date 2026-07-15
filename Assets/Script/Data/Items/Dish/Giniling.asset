@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Giniling
   description: Ground meat with vegetables.
-  thumbnail: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
-  itemSprite: {fileID: 21300000, guid: dd54a38de6feb904494f8516d09b91eb, type: 3}
+  thumbnail: {fileID: 21300000, guid: b7ca0ea7f5c33ad4880fdefdf04aa8e7, type: 3}
+  itemSprite: {fileID: 21300000, guid: b7ca0ea7f5c33ad4880fdefdf04aa8e7, type: 3}
   gameModel: {fileID: 0}
   handScale: {x: 1, y: 1, z: 1}
   isIngredient: 0

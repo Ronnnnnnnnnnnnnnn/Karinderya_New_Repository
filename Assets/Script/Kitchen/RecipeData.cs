@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Recipe/New Recipe")]
@@ -14,4 +16,12 @@ public class RecipeData : ScriptableObject
 
     [Header("Cooking")]
     public float cookTime = 10f;
+
+    [Header("Unlock")]
+    public bool unlockedByDefault = false;
+
+    public int unlockCost = 0;
+
+    [Header("Customer Reward")]
+    public int sellingPrice = 60;
 }

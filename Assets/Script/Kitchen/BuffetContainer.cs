@@ -10,6 +10,9 @@ public class BuffetContainer : MonoBehaviour
 
     public int maxServings = 10;
 
+    [Header("This Buffet's Recipe")]
+    public RecipeData buffetRecipe;
+
     [Header("Visuals")]
     public SpriteRenderer dishRenderer;
 
@@ -18,19 +21,56 @@ public class BuffetContainer : MonoBehaviour
     [Header("Sprites")]
     public Sprite emptySprite;
 
+    [Header("Lock Visual")]
+    public GameObject lockObject;
+
+    public TextMeshPro lockText;
+
+    [Header("Unlock Visual")]
+    public SpriteRenderer buffetRenderer;
+
+    // =====================================================
+    // START
+    // =====================================================
+
     void Start()
     {
         UpdateVisuals();
+        UpdateLockVisual();
 
-        Debug.Log("[BUFFET] Ready");
+        Debug.Log(
+            "[BUFFET] Ready: " +
+            GetBuffetName()
+        );
     }
+
+    // =====================================================
+    // INTERACT
+    // =====================================================
 
     public void Interact()
     {
-        Debug.Log("[BUFFET] Interacted");
+        Debug.Log(
+            "[BUFFET] Interacted: " +
+            GetBuffetName()
+        );
+
+        // =========================================
+        // LOCKED
+        // =========================================
+
+        if (IsLocked())
+        {
+            UnlockBuffet();
+            return;
+        }
+
+        // =========================================
+        // UNLOCKED
+        // =========================================
 
         // Put dish inside buffet
-        if(storedDish == null)
+        if (storedDish == null)
         {
             InsertDish();
             return;
@@ -41,15 +81,93 @@ public class BuffetContainer : MonoBehaviour
     }
 
     // =====================================================
+    // CHECK LOCK
+    // =====================================================
+
+    bool IsLocked()
+    {
+        if (buffetRecipe == null)
+            return false;
+
+        if (RecipeUnlockManager.Instance == null)
+        {
+            Debug.LogWarning(
+                "[BUFFET] RecipeUnlockManager missing!"
+            );
+
+            return true;
+        }
+
+        return !RecipeUnlockManager.Instance.IsUnlocked(
+            buffetRecipe
+        );
+    }
+
+    // =====================================================
+    // UNLOCK BUFFET
+    // =====================================================
+
+    void UnlockBuffet()
+    {
+        if (buffetRecipe == null)
+        {
+            Debug.LogWarning(
+                "[BUFFET] No recipe assigned!"
+            );
+
+            return;
+        }
+
+        if (RecipeUnlockManager.Instance == null)
+        {
+            Debug.LogWarning(
+                "[BUFFET] RecipeUnlockManager missing!"
+            );
+
+            return;
+        }
+
+        if (RecipeUnlockManager.Instance.IsUnlocked(
+            buffetRecipe))
+        {
+            UpdateLockVisual();
+            return;
+        }
+
+        Debug.Log(
+            "[BUFFET] Attempting to unlock: " +
+            buffetRecipe.recipeName
+        );
+
+        bool success =
+            RecipeUnlockManager.Instance.UnlockRecipe(
+                buffetRecipe
+            );
+
+        if (success)
+        {
+            UpdateLockVisual();
+
+            NotificationManager.Instance.ShowMessage(
+                buffetRecipe.recipeName +
+                " Buffet Unlocked!"
+            );
+        }
+    }
+
+    // =====================================================
     // INSERT DISH
     // =====================================================
 
     void InsertDish()
     {
-        if(!InventoryManager.Instance.SlotEquipped(
+        if (!InventoryManager.Instance.SlotEquipped(
             InventorySlot.InventoryType.Item))
         {
-            Debug.Log("[BUFFET] No item equipped");
+            NotificationManager.Instance.ShowMessage(
+                "Hold A Dish!"
+            );
+
             return;
         }
 
@@ -58,13 +176,35 @@ public class BuffetContainer : MonoBehaviour
                 InventorySlot.InventoryType.Item
             );
 
-        if(heldItem == null)
+        if (heldItem == null)
             return;
 
-        // Optional: only allow dishes
-        if(!heldItem.isDish)
+        // ONLY ALLOW DISHES
+        if (!heldItem.isDish)
         {
-            Debug.Log("[BUFFET] Item is not a dish");
+            NotificationManager.Instance.ShowMessage(
+                "Item Is Not A Dish!"
+            );
+
+            return;
+        }
+
+        // =========================================
+        // CHECK CORRECT DISH
+        // =========================================
+
+        if (buffetRecipe != null &&
+            buffetRecipe.resultDish != heldItem)
+        {
+            NotificationManager.Instance.ShowMessage(
+                "Wrong Dish For This Buffet!"
+            );
+
+            Debug.Log(
+                "[BUFFET] Wrong dish. Expected: " +
+                buffetRecipe.resultDish.itemName
+            );
+
             return;
         }
 
@@ -79,7 +219,7 @@ public class BuffetContainer : MonoBehaviour
         );
 
         Debug.Log(
-            "[BUFFET] Stored " +
+            "[BUFFET] Stored: " +
             storedDish.itemName
         );
 
@@ -92,10 +232,10 @@ public class BuffetContainer : MonoBehaviour
 
     void GiveServing()
     {
-        if(storedDish == null)
+        if (storedDish == null)
             return;
 
-        if(servings <= 0)
+        if (servings <= 0)
         {
             EmptyBuffet();
             return;
@@ -103,11 +243,15 @@ public class BuffetContainer : MonoBehaviour
 
         if (storedDish.servingVersion != null)
         {
-            InventoryManager.Instance.AddItem(storedDish.servingVersion);
+            InventoryManager.Instance.AddItem(
+                storedDish.servingVersion
+            );
         }
         else
         {
-            InventoryManager.Instance.AddItem(storedDish);
+            InventoryManager.Instance.AddItem(
+                storedDish
+            );
         }
 
         servings--;
@@ -117,7 +261,7 @@ public class BuffetContainer : MonoBehaviour
             storedDish.itemName
         );
 
-        if(servings <= 0)
+        if (servings <= 0)
         {
             EmptyBuffet();
         }
@@ -135,7 +279,9 @@ public class BuffetContainer : MonoBehaviour
 
         servings = 0;
 
-        Debug.Log("[BUFFET] Empty");
+        Debug.Log(
+            "[BUFFET] Empty"
+        );
 
         UpdateVisuals();
     }
@@ -146,24 +292,27 @@ public class BuffetContainer : MonoBehaviour
 
     void UpdateVisuals()
     {
-        if(servingsText != null)
+        if (servingsText != null)
         {
-            if(storedDish == null)
+            if (storedDish == null)
             {
                 servingsText.text = "EMPTY";
             }
             else
             {
                 servingsText.text =
-                    servings + "/" + maxServings;
+                    servings +
+                    "/" +
+                    maxServings;
             }
         }
 
-        if(dishRenderer != null)
+        if (dishRenderer != null)
         {
-            if(storedDish == null)
+            if (storedDish == null)
             {
-                dishRenderer.sprite = emptySprite;
+                dishRenderer.sprite =
+                    emptySprite;
             }
             else
             {
@@ -171,5 +320,66 @@ public class BuffetContainer : MonoBehaviour
                     storedDish.itemSprite;
             }
         }
+    }
+
+    // =====================================================
+    // LOCK VISUAL
+    // =====================================================
+
+    void UpdateLockVisual()
+    {
+        if (buffetRecipe == null)
+        {
+            if (lockObject != null)
+                lockObject.SetActive(false);
+
+            if (lockText != null)
+                lockText.text = "";
+
+            return;
+        }
+
+        bool locked = IsLocked();
+
+        // LOCK ICON
+        if (lockObject != null)
+        {
+            lockObject.SetActive(locked);
+        }
+
+        // LOCK TEXT
+        if (lockText != null)
+        {
+            if (locked)
+            {
+                lockText.text =
+                    "LOCKED\n₱" +
+                    buffetRecipe.unlockCost;
+            }
+            else
+            {
+                lockText.text =
+                    buffetRecipe.recipeName;
+            }
+        }
+
+        Debug.Log(
+            "[BUFFET] " +
+            buffetRecipe.recipeName +
+            " Locked: " +
+            locked
+        );
+    }
+
+    // =====================================================
+    // NAME
+    // =====================================================
+
+    string GetBuffetName()
+    {
+        if (buffetRecipe != null)
+            return buffetRecipe.recipeName;
+
+        return "Unassigned Buffet";
     }
 }

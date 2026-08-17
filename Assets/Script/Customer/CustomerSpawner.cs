@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomerSpawner : MonoBehaviour
@@ -23,31 +24,70 @@ public class CustomerSpawner : MonoBehaviour
 
     bool customerExists;
 
+    // =====================================================
+    // START
+    // =====================================================
+
     void Start()
     {
-        Debug.Log("[SPAWNER] Started");
+        Debug.Log(
+            "[SPAWNER] Started"
+        );
 
-        StartCoroutine(SpawnLoop());
+        StartCoroutine(
+            SpawnLoop()
+        );
     }
+
+    // =====================================================
+    // SPAWN LOOP
+    // =====================================================
 
     IEnumerator SpawnLoop()
     {
         while (true)
         {
-            float delay = spawnDelay;
+            float delay =
+                spawnDelay;
 
             if (PlayerProgression.Instance != null)
-                delay = PlayerProgression.Instance.GetSpawnDelay();
+            {
+                delay =
+                    PlayerProgression.Instance
+                    .GetSpawnDelay();
+            }
 
-            yield return new WaitForSeconds(delay);
+            yield return new WaitForSeconds(
+                delay
+            );
 
             if (!customerExists)
+            {
                 SpawnCustomer();
+            }
         }
     }
 
+    // =====================================================
+    // SPAWN CUSTOMER
+    // =====================================================
+
     void SpawnCustomer()
     {
+        // Get only unlocked dishes
+        List<ItemData> unlockedOrders =
+            GetUnlockedOrders();
+
+        // If nothing is available
+        if (unlockedOrders.Count == 0)
+        {
+            Debug.Log(
+                "[SPAWNER] No unlocked dishes available."
+            );
+
+            return;
+        }
+
         customerExists = true;
 
         Debug.Log(
@@ -61,56 +101,131 @@ public class CustomerSpawner : MonoBehaviour
                 Quaternion.identity
             );
 
-        // =====================================
+        // =========================================
         // CUSTOMER AI
-        // =====================================
+        // =========================================
 
         CustomerAI ai =
             customerObj.GetComponent<CustomerAI>();
 
-        if(ai != null)
+        if (ai != null)
         {
-            ai.counterPoint = counterPoint;
+            ai.counterPoint =
+                counterPoint;
 
-            ai.exitPoint = exitPoint;
+            ai.exitPoint =
+                exitPoint;
 
-            ai.lookPoint = lookPoint;
+            ai.lookPoint =
+                lookPoint;
 
-            ai.spawner = this;
+            ai.spawner =
+                this;
 
             Transform npcModel =
-                customerObj.transform.Find("npc");
+                customerObj.transform.Find(
+                    "npc"
+                );
 
-            if(npcModel != null)
+            if (npcModel != null)
             {
-                ai.visualModel = npcModel;
+                ai.visualModel =
+                    npcModel;
             }
         }
 
-        // =====================================
+        // =========================================
         // CUSTOMER ORDER
-        // =====================================
+        // =========================================
 
         CustomerOrder order =
             customerObj.GetComponent<CustomerOrder>();
 
-        if (order != null && possibleOrders.Length > 0)
+        if (order != null)
         {
-            ItemData chosen;
-
-            if (PlayerProgression.Instance != null)
-                chosen = PlayerProgression.Instance.PickWeightedOrder(possibleOrders);
-            else
-                chosen = possibleOrders[Random.Range(0, possibleOrders.Length)];
+            ItemData chosen =
+                unlockedOrders[
+                    Random.Range(
+                        0,
+                        unlockedOrders.Count
+                    )
+                ];
 
             if (chosen != null)
-                order.SetOrder(chosen);
+            {
+                order.SetOrder(
+                    chosen
+                );
+            }
         }
     }
 
-    // =========================================
+    // =====================================================
+    // GET UNLOCKED ORDERS
+    // =====================================================
+
+    List<ItemData> GetUnlockedOrders()
+    {
+        List<ItemData> result =
+            new List<ItemData>();
+
+        if (possibleOrders == null)
+            return result;
+
+        foreach (ItemData dish in possibleOrders)
+        {
+            if (dish == null)
+                continue;
+
+            RecipeData recipe =
+                FindRecipeForDish(dish);
+
+            if (recipe == null)
+                continue;
+
+            if (RecipeUnlockManager.Instance != null &&
+                RecipeUnlockManager.Instance.IsUnlocked(
+                    recipe))
+            {
+                result.Add(dish);
+
+                Debug.Log(
+                    "[SPAWNER] Available Order: " +
+                    dish.itemName
+                );
+            }
+        }
+
+        return result;
+    }
+
+    // =====================================================
+    // FIND RECIPE
+    // =====================================================
+
+    RecipeData FindRecipeForDish(
+        ItemData dish)
+    {
+        RecipeData[] recipes =
+            Resources.FindObjectsOfTypeAll<RecipeData>();
+
+        foreach (RecipeData recipe in recipes)
+        {
+            if (recipe == null)
+                continue;
+
+            if (recipe.resultDish == dish)
+            {
+                return recipe;
+            }
+        }
+
+        return null;
+    }
+
+    // =====================================================
     // CUSTOMER LEFT
-    // =========================================
+    // =====================================================
 
     public void CustomerLeft()
     {

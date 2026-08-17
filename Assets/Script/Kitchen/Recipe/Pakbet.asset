@@ -18,4 +18,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 37270c4d01f651d409d712104c7bf755, type: 2}
   - {fileID: 11400000, guid: 5d702a453776a8b40b42919a5f7a0e3a, type: 2}
   resultDish: {fileID: 11400000, guid: f9a3b502c6d74e85b0c23d8e7f412567, type: 2}
-  cookTime: 12
+  cookTime: 15
+  unlockedByDefault: 0
+  unlockCost: 500
+  sellingPrice: 75

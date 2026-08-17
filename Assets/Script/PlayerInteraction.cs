@@ -22,15 +22,26 @@ public class PlayerInteraction : MonoBehaviour
 
     void Start()
     {
-        movement = transform.parent.GetComponent<Movement>();
+        movement =
+            transform.parent.GetComponent<Movement>();
     }
 
     void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay( new Vector3(Screen.width / 2f,Screen.height / 2f));
+        Ray ray =
+            Camera.main.ScreenPointToRay(
+                new Vector3(
+                    Screen.width / 2f,
+                    Screen.height / 2f
+                )
+            );
+
         RaycastHit hit;
 
-        if(Physics.Raycast(ray, out hit, 6f))
+        if (Physics.Raycast(
+            ray,
+            out hit,
+            6f))
         {
             OnInteractableHit(hit);
         }
@@ -48,78 +59,110 @@ public class PlayerInteraction : MonoBehaviour
     {
         Collider other = hit.collider;
 
-        // =========================
+        // =================================================
         // LAND
-        // =========================
+        // =================================================
 
-        if(other.CompareTag("Land"))
+        if (other.CompareTag("Land"))
         {
-            Land land = other.GetComponent<Land>();
+            Land land =
+                other.GetComponent<Land>();
 
-            SelectLand(land);
+            if (land != null)
+            {
+                SelectLand(land);
+            }
 
             return;
         }
 
-        // =========================
+        // =================================================
         // ITEM
-        // =========================
+        // =================================================
 
-        if(other.CompareTag("Item"))
+        if (other.CompareTag("Item"))
         {
-            selectedInteractable = other.GetComponent<InteractableObject>();
+            selectedInteractable =
+                other.GetComponent<InteractableObject>();
+
+            selectedPot = null;
+            selectedBuffet = null;
+            selectedCustomer = null;
 
             ShowUI();
 
             return;
         }
 
-        // =========================
+        // =================================================
         // POT
-        // =========================
+        // =================================================
 
-        Pot pot = other.GetComponentInParent<Pot>();
+        Pot pot =
+            other.GetComponentInParent<Pot>();
 
-        if (pot != null || other.CompareTag("Pot"))
+        if (pot != null)
         {
-            selectedPot = pot != null ? pot : other.GetComponent<Pot>();
+            selectedPot = pot;
 
-            if (selectedPot != null)
-            {
-                ShowUI();
-                Debug.Log("[INTERACT] Looking at Pot");
-                return;
-            }
-        }
+            selectedInteractable = null;
+            selectedBuffet = null;
+            selectedCustomer = null;
 
-        // =========================
-        // BUFFET
-        // =========================
+            ShowUI();
 
-        if(other.CompareTag("Buffet"))
-        {
-            selectedBuffet =
-                other.GetComponent<BuffetContainer>();
-
-            HideUI();
-
-            Debug.Log("[INTERACT] Looking at Buffet");
+            Debug.Log(
+                "[INTERACT] Looking at Pot"
+            );
 
             return;
         }
 
-        // =========================
-        // CUSTOMER
-        // =========================
+        // =================================================
+        // BUFFET
+        // =================================================
 
-        if(other.CompareTag("Customer"))
+        BuffetContainer buffet =
+            other.GetComponentInParent<BuffetContainer>();
+
+        if (buffet != null)
         {
-            selectedCustomer =
-                other.GetComponent<CustomerOrder>();
+            selectedBuffet = buffet;
+
+            selectedInteractable = null;
+            selectedPot = null;
+            selectedCustomer = null;
 
             HideUI();
 
-            Debug.Log("[INTERACT] Looking at Customer");
+            Debug.Log(
+                "[INTERACT] Looking at Buffet: " +
+                buffet.name
+            );
+
+            return;
+        }
+
+        // =================================================
+        // CUSTOMER
+        // =================================================
+
+        CustomerOrder customer =
+            other.GetComponentInParent<CustomerOrder>();
+
+        if (customer != null)
+        {
+            selectedCustomer = customer;
+
+            selectedInteractable = null;
+            selectedPot = null;
+            selectedBuffet = null;
+
+            HideUI();
+
+            Debug.Log(
+                "[INTERACT] Looking at Customer"
+            );
 
             return;
         }
@@ -141,7 +184,7 @@ public class PlayerInteraction : MonoBehaviour
 
         selectedCustomer = null;
 
-        if(selectedLand != null)
+        if (selectedLand != null)
         {
             selectedLand.Select(false);
 
@@ -159,7 +202,7 @@ public class PlayerInteraction : MonoBehaviour
 
     void SelectLand(Land land)
     {
-        if(selectedLand != null)
+        if (selectedLand != null)
         {
             selectedLand.Select(false);
         }
@@ -177,79 +220,137 @@ public class PlayerInteraction : MonoBehaviour
 
     public void Interact()
     {
-        Debug.Log("[PLAYER] Left Click");
+        Debug.Log(
+            "[PLAYER] Left Click"
+        );
 
+        // =========================================
         // LAND
-        if(selectedLand != null)
+        // =========================================
+
+        if (selectedLand != null)
         {
             selectedLand.Interact();
 
             return;
         }
 
+        // =========================================
         // POT
-        if(selectedPot != null)
+        // =========================================
+
+        if (selectedPot != null)
         {
             selectedPot.Interact();
 
             return;
         }
 
+        // =========================================
         // BUFFET
-        if(selectedBuffet != null)
+        // =========================================
+
+        if (selectedBuffet != null)
         {
             selectedBuffet.Interact();
 
             return;
         }
 
+        // =========================================
         // CUSTOMER
-        if(selectedCustomer != null)
+        // =========================================
+
+        if (selectedCustomer != null)
         {
             selectedCustomer.TryServe();
 
             return;
         }
 
-        Debug.Log("[PLAYER] Nothing to interact");
+        Debug.Log(
+            "[PLAYER] Nothing to interact"
+        );
     }
 
     // =====================================================
-    // E PICKUP ONLY
+    // E INTERACT
     // =====================================================
 
     public void ItemInteract()
     {
-        Debug.Log("[PLAYER] Pickup Key");
+        Debug.Log(
+            "[PLAYER] E Interact"
+        );
 
-        if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen)
+        // =========================================
+        // CLOSE COOKING UI
+        // =========================================
+
+        if (CookingUIManager.Instance != null &&
+            CookingUIManager.Instance.IsOpen)
         {
             CookingUIManager.Instance.CloseAll();
+
             HideUI();
+
             return;
         }
+
+        // =========================================
+        // BUFFET
+        // =========================================
+
+        if (selectedBuffet != null)
+        {
+            selectedBuffet.Interact();
+
+            return;
+        }
+
+        // =========================================
+        // POT
+        // =========================================
 
         if (selectedPot != null)
         {
             HideUI();
-            CookingUIManager.EnsureInstance().OpenRecipeBook(selectedPot);
+
+            CookingUIManager
+                .EnsureInstance()
+                .OpenRecipeBook(
+                    selectedPot
+                );
+
             return;
         }
 
-        if(InventoryManager.Instance.SlotEquipped(
+        // =========================================
+        // PUT ITEM BACK
+        // =========================================
+
+        if (InventoryManager.Instance.SlotEquipped(
             InventorySlot.InventoryType.Item))
         {
             InventoryManager.Instance.HandToInventory(
                 InventorySlot.InventoryType.Item
             );
+
             HideUI();
+
             return;
         }
 
-        if(selectedInteractable != null)
+        // =========================================
+        // PICK UP ITEM
+        // =========================================
+
+        if (selectedInteractable != null)
         {
             selectedInteractable.Pickup();
+
             HideUI();
+
             return;
         }
     }
@@ -262,11 +363,11 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (interactUI != null)
         {
-            // Don't show if recipe canvas is open
             if (CookingUIManager.Instance != null &&
                 CookingUIManager.Instance.IsOpen)
             {
                 interactUI.SetActive(false);
+
                 return;
             }
 
@@ -276,7 +377,7 @@ public class PlayerInteraction : MonoBehaviour
 
     void HideUI()
     {
-        if(interactUI != null)
+        if (interactUI != null)
         {
             interactUI.SetActive(false);
         }

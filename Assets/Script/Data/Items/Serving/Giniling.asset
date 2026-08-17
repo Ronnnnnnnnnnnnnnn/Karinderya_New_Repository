@@ -17,9 +17,9 @@ MonoBehaviour:
   thumbnail: {fileID: 127285880, guid: b41291855e333424296c22d69f7b84d0, type: 3}
   itemSprite: {fileID: 127285880, guid: b41291855e333424296c22d69f7b84d0, type: 3}
   gameModel: {fileID: 4885859709778863364, guid: d416f8a044183bb48bb6f236795b2728, type: 3}
-  handScale: {x: 1, y: 1, z: 1}
+  handScale: {x: 0.02, y: 0.02, z: 0.02}
   isIngredient: 0
   isDish: 0
   isServing: 1
-  cookedDish: {fileID: 0}
-  servingVersion: {fileID: 0}
+  cookedDish: {fileID: 11400000, guid: e8f4a201b3c54d64a9e12f7c8d901234, type: 2}
+  servingVersion: {fileID: 11400000}

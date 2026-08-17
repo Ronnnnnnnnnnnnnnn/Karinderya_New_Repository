@@ -12,7 +12,9 @@ public class CustomerOrder : MonoBehaviour
     [Header("Patience")]
     public float patienceTime = 60f;
 
-    [Tooltip("Percentage of reward deducted when customer leaves.")]
+    [Tooltip(
+        "Percentage of reward deducted when customer leaves."
+    )]
     [Range(0f, 1f)]
     public float compensationRate = 0.5f;
 
@@ -34,11 +36,15 @@ public class CustomerOrder : MonoBehaviour
 
     CustomerAI ai;
 
+    // =====================================================
+    // START
+    // =====================================================
+
     void Start()
     {
-        ai = GetComponent<CustomerAI>();
+        ai =
+            GetComponent<CustomerAI>();
 
-        // GET ALL RENDERERS SAFELY
         renderers =
             GetComponentsInChildren<Renderer>();
 
@@ -49,19 +55,24 @@ public class CustomerOrder : MonoBehaviour
         );
     }
 
+    // =====================================================
+    // UPDATE
+    // =====================================================
+
     void Update()
     {
-        if(served)
+        if (served)
             return;
 
-        if(!waitingStarted)
+        if (!waitingStarted)
             return;
 
-        timer -= Time.deltaTime;
+        timer -=
+            Time.deltaTime;
 
         UpdateTimerUI();
 
-        if(timer <= 0)
+        if (timer <= 0)
         {
             LeaveAngry();
         }
@@ -75,14 +86,11 @@ public class CustomerOrder : MonoBehaviour
     {
         waitingStarted = true;
 
-        timer = patienceTime;
+        timer =
+            patienceTime;
 
         NotificationManager.Instance.ShowMessage(
             "Customer Waiting!"
-        );
-
-        Debug.Log(
-            "[CUSTOMER] Started waiting"
         );
     }
 
@@ -90,32 +98,47 @@ public class CustomerOrder : MonoBehaviour
     // SET ORDER
     // =====================================================
 
-    public void SetOrder(ItemData serving)
+    public void SetOrder(
+        ItemData serving)
     {
-        requestedServing = serving;
+        requestedServing =
+            serving;
+
+        // Automatically determine selling price
+        RecipeData recipe =
+            FindRecipeForDish(
+                serving
+            );
+
+        if (recipe != null)
+        {
+            rewardCoins =
+                recipe.sellingPrice;
+        }
 
         UpdateVisuals();
 
         Debug.Log(
             "[CUSTOMER] Ordered: " +
-            serving.itemName
+            serving.itemName +
+            " | Reward: ₱" +
+            rewardCoins
         );
     }
 
     // =====================================================
-    // SERVE CUSTOMER
+    // SERVE
     // =====================================================
 
     public void TryServe()
     {
-        if(served)
+        if (served)
             return;
 
-        if(!waitingStarted)
+        if (!waitingStarted)
             return;
 
-        // HOLDING NOTHING
-        if(!InventoryManager.Instance.SlotEquipped(
+        if (!InventoryManager.Instance.SlotEquipped(
             InventorySlot.InventoryType.Item))
         {
             NotificationManager.Instance.ShowMessage(
@@ -130,24 +153,20 @@ public class CustomerOrder : MonoBehaviour
                 InventorySlot.InventoryType.Item
             );
 
-        if(heldItem == null)
+        if (heldItem == null)
             return;
 
         // WRONG FOOD
-        if(heldItem != requestedServing)
+        if (heldItem != requestedServing)
         {
             NotificationManager.Instance.ShowMessage(
                 "Wrong Dish!"
             );
 
-            Debug.Log(
-                "[CUSTOMER] Wrong food"
-            );
-
             return;
         }
 
-        // REMOVE ITEM
+        // REMOVE FOOD
         InventoryManager.Instance.ConsumeItem(
             InventoryManager.Instance.GetEquippedSlot(
                 InventorySlot.InventoryType.Item
@@ -156,48 +175,67 @@ public class CustomerOrder : MonoBehaviour
 
         served = true;
 
-        CurrencyManager.Instance.AddCoins(rewardCoins);
+        // PAY PLAYER
+        CurrencyManager.Instance.AddCoins(
+            rewardCoins
+        );
 
         if (PlayerProgression.Instance != null)
-            PlayerProgression.Instance.OnDishServed(rewardCoins);
+        {
+            PlayerProgression.Instance.OnDishServed(
+                rewardCoins
+            );
+        }
 
         NotificationManager.Instance.ShowMessage(
-            "+" + rewardCoins + " Coins!"
+            "+" +
+            rewardCoins +
+            " Coins!"
         );
 
         Debug.Log(
             "[CUSTOMER] Served correctly"
         );
 
-        if(ai != null)
+        if (ai != null)
         {
             ai.LeaveHappy();
         }
     }
 
     // =====================================================
-    // LEAVE ANGRY
+    // ANGRY
     // =====================================================
 
     void LeaveAngry()
     {
-        NotificationManager.Instance.ShowMessage("Customer Angry!");
-
-        int compensation = Mathf.RoundToInt(rewardCoins * 0.5f);
-
-        CurrencyManager.Instance.AddCoins(-compensation);
-
         NotificationManager.Instance.ShowMessage(
-            "-" + compensation + " Coins (Compensation)"
+            "Customer Angry!"
         );
 
-        Debug.Log("[CUSTOMER] LEFT ANGRY. Lost " + compensation + " coins.");
+        int compensation =
+            Mathf.RoundToInt(
+                rewardCoins *
+                compensationRate
+            );
 
-        foreach (Renderer rend in renderers)
+        CurrencyManager.Instance.AddCoins(
+            -compensation
+        );
+
+        NotificationManager.Instance.ShowMessage(
+            "-" +
+            compensation +
+            " Coins (Compensation)"
+        );
+
+        foreach (
+            Renderer rend in renderers)
         {
             if (rend != null)
             {
-                rend.material.color = angryColor;
+                rend.material.color =
+                    angryColor;
             }
         }
 
@@ -210,21 +248,48 @@ public class CustomerOrder : MonoBehaviour
     }
 
     // =====================================================
+    // FIND RECIPE
+    // =====================================================
+
+    RecipeData FindRecipeForDish(
+        ItemData dish)
+    {
+        if (dish == null)
+            return null;
+
+        RecipeData[] recipes =
+            Resources.FindObjectsOfTypeAll<RecipeData>();
+
+        foreach (RecipeData recipe in recipes)
+        {
+            if (recipe == null)
+                continue;
+
+            if (recipe.resultDish == dish)
+            {
+                return recipe;
+            }
+        }
+
+        return null;
+    }
+
+    // =====================================================
     // VISUALS
     // =====================================================
 
     void UpdateVisuals()
     {
-        if(requestedServing == null)
+        if (requestedServing == null)
             return;
 
-        if(orderText != null)
+        if (orderText != null)
         {
             orderText.text =
                 requestedServing.itemName;
         }
 
-        if(orderSprite != null)
+        if (orderSprite != null)
         {
             orderSprite.sprite =
                 requestedServing.itemSprite;
@@ -232,17 +297,20 @@ public class CustomerOrder : MonoBehaviour
     }
 
     // =====================================================
-    // TIMER UI
+    // TIMER
     // =====================================================
 
     void UpdateTimerUI()
     {
-        if(orderText != null)
+        if (orderText != null &&
+            requestedServing != null)
         {
             orderText.text =
                 requestedServing.itemName +
                 "\n" +
-                Mathf.Ceil(timer).ToString() +
+                Mathf.Ceil(
+                    timer
+                ).ToString() +
                 "s";
         }
     }

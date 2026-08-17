@@ -9,90 +9,139 @@ public class CustomerSpawner : MonoBehaviour
 
     [Header("Points")]
     public Transform spawnPoint;
-
     public Transform counterPoint;
-
     public Transform exitPoint;
-
     public Transform lookPoint;
 
     [Header("Orders")]
     public ItemData[] possibleOrders;
 
-    [Header("Spawn")]
+    [Header("Spawn Settings")]
     public float spawnDelay = 10f;
 
-    bool customerExists;
+    [Tooltip("Maximum number of customers allowed at the same time.")]
+    public int maxCustomers = 2;
 
-    // =====================================================
+    int currentCustomers = 0;
+
+    // =========================================================
     // START
-    // =====================================================
+    // =========================================================
 
     void Start()
     {
-        Debug.Log(
-            "[SPAWNER] Started"
-        );
+        Debug.Log("[SPAWNER] Started");
 
-        StartCoroutine(
-            SpawnLoop()
-        );
+        StartCoroutine(SpawnLoop());
     }
 
-    // =====================================================
+    // =========================================================
     // SPAWN LOOP
-    // =====================================================
+    // =========================================================
 
     IEnumerator SpawnLoop()
     {
         while (true)
         {
-            float delay =
-                spawnDelay;
+            float delay = spawnDelay;
 
             if (PlayerProgression.Instance != null)
             {
                 delay =
-                    PlayerProgression.Instance
-                    .GetSpawnDelay();
+                    PlayerProgression.Instance.GetSpawnDelay();
             }
 
-            yield return new WaitForSeconds(
-                delay
-            );
+            yield return new WaitForSeconds(delay);
 
-            if (!customerExists)
+            if (currentCustomers < maxCustomers)
             {
                 SpawnCustomer();
             }
         }
     }
 
-    // =====================================================
+    // =========================================================
     // SPAWN CUSTOMER
-    // =====================================================
+    // =========================================================
 
     void SpawnCustomer()
     {
-        // Get only unlocked dishes
-        List<ItemData> unlockedOrders =
-            GetUnlockedOrders();
+        // -----------------------------------------------------
+        // BASIC CHECKS
+        // -----------------------------------------------------
 
-        // If nothing is available
-        if (unlockedOrders.Count == 0)
+        if (customerPrefab == null)
         {
-            Debug.Log(
-                "[SPAWNER] No unlocked dishes available."
+            Debug.LogError(
+                "[SPAWNER] Customer Prefab is missing!"
             );
 
             return;
         }
 
-        customerExists = true;
+        if (spawnPoint == null)
+        {
+            Debug.LogError(
+                "[SPAWNER] Spawn Point is missing!"
+            );
+
+            return;
+        }
+
+        if (counterPoint == null)
+        {
+            Debug.LogError(
+                "[SPAWNER] Counter Point is missing!"
+            );
+
+            return;
+        }
+
+        // -----------------------------------------------------
+        // FIND UNLOCKED ORDERS
+        // -----------------------------------------------------
+
+        List<ItemData> unlockedOrders =
+            GetUnlockedOrders();
+
+        // If unlock system isn't working,
+        // still allow the first two dishes.
+        if (unlockedOrders.Count == 0)
+        {
+            Debug.LogWarning(
+                "[SPAWNER] No unlocked orders found. " +
+                "Using first two dishes as default."
+            );
+
+            unlockedOrders =
+                GetDefaultOrders();
+        }
+
+        if (unlockedOrders.Count == 0)
+        {
+            Debug.LogError(
+                "[SPAWNER] No customer orders available!"
+            );
+
+            return;
+        }
+
+        // -----------------------------------------------------
+        // INCREASE CUSTOMER COUNT
+        // -----------------------------------------------------
+
+        currentCustomers++;
 
         Debug.Log(
-            "[SPAWNER] Spawning customer"
+            "[SPAWNER] Spawning Customer " +
+            currentCustomers +
+            "/" +
+            maxCustomers
         );
+
+        // -----------------------------------------------------
+        // CREATE CUSTOMER
+        // -----------------------------------------------------
 
         GameObject customerObj =
             Instantiate(
@@ -101,9 +150,9 @@ public class CustomerSpawner : MonoBehaviour
                 Quaternion.identity
             );
 
-        // =========================================
+        // -----------------------------------------------------
         // CUSTOMER AI
-        // =========================================
+        // -----------------------------------------------------
 
         CustomerAI ai =
             customerObj.GetComponent<CustomerAI>();
@@ -122,21 +171,14 @@ public class CustomerSpawner : MonoBehaviour
             ai.spawner =
                 this;
 
-            Transform npcModel =
-                customerObj.transform.Find(
-                    "npc"
-                );
-
-            if (npcModel != null)
-            {
-                ai.visualModel =
-                    npcModel;
-            }
+            Debug.Log(
+                "[SPAWNER] Counter assigned"
+            );
         }
 
-        // =========================================
+        // -----------------------------------------------------
         // CUSTOMER ORDER
-        // =========================================
+        // -----------------------------------------------------
 
         CustomerOrder order =
             customerObj.GetComponent<CustomerOrder>();
@@ -153,86 +195,177 @@ public class CustomerSpawner : MonoBehaviour
 
             if (chosen != null)
             {
-                order.SetOrder(
-                    chosen
+                order.SetOrder(chosen);
+
+                Debug.Log(
+                    "[SPAWNER] Customer ordered: " +
+                    chosen.itemName
                 );
             }
         }
     }
 
-    // =====================================================
+    // =========================================================
     // GET UNLOCKED ORDERS
-    // =====================================================
+    // =========================================================
 
     List<ItemData> GetUnlockedOrders()
     {
-        List<ItemData> result =
+        List<ItemData> unlocked =
             new List<ItemData>();
 
-        if (possibleOrders == null)
-            return result;
-
-        foreach (ItemData dish in possibleOrders)
+        if (possibleOrders == null ||
+            possibleOrders.Length == 0)
         {
-            if (dish == null)
+            return unlocked;
+        }
+
+        foreach (ItemData item in possibleOrders)
+        {
+            if (item == null)
                 continue;
 
-            RecipeData recipe =
-                FindRecipeForDish(dish);
-
-            if (recipe == null)
-                continue;
-
-            if (RecipeUnlockManager.Instance != null &&
-                RecipeUnlockManager.Instance.IsUnlocked(
-                    recipe))
+            if (IsDishUnlocked(item))
             {
-                result.Add(dish);
-
-                Debug.Log(
-                    "[SPAWNER] Available Order: " +
-                    dish.itemName
-                );
+                unlocked.Add(item);
             }
         }
 
-        return result;
+        return unlocked;
     }
 
-    // =====================================================
-    // FIND RECIPE
-    // =====================================================
+    // =========================================================
+    // CHECK DISH UNLOCK
+    // =========================================================
 
-    RecipeData FindRecipeForDish(
-        ItemData dish)
+    bool IsDishUnlocked(ItemData dish)
     {
-        RecipeData[] recipes =
-            Resources.FindObjectsOfTypeAll<RecipeData>();
+        if (dish == null)
+            return false;
 
-        foreach (RecipeData recipe in recipes)
+        // -----------------------------------------------------
+        // FIND RECIPE CATALOG
+        // -----------------------------------------------------
+
+        RecipeBookCatalog catalog =
+            FindObjectOfType<RecipeBookCatalog>();
+
+        if (catalog == null)
+        {
+            Debug.LogWarning(
+                "[SPAWNER] RecipeBookCatalog not found. " +
+                "Allowing dish: " +
+                dish.itemName
+            );
+
+            return true;
+        }
+
+        if (catalog.recipes == null)
+            return false;
+
+        // -----------------------------------------------------
+        // FIND RECIPE FOR THIS DISH
+        // -----------------------------------------------------
+
+        foreach (RecipeData recipe in catalog.recipes)
         {
             if (recipe == null)
                 continue;
 
             if (recipe.resultDish == dish)
             {
-                return recipe;
+                // No unlock manager
+                if (RecipeUnlockManager.Instance == null)
+                {
+                    Debug.LogWarning(
+                        "[SPAWNER] RecipeUnlockManager missing. " +
+                        "Allowing: " +
+                        recipe.recipeName
+                    );
+
+                    return true;
+                }
+
+                bool unlocked =
+                    RecipeUnlockManager.Instance
+                    .IsUnlocked(recipe);
+
+                Debug.Log(
+                    "[SPAWNER] " +
+                    recipe.recipeName +
+                    " unlocked = " +
+                    unlocked
+                );
+
+                return unlocked;
             }
         }
 
-        return null;
+        Debug.LogWarning(
+            "[SPAWNER] Recipe not found for: " +
+            dish.itemName
+        );
+
+        return false;
     }
 
-    // =====================================================
-    // CUSTOMER LEFT
-    // =====================================================
+    // =========================================================
+    // DEFAULT ORDERS
+    // =========================================================
 
-    public void CustomerLeft()
+    List<ItemData> GetDefaultOrders()
     {
-        customerExists = false;
+        List<ItemData> defaults =
+            new List<ItemData>();
 
-        Debug.Log(
-            "[SPAWNER] Customer cleared"
-        );
+        if (possibleOrders == null)
+            return defaults;
+
+        // FIRST TWO DISHES ARE ALWAYS AVAILABLE
+        // Kaldereta
+        // Giniling
+
+        for (int i = 0;
+             i < possibleOrders.Length && i < 2;
+             i++)
+        {
+            if (possibleOrders[i] != null)
+            {
+                defaults.Add(
+                    possibleOrders[i]
+                );
+            }
+        }
+
+        return defaults;
+    }
+
+    // =========================================================
+    // CUSTOMER LEFT
+    // =========================================================
+
+  public void CustomerLeft()
+{
+    currentCustomers--;
+
+    if (currentCustomers < 0)
+        currentCustomers = 0;
+
+    Debug.Log(
+        "[SPAWNER] Customer left. Current: " +
+        currentCustomers +
+        "/" +
+        maxCustomers
+    );
+}
+
+    // =========================================================
+    // GET CURRENT CUSTOMERS
+    // =========================================================
+
+    public int GetCurrentCustomers()
+    {
+        return currentCustomers;
     }
 }

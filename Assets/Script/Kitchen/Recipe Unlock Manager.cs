@@ -5,10 +5,13 @@ public class RecipeUnlockManager : MonoBehaviour
 {
     public static RecipeUnlockManager Instance;
 
+    [Header("Recipes Unlocked From Start")]
+    public RecipeData[] startingUnlockedRecipes;
+
     private HashSet<RecipeData> unlockedRecipes =
         new HashSet<RecipeData>();
 
-    private void Awake()
+    void Awake()
     {
         if (Instance != null && Instance != this)
         {
@@ -18,31 +21,20 @@ public class RecipeUnlockManager : MonoBehaviour
 
         Instance = this;
 
-        InitializeDefaultRecipes();
-    }
-
-    // =====================================================
-    // INITIALIZE DEFAULT RECIPES
-    // =====================================================
-
-    void InitializeDefaultRecipes()
-    {
-        RecipeData[] recipes =
-            Resources.FindObjectsOfTypeAll<RecipeData>();
-
-        foreach (RecipeData recipe in recipes)
+        // Add starting recipes
+        if (startingUnlockedRecipes != null)
         {
-            if (recipe == null)
-                continue;
-
-            if (recipe.unlockedByDefault)
+            foreach (RecipeData recipe in startingUnlockedRecipes)
             {
-                unlockedRecipes.Add(recipe);
+                if (recipe != null)
+                {
+                    unlockedRecipes.Add(recipe);
 
-                Debug.Log(
-                    "[UNLOCK] Default unlocked: " +
-                    recipe.recipeName
-                );
+                    Debug.Log(
+                        "[RECIPE] Starting unlocked: " +
+                        recipe.recipeName
+                    );
+                }
             }
         }
     }
@@ -56,7 +48,8 @@ public class RecipeUnlockManager : MonoBehaviour
         if (recipe == null)
             return false;
 
-        if (recipe.unlockedByDefault)
+        // Free recipes are automatically unlocked
+        if (recipe.unlockCost <= 0)
             return true;
 
         return unlockedRecipes.Contains(recipe);
@@ -71,64 +64,47 @@ public class RecipeUnlockManager : MonoBehaviour
         if (recipe == null)
             return false;
 
-        // Already unlocked
         if (IsUnlocked(recipe))
         {
             NotificationManager.Instance.ShowMessage(
-                recipe.recipeName + " Already Unlocked!"
+                recipe.recipeName +
+                " is already unlocked!"
             );
 
             return true;
         }
 
-        // FREE
-        if (recipe.unlockCost <= 0)
+        if (CurrencyManager.Instance == null)
+        {
+            Debug.LogError(
+                "[RECIPE] CurrencyManager missing!"
+            );
+
+            return false;
+        }
+
+        if (CurrencyManager.Instance.SpendCoins(
+            recipe.unlockCost))
         {
             unlockedRecipes.Add(recipe);
 
             NotificationManager.Instance.ShowMessage(
-                recipe.recipeName + " Unlocked!"
+                recipe.recipeName +
+                " Unlocked!"
+            );
+
+            Debug.Log(
+                "[RECIPE] Unlocked: " +
+                recipe.recipeName
             );
 
             return true;
         }
 
-        // CHECK MONEY
-        if (CurrencyManager.Instance == null)
-        {
-            Debug.LogWarning(
-                "[UNLOCK] CurrencyManager missing!"
-            );
-
-            return false;
-        }
-
-        // TRY TO SPEND
-        if (!CurrencyManager.Instance.SpendCoins(
-            recipe.unlockCost))
-        {
-            NotificationManager.Instance.ShowMessage(
-                "Not Enough Coins!"
-            );
-
-            return false;
-        }
-
-        // UNLOCK
-        unlockedRecipes.Add(recipe);
-
         NotificationManager.Instance.ShowMessage(
-            recipe.recipeName +
-            " Unlocked!"
+            "Not Enough Coins!"
         );
 
-        Debug.Log(
-            "[UNLOCK] " +
-            recipe.recipeName +
-            " unlocked for ₱" +
-            recipe.unlockCost
-        );
-
-        return true;
+        return false;
     }
 }

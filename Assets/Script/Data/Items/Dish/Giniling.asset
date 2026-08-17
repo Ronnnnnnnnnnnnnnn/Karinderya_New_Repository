@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Ground meat with vegetables.
   thumbnail: {fileID: 21300000, guid: b7ca0ea7f5c33ad4880fdefdf04aa8e7, type: 3}
   itemSprite: {fileID: 21300000, guid: b7ca0ea7f5c33ad4880fdefdf04aa8e7, type: 3}
-  gameModel: {fileID: 0}
+  gameModel: {fileID: 4885859709778863364, guid: d416f8a044183bb48bb6f236795b2728, type: 3}
   handScale: {x: 1, y: 1, z: 1}
   isIngredient: 0
   isDish: 1

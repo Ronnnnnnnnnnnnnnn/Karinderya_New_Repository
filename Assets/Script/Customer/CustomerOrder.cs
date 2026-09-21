@@ -89,9 +89,12 @@ public class CustomerOrder : MonoBehaviour
         timer =
             patienceTime;
 
-        NotificationManager.Instance.ShowMessage(
-            "Customer Waiting!"
-        );
+        if (NotificationManager.Instance != null)
+        {
+            NotificationManager.Instance.ShowMessage(
+                "Customer Waiting!"
+            );
+        }
     }
 
     // =====================================================
@@ -209,6 +212,9 @@ public class CustomerOrder : MonoBehaviour
 
     void LeaveAngry()
     {
+        // Customer is leaving: can no longer be served
+        served = true;
+
         NotificationManager.Instance.ShowMessage(
             "Customer Angry!"
         );
@@ -257,15 +263,25 @@ public class CustomerOrder : MonoBehaviour
         if (dish == null)
             return null;
 
-        RecipeData[] recipes =
-            Resources.FindObjectsOfTypeAll<RecipeData>();
+        // Read recipes from the catalog (Resources.FindObjectsOfTypeAll
+        // only sees loaded assets in a build)
+        RecipeBookCatalog catalog =
+            RecipeBookCatalog.Find();
 
-        foreach (RecipeData recipe in recipes)
+        if (catalog == null ||
+            catalog.recipes == null)
+            return null;
+
+        foreach (RecipeData recipe in catalog.recipes)
         {
-            if (recipe == null)
+            if (recipe == null ||
+                recipe.resultDish == null)
                 continue;
 
-            if (recipe.resultDish == dish)
+            // Customers order Serving items,
+            // recipes produce Dish items
+            if (recipe.resultDish == dish ||
+                recipe.resultDish.servingVersion == dish)
             {
                 return recipe;
             }

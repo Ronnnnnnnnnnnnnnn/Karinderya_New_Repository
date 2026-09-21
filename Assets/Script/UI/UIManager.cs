@@ -148,14 +148,11 @@ public class UIManager : MonoBehaviour, ITimeTracker
         int hours = timestamp.hour;
         int minutes = timestamp.minute; 
 
-        string prefix = "AM ";
-        
-        if (hours > 12)
-        {
-            prefix = "PM ";
-            hours = hours - 12;
-            Debug.Log(hours);
-        }
+        string prefix = hours >= 12 ? "PM " : "AM ";
+
+        hours = hours % 12;
+        if (hours == 0)
+            hours = 12;
 
         timeText.text = prefix + hours + ":" + minutes.ToString("00");
 

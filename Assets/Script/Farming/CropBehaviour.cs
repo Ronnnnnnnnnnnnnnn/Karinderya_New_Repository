@@ -34,13 +34,17 @@ public class CropBehaviour : MonoBehaviour
     public float maxGrowSeconds = 180f;
 
     float plantRealTime;
+    float saveTimer;
     bool useRealTimeGrowth = true;
 
     public SeedData SeedToGrow => seedToGrow;
 
    public void Plant(int landID, SeedData seedToGrow)
     {
-        LoadCrop(landID, seedToGrow, CropState.Seed, 0, 0);
+        // Small starting health so a crop that was watered once isn't
+        // wilted on the very next tick (tune this to change how forgiving
+        // the watering rule is).
+        LoadCrop(landID, seedToGrow, CropState.Seed, 0, maxHealth / 3f);
         LandManager.Instance.RegisterCrop(landID, seedToGrow, cropState, growth, health); 
     }
 
@@ -58,9 +62,11 @@ public class CropBehaviour : MonoBehaviour
         float hoursToGrow = GameTimestamp.DaysToHours(seedToGrow.daysToGrow);
         maxGrowth = GameTimestamp.HoursToMinutes(hoursToGrow);
 
+        // In real-time mode 'growth' is the elapsed grow time in seconds,
+        // so a loaded crop continues where it left off.
         this.growth = growth;
         this.health = health;
-        plantRealTime = Time.time;
+        plantRealTime = Time.time - growth;
 
         if (seedToGrow.regrowable)
         {
@@ -80,7 +86,18 @@ public class CropBehaviour : MonoBehaviour
         if (cropState == CropState.Harvestable || cropState == CropState.Wilted)
             return;
 
-        float progress = Mathf.Clamp01((Time.time - plantRealTime) / maxGrowSeconds);
+        float elapsed = Time.time - plantRealTime;
+        growth = elapsed;
+
+        float progress = Mathf.Clamp01(elapsed / maxGrowSeconds);
+
+        // Keep the save data current
+        saveTimer -= Time.deltaTime;
+        if (saveTimer <= 0f)
+        {
+            saveTimer = 1f;
+            LandManager.Instance.OnCropStateChange(landID, cropState, growth, health);
+        }
 
         if (progress >= 1f && cropState != CropState.Harvestable)
         {
@@ -114,12 +131,20 @@ public class CropBehaviour : MonoBehaviour
 
     public void Grow()
     {
-        growth++;
-
         if(health < maxHealth)
         {
             health++;
         }
+
+        // Real-time mode: Update() owns growth and state changes.
+        // Watering only keeps the crop healthy.
+        if (useRealTimeGrowth)
+        {
+            LandManager.Instance.OnCropStateChange(landID, cropState, growth, health);
+            return;
+        }
+
+        growth++;
 
         if(growth >= maxGrowth / 2 && cropState == CropState.Seed)
         {
@@ -138,7 +163,10 @@ public class CropBehaviour : MonoBehaviour
     {
         health--;
 
-        if(health <= 0 && cropState != CropState.Seed)
+        // Ready-to-harvest crops don't wilt
+        if(health <= 0 &&
+           cropState != CropState.Seed &&
+           cropState != CropState.Harvestable)
         {
             SwitchState(CropState.Wilted);
         }
@@ -192,7 +220,23 @@ public class CropBehaviour : MonoBehaviour
     {
         float hoursToRegrow = GameTimestamp.DaysToHours(seedToGrow.daysToRegrow);
 
-        growth = maxGrowth - GameTimestamp.HoursToMinutes(hoursToRegrow);
+        if (useRealTimeGrowth)
+        {
+            // Restart at (at least) the Seedling stage. Without this,
+            // Update() sees an old plant time and re-harvests instantly.
+            float fraction = seedToGrow.daysToGrow > 0f
+                ? 1f - (seedToGrow.daysToRegrow / seedToGrow.daysToGrow)
+                : 0.5f;
+
+            fraction = Mathf.Clamp(fraction, 0.5f, 0.99f);
+
+            growth = maxGrowSeconds * fraction;
+            plantRealTime = Time.time - growth;
+        }
+        else
+        {
+            growth = maxGrowth - GameTimestamp.HoursToMinutes(hoursToRegrow);
+        }
 
         SwitchState(CropState.Seedling);
     }

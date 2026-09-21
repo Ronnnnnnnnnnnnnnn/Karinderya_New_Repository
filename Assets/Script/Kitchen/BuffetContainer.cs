@@ -33,8 +33,14 @@ public class BuffetContainer : MonoBehaviour
     // START
     // =====================================================
 
+    // Sprite shown while the buffet is empty, so the player knows
+    // which dish belongs here
+    Sprite hintSprite;
+
     void Start()
     {
+        CacheHintSprite();
+
         UpdateVisuals();
         UpdateLockVisual();
 
@@ -241,18 +247,14 @@ public class BuffetContainer : MonoBehaviour
             return;
         }
 
-        if (storedDish.servingVersion != null)
-        {
-            InventoryManager.Instance.AddItem(
-                storedDish.servingVersion
-            );
-        }
-        else
-        {
-            InventoryManager.Instance.AddItem(
-                storedDish
-            );
-        }
+        ItemData serving =
+            storedDish.servingVersion != null
+            ? storedDish.servingVersion
+            : storedDish;
+
+        // Don't use up a serving if the bag is full
+        if (!InventoryManager.Instance.AddItem(serving))
+            return;
 
         servings--;
 
@@ -290,35 +292,46 @@ public class BuffetContainer : MonoBehaviour
     // VISUALS
     // =====================================================
 
+    void CacheHintSprite()
+    {
+        // 1) The sprite already set on the renderer in the scene
+        if (dishRenderer != null &&
+            dishRenderer.sprite != null)
+        {
+            hintSprite = dishRenderer.sprite;
+        }
+        // 2) The sprite of the dish this buffet takes
+        else if (buffetRecipe != null &&
+                 buffetRecipe.resultDish != null)
+        {
+            hintSprite = buffetRecipe.resultDish.itemSprite;
+        }
+        // 3) Last resort
+        else
+        {
+            hintSprite = emptySprite;
+        }
+    }
+
     void UpdateVisuals()
     {
+        // Always show "servings/max", e.g. 0/10 when empty
         if (servingsText != null)
         {
-            if (storedDish == null)
-            {
-                servingsText.text = "EMPTY";
-            }
-            else
-            {
-                servingsText.text =
-                    servings +
-                    "/" +
-                    maxServings;
-            }
+            servingsText.text =
+                servings +
+                "/" +
+                maxServings;
         }
 
         if (dishRenderer != null)
         {
-            if (storedDish == null)
-            {
-                dishRenderer.sprite =
-                    emptySprite;
-            }
-            else
-            {
-                dishRenderer.sprite =
-                    storedDish.itemSprite;
-            }
+            // Keep showing the dish sprite when empty
+            // so the player knows what to put in
+            dishRenderer.sprite =
+                storedDish == null
+                ? hintSprite
+                : storedDish.itemSprite;
         }
     }
 

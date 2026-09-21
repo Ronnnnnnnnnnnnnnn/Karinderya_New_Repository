@@ -34,23 +34,13 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2f, Screen.height / 2f));
-
-        Vector3 screenCenter = new Vector3(Screen.width / 2f, Screen.height / 2f, 0f);
-        ray = Camera.main.ScreenPointToRay(screenCenter);
-
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space) && !PauseMenu.Pause)
         {
             ApplyJump();
         }
 
         Interact();
         HandleMenuShortcuts();
-
-        if(Input.GetKey(KeyCode.RightBracket))
-        {
-            TimeManager.Instance.Tick();
-        }
     }
 
     public void Interact()
@@ -58,7 +48,16 @@ public class Movement : MonoBehaviour
         if (PauseMenu.Pause)
             return;
 
-        if (Input.GetButtonDown("Fire1"))
+        // Inventory / shop open: clicks belong to the UI, not the world
+        if (UIManager.Instance != null && UIManager.Instance.IsMenuOpen)
+            return;
+
+        // Cooking UI open: only E (which closes it) is allowed
+        bool cookingOpen =
+            CookingUIManager.Instance != null &&
+            CookingUIManager.Instance.IsOpen;
+
+        if (!cookingOpen && Input.GetButtonDown("Fire1"))
             playerInteraction.Interact();
 
         if (Input.GetKeyDown(KeyCode.E))

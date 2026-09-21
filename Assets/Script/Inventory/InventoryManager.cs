@@ -60,7 +60,16 @@ public class InventoryManager : MonoBehaviour
 
             inventoryToAlter[slotIndex] = new ItemSlotData(handToEquip);
 
-            EquipHandSlot(slotToEquip); 
+            // Assign to the hand of the SAME type. EquipHandSlot() would
+            // route an empty slot to the item hand and wipe the held item.
+            if (inventoryType == InventorySlot.InventoryType.Item)
+            {
+                equippedItemSlot = slotToEquip;
+            }
+            else
+            {
+                equippedToolSlot = slotToEquip;
+            }
         }
 
         if (inventoryType == InventorySlot.InventoryType.Item)
@@ -286,12 +295,22 @@ public class InventoryManager : MonoBehaviour
         if (items == null)
             return true;
 
+        // Count how many of each item the recipe needs
+        // (an ingredient may be listed more than once)
+        Dictionary<ItemData, int> needed = new Dictionary<ItemData, int>();
+
         foreach (ItemData item in items)
         {
             if (item == null)
                 continue;
 
-            if (CountItem(item) < 1)
+            needed.TryGetValue(item, out int count);
+            needed[item] = count + 1;
+        }
+
+        foreach (KeyValuePair<ItemData, int> entry in needed)
+        {
+            if (CountItem(entry.Key) < entry.Value)
                 return false;
         }
 
@@ -334,46 +353,57 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    public void AddItem(ItemData item)
+    // Returns true if there is room for one more of this item
+    public bool HasRoomFor(ItemData item)
     {
+        if (item == null)
+            return false;
+
+        ItemSlotData[] slots = IsTool(item) ? toolSlots : itemSlots;
+
+        foreach (ItemSlotData slot in slots)
+        {
+            if (slot.IsEmpty() || slot.itemData == item)
+                return true;
+        }
+
+        return false;
+    }
+
+    // Returns false (and adds nothing) when the inventory is full
+    public bool AddItem(ItemData item)
+    {
+        if (!HasRoomFor(item))
+        {
+            if (NotificationManager.Instance != null)
+            {
+                NotificationManager.Instance.ShowMessage(
+                    "Inventory Full!"
+                );
+            }
+
+            return false;
+        }
+
         ItemSlotData newItem = new ItemSlotData(item);
 
-        if(IsTool(item))
-        {
-            if(StackItemToInventory(newItem, toolSlots))
-            {
-                UIManager.Instance.RenderInventory();
-                return;
-            }
+        ItemSlotData[] slots = IsTool(item) ? toolSlots : itemSlots;
 
-            for(int i = 0; i < toolSlots.Length; i++)
-            {
-                if(toolSlots[i].IsEmpty())
-                {
-                    toolSlots[i] = newItem;
-                    break;
-                }
-            }
-        }
-        else
+        if(!StackItemToInventory(newItem, slots))
         {
-            if(StackItemToInventory(newItem, itemSlots))
+            for(int i = 0; i < slots.Length; i++)
             {
-                UIManager.Instance.RenderInventory();
-                return;
-            }
-
-            for(int i = 0; i < itemSlots.Length; i++)
-            {
-                if(itemSlots[i].IsEmpty())
+                if(slots[i].IsEmpty())
                 {
-                    itemSlots[i] = newItem;
+                    slots[i] = newItem;
                     break;
                 }
             }
         }
 
         UIManager.Instance.RenderInventory();
+
+        return true;
     }
 
     void Start()

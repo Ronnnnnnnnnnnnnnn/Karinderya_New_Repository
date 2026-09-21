@@ -70,11 +70,20 @@ public class PlayerInteraction : MonoBehaviour
 
             if (land != null)
             {
+                // Drop stale non-land selections
+                selectedInteractable = null;
+                selectedPot = null;
+                selectedBuffet = null;
+                selectedCustomer = null;
+
                 SelectLand(land);
             }
 
             return;
         }
+
+        // Anything else means we're no longer looking at land
+        DeselectLand();
 
         // =================================================
         // ITEM
@@ -184,6 +193,13 @@ public class PlayerInteraction : MonoBehaviour
 
         selectedCustomer = null;
 
+        DeselectLand();
+
+        HideUI();
+    }
+
+    void DeselectLand()
+    {
         if (selectedLand != null)
         {
             selectedLand.Select(false);
@@ -192,8 +208,6 @@ public class PlayerInteraction : MonoBehaviour
 
             selectedLand = null;
         }
-
-        HideUI();
     }
 
     // =====================================================

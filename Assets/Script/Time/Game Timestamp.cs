@@ -66,10 +66,10 @@ public class GameTimestamp
             if(season == Season.Summer)
             {
                 season = Season.Rainy;
-                year++;
             }else
             {
-                season++;
+                season = Season.Summer;
+                year++;
             }
         }
     }
@@ -104,8 +104,8 @@ public class GameTimestamp
 
     public static float CompareTimestamps(GameTimestamp timestamp1, GameTimestamp timestamp2)
     {
-        float timestamp1Hours = DaysToHours(YearsToDays(timestamp1.year)) + DaysToHours(SeasonsToDays(timestamp1.season)) + DaysToHours(timestamp1.day) +timestamp1.hour;
-        float timestamp2Hours = DaysToHours(YearsToDays(timestamp2.year)) + DaysToHours(SeasonsToDays(timestamp2.season)) + DaysToHours(timestamp2.day) +timestamp2.hour;
+        float timestamp1Hours = DaysToHours(YearsToDays(timestamp1.year)) + DaysToHours(SeasonsToDays(timestamp1.season)) + DaysToHours(timestamp1.day) +timestamp1.hour + timestamp1.minute / 60f;
+        float timestamp2Hours = DaysToHours(YearsToDays(timestamp2.year)) + DaysToHours(SeasonsToDays(timestamp2.season)) + DaysToHours(timestamp2.day) +timestamp2.hour + timestamp2.minute / 60f;
         float difference = timestamp2Hours - timestamp1Hours;
         return Mathf.Abs(difference);
     }

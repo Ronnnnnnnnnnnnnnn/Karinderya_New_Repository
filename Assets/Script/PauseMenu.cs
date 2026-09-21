@@ -12,6 +12,7 @@ public class PauseMenu : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1f;
+        Pause = false;
     }
 
     // Update is called once per frame
@@ -45,6 +46,10 @@ public class PauseMenu : MonoBehaviour
 
     public void MainMenuButton()
     {
+        // Static state survives scene loads, so reset it here
+        Time.timeScale = 1f;
+        Pause = false;
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 }

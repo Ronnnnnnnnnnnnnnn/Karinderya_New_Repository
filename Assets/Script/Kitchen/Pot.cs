@@ -246,9 +246,12 @@ public class Pot : MonoBehaviour
         if (cookedDish == null)
             return;
 
-        InventoryManager.Instance.AddItem(
-            cookedDish
-        );
+        // Keep the dish in the pot if the bag is full
+        if (!InventoryManager.Instance.AddItem(
+            cookedDish))
+        {
+            return;
+        }
 
         NotificationManager.Instance.ShowMessage(
             cookedDish.itemName +

@@ -38,6 +38,13 @@ public class ShopManager : MonoBehaviour
 
     public void BuySeed(SeedData seed)
     {
+        // Check room BEFORE taking the player's coins
+        if (!InventoryManager.Instance.HasRoomFor(seed))
+        {
+            NotificationManager.Instance?.ShowMessage("Inventory Full!");
+            return;
+        }
+
         if(CurrencyManager.Instance.SpendCoins(seed.buyPrice))
         {
             InventoryManager.Instance.AddItem(seed);

@@ -82,7 +82,14 @@ public class LandManager : MonoBehaviour
 
     public void OnCropStateChange(int landID, CropBehaviour.CropState cropState, float growth, float health)
     {
-        
+        for (int i = 0; i < cropData.Count; i++)
+        {
+            if (cropData[i].landID == landID)
+            {
+                cropData[i] = new CropSaveState(landID, cropData[i].seedToGrow, cropState, growth, health);
+                return;
+            }
+        }
     }
 #endregion
 #region Loading Data
@@ -101,7 +108,9 @@ public class LandManager : MonoBehaviour
        public void ImportCropData(List<CropSaveState> cropDatasetToLoad)
     {
         cropData = cropDatasetToLoad;
-        foreach (CropSaveState cropSave in cropDatasetToLoad)
+
+        // Iterate a copy: loading a crop may modify cropData
+        foreach (CropSaveState cropSave in new List<CropSaveState>(cropDatasetToLoad))
         {
             Land landToPlant = landPlots[cropSave.landID];
             CropBehaviour cropToPlant = landToPlant.SpawnCrop();

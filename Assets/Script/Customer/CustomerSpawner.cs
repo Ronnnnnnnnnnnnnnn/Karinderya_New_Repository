@@ -248,17 +248,19 @@ public class CustomerSpawner : MonoBehaviour
         // -----------------------------------------------------
 
         RecipeBookCatalog catalog =
-            FindObjectOfType<RecipeBookCatalog>();
+            RecipeBookCatalog.Find();
 
+        // Without a catalog we can't tell what is unlocked, so don't
+        // allow everything: the caller falls back to the default dishes.
         if (catalog == null)
         {
             Debug.LogWarning(
                 "[SPAWNER] RecipeBookCatalog not found. " +
-                "Allowing dish: " +
+                "Cannot check unlock for: " +
                 dish.itemName
             );
 
-            return true;
+            return false;
         }
 
         if (catalog.recipes == null)
@@ -273,7 +275,10 @@ public class CustomerSpawner : MonoBehaviour
             if (recipe == null)
                 continue;
 
-            if (recipe.resultDish == dish)
+            // possibleOrders hold Serving items, recipes produce Dish items
+            if (recipe.resultDish == dish ||
+                (recipe.resultDish != null &&
+                 recipe.resultDish.servingVersion == dish))
             {
                 // No unlock manager
                 if (RecipeUnlockManager.Instance == null)

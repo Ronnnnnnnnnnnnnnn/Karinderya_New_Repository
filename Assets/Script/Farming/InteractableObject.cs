@@ -6,12 +6,17 @@ public class InteractableObject : MonoBehaviour
 {
     public ItemData item;
 
+    // Set by CropBehaviour so a picked-up crop is also removed from the land
+    public System.Action onPickedUp;
+
     public virtual void Pickup()
     {
         InventoryManager.Instance.EquipHandSlot(item);
 
         InventoryManager.Instance.RenderHand();
 
-        Destroy(gameObject); 
+        onPickedUp?.Invoke();
+
+        Destroy(gameObject);
     }
 }

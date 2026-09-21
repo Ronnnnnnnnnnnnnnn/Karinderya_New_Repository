@@ -89,10 +89,22 @@ public class PlayerInteraction : MonoBehaviour
         // ITEM
         // =================================================
 
-        if (other.CompareTag("Item"))
+        // Look on parents too (collider may be on a child), and don't
+        // depend on the "Item" tag. Ignore the model held in the hand.
+        InteractableObject interactable =
+            other.GetComponentInParent<InteractableObject>();
+
+        bool isHeldModel =
+            InventoryManager.Instance != null &&
+            InventoryManager.Instance.handPoint != null &&
+            other.transform.IsChildOf(
+                InventoryManager.Instance.handPoint);
+
+        if (!isHeldModel &&
+            (interactable != null ||
+             other.CompareTag("Item")))
         {
-            selectedInteractable =
-                other.GetComponent<InteractableObject>();
+            selectedInteractable = interactable;
 
             selectedPot = null;
             selectedBuffet = null;

@@ -50,6 +50,10 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1f;
         Pause = false;
 
+        // The game locks and hides the cursor; the menu needs it back
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 }

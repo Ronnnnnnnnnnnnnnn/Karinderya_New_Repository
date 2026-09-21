@@ -72,10 +72,182 @@ public class CropBehaviour : MonoBehaviour
         {
             RegrowableHarvestBehaviour regrowableHarvest = harvestable.GetComponent<RegrowableHarvestBehaviour>();
 
-            regrowableHarvest.SetParent(this);
+            if (regrowableHarvest != null)
+                regrowableHarvest.SetParent(this);
+            else
+                Debug.LogWarning("[CROP] " + seedToGrow.name + " is regrowable but its harvest model has no RegrowableHarvestBehaviour");
+        }
+        else
+        {
+            // The ripe crop now stays on the land (so it can dry out).
+            // Picking it up removes the crop from the land.
+            InteractableObject pickup = harvestable.GetComponent<InteractableObject>();
+
+            if (pickup != null)
+                pickup.onPickedUp = RemoveCrop;
+            else
+                Debug.LogWarning("[CROP] " + seedToGrow.name + " harvest model has no InteractableObject");
         }
 
+        MatchHarvestableSize(cropToYield);
+
+        PlaceHarvestableOnPlot();
+
+        EnsureHarvestableHasCollider();
+
         SwitchState(cropState);
+    }
+
+    // Ripe crops should look about as big as the carrot and potato.
+    // Other models come from different FBX files with different units,
+    // so some (kalabasa, ampalaya, labanos) end up tiny.
+    void MatchHarvestableSize(ItemData cropToYield)
+    {
+        ItemIndex index =
+            InventoryManager.Instance != null
+            ? InventoryManager.Instance.itemIndex
+            : null;
+
+        if (index == null || index.items == null)
+            return;
+
+        float sum = 0f;
+        int count = 0;
+
+        foreach (string referenceName in new[] { "Carrot", "Potato" })
+        {
+            ItemData reference = index.items.Find(
+                i => i != null && !(i is SeedData) && i.name == referenceName);
+
+            if (reference == null || reference.gameModel == null)
+                continue;
+
+            // The reference crops themselves are left exactly as designed
+            if (reference == cropToYield)
+                return;
+
+            float size = MeasureModelSize(reference.gameModel);
+
+            if (size > 0f)
+            {
+                sum += size;
+                count++;
+            }
+        }
+
+        if (count == 0)
+            return;
+
+        float targetSize = sum / count;
+        float currentSize = MeasureSize(harvestable);
+
+        if (currentSize <= 0f)
+            return;
+
+        float factor = targetSize / currentSize;
+
+        // Only enlarge: never shrink a model that is already big
+        if (factor <= 1.05f)
+            return;
+
+        Debug.Log("[CROP] Scaling " + cropToYield.name + " ripe model x" + factor.ToString("0.0"));
+
+        harvestable.transform.localScale *= factor;
+    }
+
+    // Size of a prefab as it would appear under this crop
+    float MeasureModelSize(GameObject prefab)
+    {
+        GameObject temp = Instantiate(prefab, transform);
+        float size = MeasureSize(temp);
+
+        temp.SetActive(false);
+        DestroyImmediate(temp);
+
+        return size;
+    }
+
+    // "Average" size of the renderers: cube root of the bounding volume,
+    // so tall and round models can be compared fairly
+    static float MeasureSize(GameObject model)
+    {
+        Renderer[] renderers = model.GetComponentsInChildren<Renderer>(true);
+
+        if (renderers.Length == 0)
+            return 0f;
+
+        Bounds bounds = renderers[0].bounds;
+
+        for (int i = 1; i < renderers.Length; i++)
+            bounds.Encapsulate(renderers[i].bounds);
+
+        Vector3 s = bounds.size;
+
+        return Mathf.Pow(
+            Mathf.Max(s.x, 0.0001f) *
+            Mathf.Max(s.y, 0.0001f) *
+            Mathf.Max(s.z, 0.0001f),
+            1f / 3f);
+    }
+
+    // The ripe crop reuses the item's model prefab. Some of those prefabs
+    // (e.g. kalabasa, ampalaya) have a large offset on their root, which
+    // puts the ripe crop far away from the plot so it looks like it vanished.
+    void PlaceHarvestableOnPlot()
+    {
+        Renderer[] renderers = harvestable.GetComponentsInChildren<Renderer>(true);
+
+        if (renderers.Length == 0)
+            return;
+
+        Bounds bounds = renderers[0].bounds;
+
+        for (int i = 1; i < renderers.Length; i++)
+            bounds.Encapsulate(renderers[i].bounds);
+
+        Vector3 origin = transform.position;
+
+        // Already sitting on the plot: leave it as designed
+        if (Vector3.Distance(bounds.center, origin) <= 1.5f)
+            return;
+
+        Debug.LogWarning(
+            "[CROP] " + harvestable.name + " model is offset from the plot by " +
+            Vector3.Distance(bounds.center, origin).ToString("0.0") +
+            " units (size " + bounds.size + "). Moving it onto the plot.");
+
+        // Center it horizontally on the plot and sit it on the soil
+        harvestable.transform.position += new Vector3(
+            origin.x - bounds.center.x,
+            origin.y - bounds.min.y,
+            origin.z - bounds.center.z);
+    }
+
+    // The player needs a collider on the ripe crop to be able to target it
+    void EnsureHarvestableHasCollider()
+    {
+        if (harvestable.GetComponentInChildren<Collider>(true) != null)
+            return;
+
+        Renderer[] renderers = harvestable.GetComponentsInChildren<Renderer>(true);
+
+        if (renderers.Length == 0)
+            return;
+
+        Bounds bounds = renderers[0].bounds;
+
+        for (int i = 1; i < renderers.Length; i++)
+            bounds.Encapsulate(renderers[i].bounds);
+
+        BoxCollider box = harvestable.AddComponent<BoxCollider>();
+
+        Vector3 scale = harvestable.transform.lossyScale;
+
+        box.center = harvestable.transform.InverseTransformPoint(bounds.center);
+        box.size = new Vector3(
+            bounds.size.x / Mathf.Max(Mathf.Abs(scale.x), 0.0001f),
+            bounds.size.y / Mathf.Max(Mathf.Abs(scale.y), 0.0001f),
+            bounds.size.z / Mathf.Max(Mathf.Abs(scale.z), 0.0001f));
     }
 
     void Update()
@@ -163,10 +335,10 @@ public class CropBehaviour : MonoBehaviour
     {
         health--;
 
-        // Ready-to-harvest crops don't wilt
+        // A ripe crop left on dry land eventually wilts too
         if(health <= 0 &&
            cropState != CropState.Seed &&
-           cropState != CropState.Harvestable)
+           cropState != CropState.Wilted)
         {
             SwitchState(CropState.Wilted);
         }
@@ -194,12 +366,6 @@ public class CropBehaviour : MonoBehaviour
 
             case CropState.Harvestable:
             harvestable.SetActive(true);
-
-            if(!seedToGrow.regrowable)
-            {
-                harvestable.transform.parent = null;
-                RemoveCrop();
-            }
             break;
 
             case CropState.Wilted:

@@ -4,14 +4,11 @@ public class CustomerAI : MonoBehaviour
 {
     [Header("Points")]
     public Transform counterPoint;
-
     public Transform exitPoint;
-
     public Transform lookPoint;
 
     [Header("Movement")]
     public float moveSpeed = 2f;
-
     public float stoppingDistance = 0.2f;
 
     [Header("Visual")]
@@ -21,57 +18,32 @@ public class CustomerAI : MonoBehaviour
     public CustomerSpawner spawner;
 
     Animator anim;
-
     Transform targetPoint;
-
     bool leaving;
-
     bool reachedCounter;
-
     bool isMoving;
-
     CustomerOrder order;
-
-
-    // =========================================================
-    // START
-    // =========================================================
 
     void Start()
     {
-        anim =
-            GetComponentInChildren<Animator>();
+        anim = GetComponentInChildren<Animator>();
+        order = GetComponent<CustomerOrder>();
 
-        order =
-            GetComponent<CustomerOrder>();
-
-        // Start walking to counter
         targetPoint = counterPoint;
 
-        Debug.Log(
-            "[AI] Walking to counter"
-        );
+        Debug.Log("[AI] Walking to counter");
     }
-
-
-    // =========================================================
-    // UPDATE
-    // =========================================================
 
     void Update()
     {
         if (targetPoint == null)
+        {
             return;
+        }
 
         MoveToTarget();
-
         UpdateAnimation();
     }
-
-
-    // =========================================================
-    // MOVE
-    // =========================================================
 
     void MoveToTarget()
     {
@@ -81,13 +53,7 @@ public class CustomerAI : MonoBehaviour
 
         direction.y = 0f;
 
-        float distance =
-            direction.magnitude;
-
-
-        // =====================================================
-        // REACHED TARGET
-        // =====================================================
+        float distance = direction.magnitude;
 
         if (distance <= stoppingDistance)
         {
@@ -95,13 +61,7 @@ public class CustomerAI : MonoBehaviour
 
             UpdateAnimation();
 
-
-            // =================================================
-            // FACE COUNTER
-            // =================================================
-
-            if (!leaving &&
-                lookPoint != null)
+            if (!leaving && lookPoint != null)
             {
                 Vector3 lookDir =
                     lookPoint.position -
@@ -112,19 +72,11 @@ public class CustomerAI : MonoBehaviour
                 if (lookDir != Vector3.zero)
                 {
                     transform.rotation =
-                        Quaternion.LookRotation(
-                            lookDir
-                        );
+                        Quaternion.LookRotation(lookDir);
                 }
             }
 
-
-            // =================================================
-            // ARRIVED AT COUNTER
-            // =================================================
-
-            if (!reachedCounter &&
-                !leaving)
+            if (!reachedCounter && !leaving)
             {
                 reachedCounter = true;
 
@@ -147,11 +99,6 @@ public class CustomerAI : MonoBehaviour
                 return;
             }
 
-
-            // =================================================
-            // EXIT COMPLETE
-            // =================================================
-
             if (leaving)
             {
                 if (spawner != null)
@@ -169,30 +116,17 @@ public class CustomerAI : MonoBehaviour
             return;
         }
 
-
-        // =====================================================
-        // MOVING
-        // =====================================================
-
         isMoving = true;
 
         direction.Normalize();
 
-        // Face movement direction
-        transform.forward =
-            direction;
+        transform.forward = direction;
 
-        // Move
         transform.position +=
             direction *
             moveSpeed *
             Time.deltaTime;
     }
-
-
-    // =========================================================
-    // HAPPY
-    // =========================================================
 
     public void LeaveHappy()
     {
@@ -200,6 +134,14 @@ public class CustomerAI : MonoBehaviour
         {
             NotificationManager.Instance.ShowMessage(
                 "Customer Happy!"
+            );
+        }
+
+        // 🔊 CUSTOMER HAPPY SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.customerHappySound
             );
         }
 
@@ -212,17 +154,20 @@ public class CustomerAI : MonoBehaviour
         targetPoint = exitPoint;
     }
 
-
-    // =========================================================
-    // ANGRY
-    // =========================================================
-
     public void LeaveAngry()
     {
         if (NotificationManager.Instance != null)
         {
             NotificationManager.Instance.ShowMessage(
                 "Customer Angry!"
+            );
+        }
+
+        // 🔊 CUSTOMER ANGRY SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.customerAngrySound
             );
         }
 
@@ -235,15 +180,12 @@ public class CustomerAI : MonoBehaviour
         targetPoint = exitPoint;
     }
 
-
-    // =========================================================
-    // ANIMATION
-    // =========================================================
-
     void UpdateAnimation()
     {
         if (anim == null)
+        {
             return;
+        }
 
         anim.SetFloat(
             "Speed",

@@ -8,38 +8,38 @@ public class InventoryManager : MonoBehaviour
 
     private void Awake()
     {
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(this);
         }
         else
         {
-            Instance = this; 
+            Instance = this;
         }
     }
 
-    public ItemIndex itemIndex; 
+    public ItemIndex itemIndex;
 
     [Header("Tools")]
     [SerializeField] private ItemSlotData[] toolSlots = new ItemSlotData[8];
-    
-    [SerializeField]private ItemSlotData equippedToolSlot = null; 
+
+    [SerializeField] private ItemSlotData equippedToolSlot = null;
 
     [Header("Items")]
     [SerializeField] private ItemSlotData[] itemSlots = new ItemSlotData[8];
-    
+
     [SerializeField] private ItemSlotData equippedItemSlot = null;
 
     public Vector3 handItemScale = Vector3.one;
 
-    public Transform handPoint; 
+    public Transform handPoint;
 
     public void InventoryToHand(int slotIndex, InventorySlot.InventoryType inventoryType)
     {
         ItemSlotData handToEquip = equippedToolSlot;
-        ItemSlotData[] inventoryToAlter = toolSlots; 
-        
-        if(inventoryType == InventorySlot.InventoryType.Item)
+        ItemSlotData[] inventoryToAlter = toolSlots;
+
+        if (inventoryType == InventorySlot.InventoryType.Item)
         {
             handToEquip = equippedItemSlot;
             inventoryToAlter = itemSlots;
@@ -52,13 +52,14 @@ public class InventoryManager : MonoBehaviour
             handToEquip.AddQuantity(slotToAlter.quantity);
 
             slotToAlter.Empty();
-
-
-        } else
+        }
+        else
         {
-            ItemSlotData slotToEquip = new ItemSlotData(inventoryToAlter[slotIndex]);
+            ItemSlotData slotToEquip =
+                new ItemSlotData(inventoryToAlter[slotIndex]);
 
-            inventoryToAlter[slotIndex] = new ItemSlotData(handToEquip);
+            inventoryToAlter[slotIndex] =
+                new ItemSlotData(handToEquip);
 
             // Assign to the hand of the SAME type. EquipHandSlot() would
             // route an empty slot to the item hand and wipe the held item.
@@ -78,7 +79,6 @@ public class InventoryManager : MonoBehaviour
         }
 
         UIManager.Instance.RenderInventory();
-
     }
 
     public void HandToInventory(InventorySlot.InventoryType inventoryType)
@@ -98,12 +98,13 @@ public class InventoryManager : MonoBehaviour
             {
                 if (inventoryToAlter[i].IsEmpty())
                 {
-                    inventoryToAlter[i] = new ItemSlotData(handSlot);
+                    inventoryToAlter[i] =
+                        new ItemSlotData(handSlot);
+
                     handSlot.Empty();
                     break;
                 }
             }
-
         }
 
         if (inventoryType == InventorySlot.InventoryType.Item)
@@ -112,24 +113,24 @@ public class InventoryManager : MonoBehaviour
         }
 
         UIManager.Instance.RenderInventory();
-
-       
     }
 
-    public bool StackItemToInventory(ItemSlotData itemSlot, ItemSlotData[] inventoryArray)
+    public bool StackItemToInventory(
+        ItemSlotData itemSlot,
+        ItemSlotData[] inventoryArray)
     {
-        
         for (int i = 0; i < inventoryArray.Length; i++)
         {
             if (inventoryArray[i].Stackable(itemSlot))
             {
                 inventoryArray[i].AddQuantity(itemSlot.quantity);
                 itemSlot.Empty();
-                return true; 
+
+                return true;
             }
         }
 
-        return false; 
+        return false;
     }
 
     public void RenderHand()
@@ -141,9 +142,16 @@ public class InventoryManager : MonoBehaviour
 
         if (SlotEquipped(InventorySlot.InventoryType.Item))
         {
-            ItemData itemData = GetEquippedSlotItem(InventorySlot.InventoryType.Item);
+            ItemData itemData =
+                GetEquippedSlotItem(
+                    InventorySlot.InventoryType.Item
+                );
 
-            GameObject item = Instantiate(itemData.gameModel, handPoint);
+            GameObject item =
+                Instantiate(
+                    itemData.gameModel,
+                    handPoint
+                );
 
             item.transform.localPosition = Vector3.zero;
             item.transform.localRotation = Quaternion.identity;
@@ -152,53 +160,63 @@ public class InventoryManager : MonoBehaviour
     }
 
     #region Gets and Checks
-    public ItemData GetEquippedSlotItem(InventorySlot.InventoryType inventoryType)
+
+    public ItemData GetEquippedSlotItem(
+        InventorySlot.InventoryType inventoryType)
     {
-        if(inventoryType == InventorySlot.InventoryType.Item)
+        if (inventoryType == InventorySlot.InventoryType.Item)
         {
             return equippedItemSlot.itemData;
         }
-        return equippedToolSlot.itemData; 
+
+        return equippedToolSlot.itemData;
     }
 
-    public ItemSlotData GetEquippedSlot(InventorySlot.InventoryType inventoryType)
+    public ItemSlotData GetEquippedSlot(
+        InventorySlot.InventoryType inventoryType)
     {
         if (inventoryType == InventorySlot.InventoryType.Item)
         {
             return equippedItemSlot;
         }
+
         return equippedToolSlot;
     }
 
-    public ItemSlotData[] GetInventorySlots(InventorySlot.InventoryType inventoryType)
+    public ItemSlotData[] GetInventorySlots(
+        InventorySlot.InventoryType inventoryType)
     {
         if (inventoryType == InventorySlot.InventoryType.Item)
         {
             return itemSlots;
         }
+
         return toolSlots;
     }
 
-    public bool SlotEquipped(InventorySlot.InventoryType inventoryType)
+    public bool SlotEquipped(
+        InventorySlot.InventoryType inventoryType)
     {
         if (inventoryType == InventorySlot.InventoryType.Item)
         {
             return !equippedItemSlot.IsEmpty();
         }
+
         return !equippedToolSlot.IsEmpty();
     }
 
     public bool IsTool(ItemData item)
     {
         EquipmentData equipment = item as EquipmentData;
-        if(equipment != null)
+
+        if (equipment != null)
         {
-            return true; 
+            return true;
         }
 
         SeedData seed = item as SeedData;
-        return seed != null; 
 
+        return seed != null;
     }
 
     #endregion
@@ -207,25 +225,29 @@ public class InventoryManager : MonoBehaviour
     {
         if (IsTool(item))
         {
-            equippedToolSlot = new ItemSlotData(item); 
-        } else
-        {
-            equippedItemSlot = new ItemSlotData(item); 
+            equippedToolSlot =
+                new ItemSlotData(item);
         }
-
+        else
+        {
+            equippedItemSlot =
+                new ItemSlotData(item);
+        }
     }
 
     public void EquipHandSlot(ItemSlotData itemSlot)
     {
         ItemData item = itemSlot.itemData;
-        
+
         if (IsTool(item))
         {
-            equippedToolSlot = new ItemSlotData(itemSlot);
+            equippedToolSlot =
+                new ItemSlotData(itemSlot);
         }
         else
         {
-            equippedItemSlot = new ItemSlotData(itemSlot);
+            equippedItemSlot =
+                new ItemSlotData(itemSlot);
         }
     }
 
@@ -233,17 +255,22 @@ public class InventoryManager : MonoBehaviour
     {
         if (itemSlot.IsEmpty())
         {
-            Debug.LogError("There is nothing to consume!");
-            return; 
+            Debug.LogError(
+                "There is nothing to consume!"
+            );
+
+            return;
         }
 
         itemSlot.Remove();
+
         RenderHand();
-        UIManager.Instance.RenderInventory(); 
+
+        UIManager.Instance.RenderInventory();
     }
 
-
     #region Inventory Slot Validation
+
     private void OnValidate()
     {
         ValidateInventorySlot(equippedToolSlot);
@@ -251,12 +278,12 @@ public class InventoryManager : MonoBehaviour
 
         ValidateInventorySlots(itemSlots);
         ValidateInventorySlots(toolSlots);
-
     }
-    
+
     void ValidateInventorySlot(ItemSlotData slot)
     {
-        if(slot.itemData != null && slot.quantity == 0)
+        if (slot.itemData != null &&
+            slot.quantity == 0)
         {
             slot.quantity = 1;
         }
@@ -269,22 +296,32 @@ public class InventoryManager : MonoBehaviour
             ValidateInventorySlot(slot);
         }
     }
+
     #endregion
 
     public int CountItem(ItemData item)
     {
         if (item == null)
+        {
             return 0;
+        }
 
         int count = 0;
 
-        if (equippedItemSlot != null && !equippedItemSlot.IsEmpty() && equippedItemSlot.itemData == item)
+        if (equippedItemSlot != null &&
+            !equippedItemSlot.IsEmpty() &&
+            equippedItemSlot.itemData == item)
+        {
             count += equippedItemSlot.quantity;
+        }
 
         foreach (ItemSlotData slot in itemSlots)
         {
-            if (!slot.IsEmpty() && slot.itemData == item)
+            if (!slot.IsEmpty() &&
+                slot.itemData == item)
+            {
                 count += slot.quantity;
+            }
         }
 
         return count;
@@ -293,25 +330,36 @@ public class InventoryManager : MonoBehaviour
     public bool HasItems(ItemData[] items)
     {
         if (items == null)
+        {
             return true;
+        }
 
         // Count how many of each item the recipe needs
         // (an ingredient may be listed more than once)
-        Dictionary<ItemData, int> needed = new Dictionary<ItemData, int>();
+        Dictionary<ItemData, int> needed =
+            new Dictionary<ItemData, int>();
 
         foreach (ItemData item in items)
         {
             if (item == null)
+            {
                 continue;
+            }
 
-            needed.TryGetValue(item, out int count);
+            needed.TryGetValue(
+                item,
+                out int count
+            );
+
             needed[item] = count + 1;
         }
 
         foreach (KeyValuePair<ItemData, int> entry in needed)
         {
             if (CountItem(entry.Key) < entry.Value)
+            {
                 return false;
+            }
         }
 
         return true;
@@ -320,24 +368,33 @@ public class InventoryManager : MonoBehaviour
     public void ConsumeItems(ItemData[] items)
     {
         if (items == null)
+        {
             return;
+        }
 
         foreach (ItemData item in items)
         {
             if (item == null)
+            {
                 continue;
+            }
 
             ConsumeOneFromInventory(item);
         }
 
         RenderHand();
+
         if (UIManager.Instance != null)
+        {
             UIManager.Instance.RenderInventory();
+        }
     }
 
     void ConsumeOneFromInventory(ItemData item)
     {
-        if (equippedItemSlot != null && !equippedItemSlot.IsEmpty() && equippedItemSlot.itemData == item)
+        if (equippedItemSlot != null &&
+            !equippedItemSlot.IsEmpty() &&
+            equippedItemSlot.itemData == item)
         {
             ConsumeItem(equippedItemSlot);
             return;
@@ -345,7 +402,8 @@ public class InventoryManager : MonoBehaviour
 
         for (int i = 0; i < itemSlots.Length; i++)
         {
-            if (!itemSlots[i].IsEmpty() && itemSlots[i].itemData == item)
+            if (!itemSlots[i].IsEmpty() &&
+                itemSlots[i].itemData == item)
             {
                 ConsumeItem(itemSlots[i]);
                 return;
@@ -357,14 +415,22 @@ public class InventoryManager : MonoBehaviour
     public bool HasRoomFor(ItemData item)
     {
         if (item == null)
+        {
             return false;
+        }
 
-        ItemSlotData[] slots = IsTool(item) ? toolSlots : itemSlots;
+        ItemSlotData[] slots =
+            IsTool(item)
+                ? toolSlots
+                : itemSlots;
 
         foreach (ItemSlotData slot in slots)
         {
-            if (slot.IsEmpty() || slot.itemData == item)
+            if (slot.IsEmpty() ||
+                slot.itemData == item)
+            {
                 return true;
+            }
         }
 
         return false;
@@ -385,15 +451,19 @@ public class InventoryManager : MonoBehaviour
             return false;
         }
 
-        ItemSlotData newItem = new ItemSlotData(item);
+        ItemSlotData newItem =
+            new ItemSlotData(item);
 
-        ItemSlotData[] slots = IsTool(item) ? toolSlots : itemSlots;
+        ItemSlotData[] slots =
+            IsTool(item)
+                ? toolSlots
+                : itemSlots;
 
-        if(!StackItemToInventory(newItem, slots))
+        if (!StackItemToInventory(newItem, slots))
         {
-            for(int i = 0; i < slots.Length; i++)
+            for (int i = 0; i < slots.Length; i++)
             {
-                if(slots[i].IsEmpty())
+                if (slots[i].IsEmpty())
                 {
                     slots[i] = newItem;
                     break;
@@ -403,16 +473,19 @@ public class InventoryManager : MonoBehaviour
 
         UIManager.Instance.RenderInventory();
 
+        // No sound here.
+        // Specific gameplay actions handle their own sounds.
+
         return true;
     }
 
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        
+
     }
 }

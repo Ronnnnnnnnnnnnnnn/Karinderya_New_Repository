@@ -36,39 +36,25 @@ public class CustomerOrder : MonoBehaviour
 
     CustomerAI ai;
 
-    // =====================================================
-    // START
-    // =====================================================
-
     void Start()
     {
-        ai =
-            GetComponent<CustomerAI>();
+        ai = GetComponent<CustomerAI>();
 
         renderers =
             GetComponentsInChildren<Renderer>();
 
         UpdateVisuals();
 
-        Debug.Log(
-            "[CUSTOMER] Spawned"
-        );
+        Debug.Log("[CUSTOMER] Spawned");
     }
-
-    // =====================================================
-    // UPDATE
-    // =====================================================
 
     void Update()
     {
-        if (served)
-            return;
+        if (served) return;
 
-        if (!waitingStarted)
-            return;
+        if (!waitingStarted) return;
 
-        timer -=
-            Time.deltaTime;
+        timer -= Time.deltaTime;
 
         UpdateTimerUI();
 
@@ -78,16 +64,11 @@ public class CustomerOrder : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // START WAITING
-    // =====================================================
-
     public void StartWaiting()
     {
         waitingStarted = true;
 
-        timer =
-            patienceTime;
+        timer = patienceTime;
 
         if (NotificationManager.Instance != null)
         {
@@ -97,26 +78,16 @@ public class CustomerOrder : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // SET ORDER
-    // =====================================================
-
-    public void SetOrder(
-        ItemData serving)
+    public void SetOrder(ItemData serving)
     {
-        requestedServing =
-            serving;
+        requestedServing = serving;
 
-        // Automatically determine selling price
         RecipeData recipe =
-            FindRecipeForDish(
-                serving
-            );
+            FindRecipeForDish(serving);
 
         if (recipe != null)
         {
-            rewardCoins =
-                recipe.sellingPrice;
+            rewardCoins = recipe.sellingPrice;
         }
 
         UpdateVisuals();
@@ -129,17 +100,11 @@ public class CustomerOrder : MonoBehaviour
         );
     }
 
-    // =====================================================
-    // SERVE
-    // =====================================================
-
     public void TryServe()
     {
-        if (served)
-            return;
+        if (served) return;
 
-        if (!waitingStarted)
-            return;
+        if (!waitingStarted) return;
 
         if (!InventoryManager.Instance.SlotEquipped(
             InventorySlot.InventoryType.Item))
@@ -147,6 +112,9 @@ public class CustomerOrder : MonoBehaviour
             NotificationManager.Instance.ShowMessage(
                 "Hold A Dish!"
             );
+
+            // 🔊 ERROR SOUND
+            PlayErrorSound();
 
             return;
         }
@@ -157,19 +125,23 @@ public class CustomerOrder : MonoBehaviour
             );
 
         if (heldItem == null)
+        {
             return;
+        }
 
-        // WRONG FOOD
         if (heldItem != requestedServing)
         {
             NotificationManager.Instance.ShowMessage(
                 "Wrong Dish!"
             );
 
+            // 🔊 WRONG DISH SOUND
+            PlayErrorSound();
+
             return;
         }
 
-        // REMOVE FOOD
+        // Correct dish
         InventoryManager.Instance.ConsumeItem(
             InventoryManager.Instance.GetEquippedSlot(
                 InventorySlot.InventoryType.Item
@@ -178,7 +150,6 @@ public class CustomerOrder : MonoBehaviour
 
         served = true;
 
-        // PAY PLAYER
         CurrencyManager.Instance.AddCoins(
             rewardCoins
         );
@@ -191,14 +162,20 @@ public class CustomerOrder : MonoBehaviour
         }
 
         NotificationManager.Instance.ShowMessage(
-            "+" +
-            rewardCoins +
-            " Coins!"
+            "+" + rewardCoins + " Coins!"
         );
 
         Debug.Log(
             "[CUSTOMER] Served correctly"
         );
+
+        // 🔊 CUSTOMER SERVED SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.serveSound
+            );
+        }
 
         if (ai != null)
         {
@@ -206,13 +183,8 @@ public class CustomerOrder : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // ANGRY
-    // =====================================================
-
     void LeaveAngry()
     {
-        // Customer is leaving: can no longer be served
         served = true;
 
         NotificationManager.Instance.ShowMessage(
@@ -221,8 +193,7 @@ public class CustomerOrder : MonoBehaviour
 
         int compensation =
             Mathf.RoundToInt(
-                rewardCoins *
-                compensationRate
+                rewardCoins * compensationRate
             );
 
         CurrencyManager.Instance.AddCoins(
@@ -235,8 +206,7 @@ public class CustomerOrder : MonoBehaviour
             " Coins (Compensation)"
         );
 
-        foreach (
-            Renderer rend in renderers)
+        foreach (Renderer rend in renderers)
         {
             if (rend != null)
             {
@@ -244,6 +214,9 @@ public class CustomerOrder : MonoBehaviour
                     angryColor;
             }
         }
+
+        // 🔊 CUSTOMER ANGRY / ERROR SOUND
+        PlayErrorSound();
 
         if (ai != null)
         {
@@ -253,33 +226,40 @@ public class CustomerOrder : MonoBehaviour
         enabled = false;
     }
 
-    // =====================================================
-    // FIND RECIPE
-    // =====================================================
+    void PlayErrorSound()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.errorSound
+            );
+        }
+    }
 
-    RecipeData FindRecipeForDish(
-        ItemData dish)
+    RecipeData FindRecipeForDish(ItemData dish)
     {
         if (dish == null)
+        {
             return null;
+        }
 
-        // Read recipes from the catalog (Resources.FindObjectsOfTypeAll
-        // only sees loaded assets in a build)
         RecipeBookCatalog catalog =
             RecipeBookCatalog.Find();
 
         if (catalog == null ||
             catalog.recipes == null)
+        {
             return null;
+        }
 
         foreach (RecipeData recipe in catalog.recipes)
         {
             if (recipe == null ||
                 recipe.resultDish == null)
+            {
                 continue;
+            }
 
-            // Customers order Serving items,
-            // recipes produce Dish items
             if (recipe.resultDish == dish ||
                 recipe.resultDish.servingVersion == dish)
             {
@@ -290,14 +270,12 @@ public class CustomerOrder : MonoBehaviour
         return null;
     }
 
-    // =====================================================
-    // VISUALS
-    // =====================================================
-
     void UpdateVisuals()
     {
         if (requestedServing == null)
+        {
             return;
+        }
 
         if (orderText != null)
         {
@@ -312,10 +290,6 @@ public class CustomerOrder : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // TIMER
-    // =====================================================
-
     void UpdateTimerUI()
     {
         if (orderText != null &&
@@ -324,9 +298,7 @@ public class CustomerOrder : MonoBehaviour
             orderText.text =
                 requestedServing.itemName +
                 "\n" +
-                Mathf.Ceil(
-                    timer
-                ).ToString() +
+                Mathf.Ceil(timer).ToString() +
                 "s";
         }
     }

@@ -36,10 +36,6 @@ public class Pot : MonoBehaviour
     RecipeData activeRecipe;
     ItemData cookedDish;
 
-    // =====================================================
-    // START
-    // =====================================================
-
     void Start()
     {
         HideDish();
@@ -52,18 +48,15 @@ public class Pot : MonoBehaviour
                 Resources.FindObjectsOfTypeAll<RecipeBookCatalog>();
 
             if (catalogs.Length > 0)
+            {
                 recipeCatalog = catalogs[0];
+            }
         }
     }
 
-    // =====================================================
-    // GET RECIPES
-    // =====================================================
-
     public RecipeData[] GetRecipes()
     {
-        if (availableRecipes != null &&
-            availableRecipes.Length > 0)
+        if (availableRecipes != null && availableRecipes.Length > 0)
         {
             return availableRecipes;
         }
@@ -76,23 +69,17 @@ public class Pot : MonoBehaviour
         }
 
         if (recipe != null)
+        {
             return new RecipeData[] { recipe };
+        }
 
         return new RecipeData[0];
     }
-
-    // =====================================================
-    // CAN COOK
-    // =====================================================
 
     public bool CanStartCooking()
     {
         return !cooking && !cooked;
     }
-
-    // =====================================================
-    // INTERACT
-    // =====================================================
 
     public void Interact()
     {
@@ -102,53 +89,32 @@ public class Pot : MonoBehaviour
             return;
         }
 
-        if (cooking)
-            return;
+        if (cooking) return;
     }
 
-    // =====================================================
-    // START COOKING
-    // =====================================================
-
-    public bool TryStartCooking(
-        RecipeData recipeToCook)
+    public bool TryStartCooking(RecipeData recipeToCook)
     {
-        if (!CanStartCooking() ||
-            recipeToCook == null)
+        if (!CanStartCooking() || recipeToCook == null)
         {
             return false;
         }
-
-        // =========================================
-        // CHECK UNLOCK
-        // =========================================
 
         if (RecipeUnlockManager.Instance == null)
         {
-            Debug.LogWarning(
-                "[POT] RecipeUnlockManager missing!"
-            );
-
+            Debug.LogWarning("[POT] RecipeUnlockManager missing!");
             return false;
         }
 
-        if (!RecipeUnlockManager.Instance.IsUnlocked(
-            recipeToCook))
+        if (!RecipeUnlockManager.Instance.IsUnlocked(recipeToCook))
         {
             NotificationManager.Instance.ShowMessage(
-                recipeToCook.recipeName +
-                " is Locked!"
+                recipeToCook.recipeName + " is Locked!"
             );
 
             return false;
         }
 
-        // =========================================
-        // CHECK INGREDIENTS
-        // =========================================
-
-        if (!InventoryManager.Instance.HasItems(
-            recipeToCook.ingredients))
+        if (!InventoryManager.Instance.HasItems(recipeToCook.ingredients))
         {
             NotificationManager.Instance.ShowMessage(
                 "Not Enough Ingredients!"
@@ -157,10 +123,7 @@ public class Pot : MonoBehaviour
             return false;
         }
 
-        // =========================================
-        // CONSUME INGREDIENTS
-        // =========================================
-
+        // Remove the required ingredients from inventory
         InventoryManager.Instance.ConsumeItems(
             recipeToCook.ingredients
         );
@@ -168,16 +131,22 @@ public class Pot : MonoBehaviour
         activeRecipe = recipeToCook;
 
         if (ingredientText != null)
+        {
             ingredientText.gameObject.SetActive(false);
+        }
+
+        // 🔊 COOKING START SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.ingredientDropSound
+            );
+        }
 
         StartCoroutine(CookRoutine());
 
         return true;
     }
-
-    // =====================================================
-    // COOKING
-    // =====================================================
 
     IEnumerator CookRoutine()
     {
@@ -185,8 +154,8 @@ public class Pot : MonoBehaviour
 
         float duration =
             activeRecipe != null
-            ? activeRecipe.cookTime
-            : cookTime;
+                ? activeRecipe.cookTime
+                : cookTime;
 
         float timer = duration;
 
@@ -194,8 +163,7 @@ public class Pot : MonoBehaviour
 
         while (timer > 0)
         {
-            int rounded =
-                Mathf.CeilToInt(timer);
+            int rounded = Mathf.CeilToInt(timer);
 
             UpdateTimerSprite(rounded);
 
@@ -207,162 +175,154 @@ public class Pot : MonoBehaviour
         FinishCooking();
     }
 
-    // =====================================================
-    // FINISH
-    // =====================================================
-
     void FinishCooking()
     {
         cooking = false;
-
         cooked = true;
 
         cookedDish =
             activeRecipe != null
-            ? activeRecipe.resultDish
-            : null;
+                ? activeRecipe.resultDish
+                : null;
 
         HideTimer();
-
         ShowDish();
 
         string dishName =
             cookedDish != null
-            ? cookedDish.itemName
-            : "Dish";
+                ? cookedDish.itemName
+                : "Dish";
 
         NotificationManager.Instance.ShowMessage(
-            dishName +
-            " Cooked!"
+            dishName + " Cooked!"
         );
-    }
 
-    // =====================================================
-    // GIVE DISH
-    // =====================================================
+        // 🔊 COOKING COMPLETE SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.cookingDoneSound
+            );
+        }
+    }
 
     void GiveDish()
     {
         if (cookedDish == null)
+        {
             return;
+        }
 
         // Keep the dish in the pot if the bag is full
-        if (!InventoryManager.Instance.AddItem(
-            cookedDish))
+        if (!InventoryManager.Instance.AddItem(cookedDish))
         {
             return;
         }
 
         NotificationManager.Instance.ShowMessage(
-            cookedDish.itemName +
-            " Taken"
+            cookedDish.itemName + " Taken"
         );
 
+        // 🔊 DISH TAKE SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.dishTakeSound
+            );
+        }
+
         cooked = false;
-
         activeRecipe = null;
-
         cookedDish = null;
 
         HideDish();
-
         UpdateIngredientText();
 
         if (ingredientText != null)
+        {
             ingredientText.gameObject.SetActive(true);
+        }
     }
-
-    // =====================================================
-    // DISH VISUAL
-    // =====================================================
 
     void ShowDish()
     {
-        if (dishRenderer == null ||
-            cookedDish == null)
+        if (dishRenderer == null || cookedDish == null)
+        {
             return;
+        }
 
-        dishRenderer.sprite =
-            cookedDish.itemSprite;
-
+        dishRenderer.sprite = cookedDish.itemSprite;
         dishRenderer.gameObject.SetActive(true);
     }
 
     void HideDish()
     {
         if (dishRenderer == null)
+        {
             return;
+        }
 
         dishRenderer.gameObject.SetActive(false);
     }
 
-    // =====================================================
-    // TIMER
-    // =====================================================
-
     void ShowTimer()
     {
         if (timerRenderer != null)
+        {
             timerRenderer.gameObject.SetActive(true);
+        }
     }
 
     void HideTimer()
     {
         if (timerRenderer != null)
+        {
             timerRenderer.gameObject.SetActive(false);
+        }
     }
 
     void UpdateTimerSprite(int number)
     {
-        if (timerRenderer == null ||
-            numberSprites == null)
+        if (timerRenderer == null || numberSprites == null)
+        {
             return;
+        }
 
-        if (number < 0 ||
-            number >= numberSprites.Length)
+        if (number < 0 || number >= numberSprites.Length)
+        {
             return;
+        }
 
-        timerRenderer.sprite =
-            numberSprites[number];
+        timerRenderer.sprite = numberSprites[number];
     }
-
-    // =====================================================
-    // INGREDIENT TEXT
-    // =====================================================
 
     void UpdateIngredientText()
     {
         if (ingredientText == null)
+        {
             return;
+        }
 
-        RecipeData[] recipes =
-            GetRecipes();
+        RecipeData[] recipes = GetRecipes();
 
         if (recipes.Length == 0)
         {
-            ingredientText.text =
-                "NO RECIPE";
-
+            ingredientText.text = "NO RECIPE";
             return;
         }
 
         if (cooking)
         {
-            ingredientText.text =
-                "COOKING";
-
+            ingredientText.text = "COOKING";
             return;
         }
 
         if (cooked)
         {
-            ingredientText.text =
-                "DONE";
-
+            ingredientText.text = "DONE";
             return;
         }
 
-        ingredientText.text =
-            "Press E";
+        ingredientText.text = "Press E";
     }
 }

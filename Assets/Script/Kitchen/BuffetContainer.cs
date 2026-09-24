@@ -5,9 +5,7 @@ public class BuffetContainer : MonoBehaviour
 {
     [Header("Storage")]
     public ItemData storedDish;
-
     public int servings;
-
     public int maxServings = 10;
 
     [Header("This Buffet's Recipe")]
@@ -15,7 +13,6 @@ public class BuffetContainer : MonoBehaviour
 
     [Header("Visuals")]
     public SpriteRenderer dishRenderer;
-
     public TextMeshPro servingsText;
 
     [Header("Sprites")]
@@ -23,47 +20,25 @@ public class BuffetContainer : MonoBehaviour
 
     [Header("Lock Visual")]
     public GameObject lockObject;
-
     public TextMeshPro lockText;
 
     [Header("Unlock Visual")]
     public SpriteRenderer buffetRenderer;
 
-    // =====================================================
-    // START
-    // =====================================================
-
-    // Sprite shown while the buffet is empty, so the player knows
-    // which dish belongs here
     Sprite hintSprite;
 
     void Start()
     {
         CacheHintSprite();
-
         UpdateVisuals();
         UpdateLockVisual();
 
-        Debug.Log(
-            "[BUFFET] Ready: " +
-            GetBuffetName()
-        );
+        Debug.Log("[BUFFET] Ready: " + GetBuffetName());
     }
-
-    // =====================================================
-    // INTERACT
-    // =====================================================
 
     public void Interact()
     {
-        Debug.Log(
-            "[BUFFET] Interacted: " +
-            GetBuffetName()
-        );
-
-        // =========================================
-        // LOCKED
-        // =========================================
+        Debug.Log("[BUFFET] Interacted: " + GetBuffetName());
 
         if (IsLocked())
         {
@@ -71,70 +46,46 @@ public class BuffetContainer : MonoBehaviour
             return;
         }
 
-        // =========================================
-        // UNLOCKED
-        // =========================================
-
-        // Put dish inside buffet
         if (storedDish == null)
         {
             InsertDish();
             return;
         }
 
-        // Take serving
         GiveServing();
     }
-
-    // =====================================================
-    // CHECK LOCK
-    // =====================================================
 
     bool IsLocked()
     {
         if (buffetRecipe == null)
+        {
             return false;
+        }
 
         if (RecipeUnlockManager.Instance == null)
         {
-            Debug.LogWarning(
-                "[BUFFET] RecipeUnlockManager missing!"
-            );
-
+            Debug.LogWarning("[BUFFET] RecipeUnlockManager missing!");
             return true;
         }
 
-        return !RecipeUnlockManager.Instance.IsUnlocked(
-            buffetRecipe
-        );
+        return !RecipeUnlockManager.Instance.IsUnlocked(buffetRecipe);
     }
-
-    // =====================================================
-    // UNLOCK BUFFET
-    // =====================================================
 
     void UnlockBuffet()
     {
         if (buffetRecipe == null)
         {
-            Debug.LogWarning(
-                "[BUFFET] No recipe assigned!"
-            );
-
+            Debug.LogWarning("[BUFFET] No recipe assigned!");
             return;
         }
 
         if (RecipeUnlockManager.Instance == null)
         {
-            Debug.LogWarning(
-                "[BUFFET] RecipeUnlockManager missing!"
-            );
-
+            Debug.LogWarning("[BUFFET] RecipeUnlockManager missing!");
             return;
         }
 
-        if (RecipeUnlockManager.Instance.IsUnlocked(
-            buffetRecipe))
+        if (RecipeUnlockManager.Instance.IsUnlocked(buffetRecipe))
         {
             UpdateLockVisual();
             return;
@@ -161,10 +112,6 @@ public class BuffetContainer : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // INSERT DISH
-    // =====================================================
-
     void InsertDish()
     {
         if (!InventoryManager.Instance.SlotEquipped(
@@ -183,9 +130,10 @@ public class BuffetContainer : MonoBehaviour
             );
 
         if (heldItem == null)
+        {
             return;
+        }
 
-        // ONLY ALLOW DISHES
         if (!heldItem.isDish)
         {
             NotificationManager.Instance.ShowMessage(
@@ -194,10 +142,6 @@ public class BuffetContainer : MonoBehaviour
 
             return;
         }
-
-        // =========================================
-        // CHECK CORRECT DISH
-        // =========================================
 
         if (buffetRecipe != null &&
             buffetRecipe.resultDish != heldItem)
@@ -215,7 +159,6 @@ public class BuffetContainer : MonoBehaviour
         }
 
         storedDish = heldItem;
-
         servings = maxServings;
 
         InventoryManager.Instance.ConsumeItem(
@@ -230,16 +173,22 @@ public class BuffetContainer : MonoBehaviour
         );
 
         UpdateVisuals();
-    }
 
-    // =====================================================
-    // GIVE SERVING
-    // =====================================================
+        // 🔊 BUFFET PLACE SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.serveSound
+            );
+        }
+    }
 
     void GiveServing()
     {
         if (storedDish == null)
+        {
             return;
+        }
 
         if (servings <= 0)
         {
@@ -249,12 +198,14 @@ public class BuffetContainer : MonoBehaviour
 
         ItemData serving =
             storedDish.servingVersion != null
-            ? storedDish.servingVersion
-            : storedDish;
+                ? storedDish.servingVersion
+                : storedDish;
 
         // Don't use up a serving if the bag is full
         if (!InventoryManager.Instance.AddItem(serving))
+        {
             return;
+        }
 
         servings--;
 
@@ -262,6 +213,14 @@ public class BuffetContainer : MonoBehaviour
             "[BUFFET] Serving Given: " +
             storedDish.itemName
         );
+
+        // 🔊 BUFFET SERVING TAKE SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.dishTakeSound
+            );
+        }
 
         if (servings <= 0)
         {
@@ -271,42 +230,29 @@ public class BuffetContainer : MonoBehaviour
         UpdateVisuals();
     }
 
-    // =====================================================
-    // EMPTY BUFFET
-    // =====================================================
-
     void EmptyBuffet()
     {
         storedDish = null;
-
         servings = 0;
 
-        Debug.Log(
-            "[BUFFET] Empty"
-        );
+        Debug.Log("[BUFFET] Empty");
 
         UpdateVisuals();
     }
 
-    // =====================================================
-    // VISUALS
-    // =====================================================
-
     void CacheHintSprite()
     {
-        // 1) The sprite already set on the renderer in the scene
         if (dishRenderer != null &&
             dishRenderer.sprite != null)
         {
             hintSprite = dishRenderer.sprite;
         }
-        // 2) The sprite of the dish this buffet takes
         else if (buffetRecipe != null &&
                  buffetRecipe.resultDish != null)
         {
-            hintSprite = buffetRecipe.resultDish.itemSprite;
+            hintSprite =
+                buffetRecipe.resultDish.itemSprite;
         }
-        // 3) Last resort
         else
         {
             hintSprite = emptySprite;
@@ -315,52 +261,45 @@ public class BuffetContainer : MonoBehaviour
 
     void UpdateVisuals()
     {
-        // Always show "servings/max", e.g. 0/10 when empty
         if (servingsText != null)
         {
             servingsText.text =
-                servings +
-                "/" +
-                maxServings;
+                servings + "/" + maxServings;
         }
 
         if (dishRenderer != null)
         {
-            // Keep showing the dish sprite when empty
-            // so the player knows what to put in
             dishRenderer.sprite =
                 storedDish == null
-                ? hintSprite
-                : storedDish.itemSprite;
+                    ? hintSprite
+                    : storedDish.itemSprite;
         }
     }
-
-    // =====================================================
-    // LOCK VISUAL
-    // =====================================================
 
     void UpdateLockVisual()
     {
         if (buffetRecipe == null)
         {
             if (lockObject != null)
+            {
                 lockObject.SetActive(false);
+            }
 
             if (lockText != null)
+            {
                 lockText.text = "";
+            }
 
             return;
         }
 
         bool locked = IsLocked();
 
-        // LOCK ICON
         if (lockObject != null)
         {
             lockObject.SetActive(locked);
         }
 
-        // LOCK TEXT
         if (lockText != null)
         {
             if (locked)
@@ -384,14 +323,12 @@ public class BuffetContainer : MonoBehaviour
         );
     }
 
-    // =====================================================
-    // NAME
-    // =====================================================
-
     string GetBuffetName()
     {
         if (buffetRecipe != null)
+        {
             return buffetRecipe.recipeName;
+        }
 
         return "Unassigned Buffet";
     }

@@ -12,8 +12,15 @@ public class InteractableObject : MonoBehaviour
     public virtual void Pickup()
     {
         InventoryManager.Instance.EquipHandSlot(item);
-
         InventoryManager.Instance.RenderHand();
+
+        // 🔊 PHYSICAL ITEM PICKUP SOUND
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(
+                AudioManager.Instance.pickupSound
+            );
+        }
 
         onPickedUp?.Invoke();
 

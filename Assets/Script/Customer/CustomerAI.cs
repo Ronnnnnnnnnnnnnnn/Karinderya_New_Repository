@@ -76,6 +76,10 @@ public class CustomerAI : MonoBehaviour
                 }
             }
 
+            // =====================================================
+            // CUSTOMER ARRIVED AT COUNTER
+            // =====================================================
+
             if (!reachedCounter && !leaving)
             {
                 reachedCounter = true;
@@ -83,6 +87,14 @@ public class CustomerAI : MonoBehaviour
                 Debug.Log(
                     "[AI] Reached counter"
                 );
+
+                // 🔊 CUSTOMER ARRIVAL SOUND
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlaySFX(
+                        AudioManager.Instance.customerArrivalSound
+                    );
+                }
 
                 if (NotificationManager.Instance != null)
                 {
@@ -98,6 +110,11 @@ public class CustomerAI : MonoBehaviour
 
                 return;
             }
+
+
+            // =====================================================
+            // CUSTOMER LEAVING
+            // =====================================================
 
             if (leaving)
             {
@@ -128,6 +145,11 @@ public class CustomerAI : MonoBehaviour
             Time.deltaTime;
     }
 
+
+    // =========================================================
+    // LEAVE HAPPY
+    // =========================================================
+
     public void LeaveHappy()
     {
         if (NotificationManager.Instance != null)
@@ -154,6 +176,11 @@ public class CustomerAI : MonoBehaviour
         targetPoint = exitPoint;
     }
 
+
+    // =========================================================
+    // LEAVE ANGRY
+    // =========================================================
+
     public void LeaveAngry()
     {
         if (NotificationManager.Instance != null)
@@ -179,6 +206,11 @@ public class CustomerAI : MonoBehaviour
 
         targetPoint = exitPoint;
     }
+
+
+    // =========================================================
+    // UPDATE ANIMATION
+    // =========================================================
 
     void UpdateAnimation()
     {

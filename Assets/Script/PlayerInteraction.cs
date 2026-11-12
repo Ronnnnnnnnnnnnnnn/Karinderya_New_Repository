@@ -28,6 +28,10 @@ public class PlayerInteraction : MonoBehaviour
 
     void Update()
     {
+        // Game is frozen behind the main menu (its camera is off)
+        if (PauseMenu.InMainMenu)
+            return;
+
         Ray ray =
             Camera.main.ScreenPointToRay(
                 new Vector3(

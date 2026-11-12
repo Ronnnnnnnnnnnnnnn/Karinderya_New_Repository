@@ -571,14 +571,6 @@ public class CropBehaviour : MonoBehaviour
                 health
             );
 
-            // 🔊 WATERING SOUND
-            if (AudioManager.Instance != null)
-            {
-                AudioManager.Instance.PlaySFX(
-                    AudioManager.Instance.waterSound
-                );
-            }
-
             return;
         }
 
@@ -607,13 +599,6 @@ public class CropBehaviour : MonoBehaviour
             health
         );
 
-        // 🔊 WATERING SOUND
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlaySFX(
-                AudioManager.Instance.waterSound
-            );
-        }
     }
 
     public void Wither()

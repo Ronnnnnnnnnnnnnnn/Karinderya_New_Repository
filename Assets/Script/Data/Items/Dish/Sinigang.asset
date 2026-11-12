@@ -17,7 +17,7 @@ MonoBehaviour:
   thumbnail: {fileID: 21300000, guid: 1699b5a665aa77e448b48b387ada8e4e, type: 3}
   itemSprite: {fileID: 21300000, guid: 1699b5a665aa77e448b48b387ada8e4e, type: 3}
   gameModel: {fileID: 0}
-  handScale: {x: 1, y: 1, z: 1}
+  handScale: {x: 0.02, y: 0.02, z: 0.02}
   isIngredient: 0
   isDish: 1
   isServing: 0

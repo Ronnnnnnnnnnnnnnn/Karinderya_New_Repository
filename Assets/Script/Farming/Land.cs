@@ -125,7 +125,15 @@ public class Land : MonoBehaviour, ITimeTracker
                 if(landStatus != LandStatus.Soil)
                 {
                     SwitchLandStatus(LandStatus.Watered);
-                }  
+
+                    // Play once per click, not on every clock tick
+                    if (AudioManager.Instance != null)
+                    {
+                        AudioManager.Instance.PlaySFX(
+                            AudioManager.Instance.waterSound
+                        );
+                    }
+                }
                     break;
 
                 case EquipmentData.ToolType.Shovel:

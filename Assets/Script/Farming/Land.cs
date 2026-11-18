@@ -119,6 +119,16 @@ public class Land : MonoBehaviour, ITimeTracker
             {
                 case EquipmentData.ToolType.Hoe:
                     SwitchLandStatus(LandStatus.Farmland);
+
+                    if (AudioManager.Instance != null)
+                    {
+                        AudioClip hoeClip =
+                            AudioManager.Instance.hoeSound != null
+                                ? AudioManager.Instance.hoeSound
+                                : AudioManager.Instance.plantSound;
+
+                        AudioManager.Instance.PlaySFX(hoeClip);
+                    }
                     break;
                 case EquipmentData.ToolType.WateringCan:
 

@@ -269,10 +269,18 @@ public class BuffetContainer : MonoBehaviour
 
         if (dishRenderer != null)
         {
-            dishRenderer.sprite =
-                storedDish == null
-                    ? hintSprite
-                    : storedDish.itemSprite;
+            bool empty = storedDish == null || servings <= 0;
+
+            if (empty)
+            {
+                dishRenderer.sprite = emptySprite;
+                dishRenderer.enabled = emptySprite != null;
+            }
+            else
+            {
+                dishRenderer.sprite = storedDish.itemSprite;
+                dishRenderer.enabled = true;
+            }
         }
     }
 

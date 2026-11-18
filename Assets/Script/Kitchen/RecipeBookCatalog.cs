@@ -23,7 +23,8 @@ public class RecipeBookCatalog : ScriptableObject
             return cached;
         }
 
-        foreach (Pot pot in FindObjectsOfType<Pot>())
+        foreach (Pot pot in Object.FindObjectsByType<Pot>(
+            FindObjectsSortMode.None))
         {
             if (pot.recipeCatalog != null)
             {

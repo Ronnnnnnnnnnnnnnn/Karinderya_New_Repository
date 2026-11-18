@@ -81,7 +81,7 @@ public class InventoryManager : MonoBehaviour
         UIManager.Instance.RenderInventory();
     }
 
-    public void HandToInventory(InventorySlot.InventoryType inventoryType)
+    public bool HandToInventory(InventorySlot.InventoryType inventoryType)
     {
         ItemSlotData handSlot = equippedToolSlot;
         ItemSlotData[] inventoryToAlter = toolSlots;
@@ -92,16 +92,26 @@ public class InventoryManager : MonoBehaviour
             inventoryToAlter = itemSlots;
         }
 
-        if (!StackItemToInventory(handSlot, inventoryToAlter))
+        if (handSlot == null || handSlot.IsEmpty())
+            return true;
+
+        if (inventoryToAlter == null)
+            return false;
+
+        bool moved = StackItemToInventory(handSlot, inventoryToAlter);
+
+        if (!moved)
         {
             for (int i = 0; i < inventoryToAlter.Length; i++)
             {
-                if (inventoryToAlter[i].IsEmpty())
+                if (inventoryToAlter[i] != null &&
+                    inventoryToAlter[i].IsEmpty())
                 {
                     inventoryToAlter[i] =
                         new ItemSlotData(handSlot);
 
                     handSlot.Empty();
+                    moved = true;
                     break;
                 }
             }
@@ -113,15 +123,21 @@ public class InventoryManager : MonoBehaviour
         }
 
         UIManager.Instance.RenderInventory();
+
+        return moved;
     }
 
     public bool StackItemToInventory(
         ItemSlotData itemSlot,
         ItemSlotData[] inventoryArray)
     {
+        if (itemSlot == null || inventoryArray == null)
+            return false;
+
         for (int i = 0; i < inventoryArray.Length; i++)
         {
-            if (inventoryArray[i].Stackable(itemSlot))
+            if (inventoryArray[i] != null &&
+                inventoryArray[i].Stackable(itemSlot))
             {
                 inventoryArray[i].AddQuantity(itemSlot.quantity);
                 itemSlot.Empty();
@@ -135,6 +151,9 @@ public class InventoryManager : MonoBehaviour
 
     public void RenderHand()
     {
+        if (handPoint == null)
+            return;
+
         if (handPoint.childCount > 0)
         {
             Destroy(handPoint.GetChild(0).gameObject);
@@ -146,6 +165,16 @@ public class InventoryManager : MonoBehaviour
                 GetEquippedSlotItem(
                     InventorySlot.InventoryType.Item
                 );
+
+            if (itemData == null || itemData.gameModel == null)
+            {
+                Debug.LogWarning(
+                    "[INVENTORY] Item has no world model: " +
+                    (itemData != null ? itemData.name : "null")
+                );
+
+                return;
+            }
 
             GameObject item =
                 Instantiate(
@@ -282,6 +311,9 @@ public class InventoryManager : MonoBehaviour
 
     void ValidateInventorySlot(ItemSlotData slot)
     {
+        if (slot == null)
+            return;
+
         if (slot.itemData != null &&
             slot.quantity == 0)
         {
@@ -291,6 +323,9 @@ public class InventoryManager : MonoBehaviour
 
     void ValidateInventorySlots(ItemSlotData[] array)
     {
+        if (array == null)
+            return;
+
         foreach (ItemSlotData slot in array)
         {
             ValidateInventorySlot(slot);

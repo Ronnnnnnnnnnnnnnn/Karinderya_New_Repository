@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -128,12 +129,40 @@ public class AudioManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            EnsureDistinctSources();
         }
         else
         {
             Destroy(gameObject);
             return;
         }
+    }
+
+    void EnsureDistinctSources()
+    {
+        HashSet<AudioSource> used = new HashSet<AudioSource>();
+
+        sfxSource = EnsureUniqueSource(sfxSource, used);
+        musicSource = EnsureUniqueSource(musicSource, used);
+        ambientSource = EnsureUniqueSource(ambientSource, used);
+        randomAmbientSource =
+            EnsureUniqueSource(randomAmbientSource, used);
+    }
+
+    AudioSource EnsureUniqueSource(
+        AudioSource source,
+        HashSet<AudioSource> used)
+    {
+        if (source != null && used.Add(source))
+            return source;
+
+        AudioSource created = gameObject.AddComponent<AudioSource>();
+        created.playOnAwake = false;
+        created.loop = false;
+        created.spatialBlend = 0f;
+
+        used.Add(created);
+        return created;
     }
 
 

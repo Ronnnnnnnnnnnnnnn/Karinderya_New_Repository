@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: 
   description: The crop the player harvest first
-  thumbnail: {fileID: 0}
-  itemSprite: {fileID: 0}
+  thumbnail: {fileID: 1713262818, guid: 84e63144a7f6fbe41a6e0751b226136e, type: 3}
+  itemSprite: {fileID: 1713262818, guid: 84e63144a7f6fbe41a6e0751b226136e, type: 3}
   gameModel: {fileID: 3699918654475473860, guid: 696c2f0a20b32ff4d9328a75aed4eb3e, type: 3}
   handScale: {x: 1, y: 1, z: 1}
   isIngredient: 0

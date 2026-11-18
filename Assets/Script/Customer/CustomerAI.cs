@@ -183,12 +183,6 @@ public class CustomerAI : MonoBehaviour
 
     public void LeaveAngry()
     {
-        if (NotificationManager.Instance != null)
-        {
-            NotificationManager.Instance.ShowMessage(
-                "Customer Angry!"
-            );
-        }
 
         // 🔊 CUSTOMER ANGRY SOUND
         if (AudioManager.Instance != null)

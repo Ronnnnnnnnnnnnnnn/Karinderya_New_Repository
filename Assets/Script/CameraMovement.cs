@@ -69,7 +69,7 @@ public class CameraMovement : MonoBehaviour
 
     void LateUpdate()
     {
-        if (ShouldUseFreeCursor())
+        if (ShouldUseFreeCursor() || !isCursorLocked)
             return;
 
         float mouseX = Input.GetAxisRaw("Mouse X");

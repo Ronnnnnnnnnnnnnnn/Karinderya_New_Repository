@@ -12,7 +12,14 @@ public class LandManager : MonoBehaviour
     List<Land> landPlots = new List<Land>();
 
     List<LandSaveState> landData = new List<LandSaveState>();
-    List<CropSaveState> cropData = new List<CropSaveState>(); 
+    List<CropSaveState> cropData = new List<CropSaveState>();
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics()
+    {
+        Instance = null;
+        farmData = null;
+    }
 
     private void Awake()
     {

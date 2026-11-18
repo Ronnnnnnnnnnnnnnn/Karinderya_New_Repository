@@ -57,7 +57,7 @@ public class CookingUIManager : MonoBehaviour
         if (recipeBookPanel != null && ingredientPanel != null)
             return;
 
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = UIRoot.FindGameCanvas();
         if (canvas == null)
         {
             GameObject canvasObj = new GameObject("CookingCanvas");
@@ -87,6 +87,8 @@ public class CookingUIManager : MonoBehaviour
         scrollRect.offsetMax = Vector2.zero;
 
         ScrollRect scroll = scrollObj.AddComponent<ScrollRect>();
+        scrollObj.AddComponent<RectMask2D>();
+
         GameObject content = new GameObject("Content");
         content.transform.SetParent(scrollObj.transform, false);
         RectTransform contentRect = content.AddComponent<RectTransform>();
@@ -101,6 +103,7 @@ public class CookingUIManager : MonoBehaviour
         ContentSizeFitter fitter = content.AddComponent<ContentSizeFitter>();
         fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         scroll.content = contentRect;
+        scroll.viewport = scrollRect;
         scroll.vertical = true;
         scroll.horizontal = false;
 
@@ -175,8 +178,16 @@ public class CookingUIManager : MonoBehaviour
             btn.onClick.AddListener(() => SelectRecipe(captured));
 
             string ingredientLine = FormatIngredientLine(recipe);
+            bool unlocked =
+                RecipeUnlockManager.Instance == null ||
+                RecipeUnlockManager.Instance.IsUnlocked(recipe);
+
+            string lockSuffix = unlocked
+                ? ""
+                : "  [LOCKED - " + recipe.unlockCost + "]";
+
             Text label = CreateText(row.transform,
-                recipe.recipeName + "\n" + ingredientLine,
+                recipe.recipeName + lockSuffix + "\n" + ingredientLine,
                 16, TextAnchor.MiddleLeft, Vector2.zero, new Vector2(360, 64));
             RectTransform labelRect = label.GetComponent<RectTransform>();
             labelRect.anchorMin = Vector2.zero;
@@ -225,7 +236,13 @@ public class CookingUIManager : MonoBehaviour
         var sb = new StringBuilder();
         sb.AppendLine("Required ingredients:\n");
 
-        bool hasAll = true;
+        bool hasAll =
+            InventoryManager.Instance != null &&
+            InventoryManager.Instance.HasItems(recipe.ingredients);
+
+        bool unlocked =
+            RecipeUnlockManager.Instance != null &&
+            RecipeUnlockManager.Instance.IsUnlocked(recipe);
 
         foreach (ItemData ingredient in recipe.ingredients)
         {
@@ -236,13 +253,24 @@ public class CookingUIManager : MonoBehaviour
             string name = GetDisplayName(ingredient);
             string status = have > 0 ? "OK" : "X";
             sb.AppendLine(status + " " + name + "  (" + have + " in bag)");
+        }
 
-            if (have < 1)
-                hasAll = false;
+        if (!unlocked)
+        {
+            sb.AppendLine();
+            sb.AppendLine(
+                "LOCKED - unlock at the " +
+                recipe.recipeName +
+                " buffet (" + recipe.unlockCost + ")"
+            );
         }
 
         ingredientsListText.text = sb.ToString();
-        startCookButton.interactable = hasAll && activePot != null && activePot.CanStartCooking();
+        startCookButton.interactable =
+            hasAll &&
+            unlocked &&
+            activePot != null &&
+            activePot.CanStartCooking();
     }
 
     void OnStartCooking()
@@ -259,7 +287,8 @@ public class CookingUIManager : MonoBehaviour
 
         if (!activePot.TryStartCooking(selectedRecipe))
         {
-            NotificationManager.Instance.ShowMessage("Cannot cook right now.");
+            // TryStartCooking already shows the specific reason
+            // (locked, not enough ingredients, etc.).
             return;
         }
 
@@ -295,7 +324,8 @@ public class CookingUIManager : MonoBehaviour
 
     static void RefreshCursorState()
     {
-        CameraMovement cameraMovement = Object.FindObjectOfType<CameraMovement>();
+        CameraMovement cameraMovement =
+            Object.FindFirstObjectByType<CameraMovement>();
         if (cameraMovement != null)
             cameraMovement.RefreshCursorState();
     }

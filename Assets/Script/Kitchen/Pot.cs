@@ -36,6 +36,12 @@ public class Pot : MonoBehaviour
     RecipeData activeRecipe;
     ItemData cookedDish;
 
+    // Read-only state for the tutorial and other systems.
+    public bool IsCooking => cooking;
+    public bool HasCookedDish => cooked;
+    public ItemData CookedDish => cookedDish;
+    public RecipeData ActiveRecipe => activeRecipe;
+
     void Start()
     {
         HideDish();
@@ -90,6 +96,10 @@ public class Pot : MonoBehaviour
         }
 
         if (cooking) return;
+
+        // Left-clicking an idle pot now opens the recipe book, the
+        // same way E does. Previously left-click did nothing here.
+        CookingUIManager.EnsureInstance().OpenRecipeBook(this);
     }
 
     public bool TryStartCooking(RecipeData recipeToCook)
@@ -268,30 +278,26 @@ public class Pot : MonoBehaviour
     void ShowTimer()
     {
         if (timerRenderer != null)
-        {
             timerRenderer.gameObject.SetActive(true);
-        }
     }
 
     void HideTimer()
     {
         if (timerRenderer != null)
-        {
             timerRenderer.gameObject.SetActive(false);
-        }
     }
 
     void UpdateTimerSprite(int number)
     {
-        if (timerRenderer == null || numberSprites == null)
+        if (timerRenderer == null ||
+            numberSprites == null ||
+            numberSprites.Length == 0)
         {
             return;
         }
 
         if (number < 0 || number >= numberSprites.Length)
-        {
             return;
-        }
 
         timerRenderer.sprite = numberSprites[number];
     }

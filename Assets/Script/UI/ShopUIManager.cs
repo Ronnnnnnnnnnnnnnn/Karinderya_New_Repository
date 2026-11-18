@@ -17,7 +17,11 @@ public class ShopUIManager : MonoBehaviour
     {
         if(item == null) return;
 
-        itemNameText.text = item.name;
+        itemNameText.text =
+            string.IsNullOrEmpty(item.itemName)
+                ? item.name
+                : item.itemName;
+
         itemDescText.text = item.description;
     }
 

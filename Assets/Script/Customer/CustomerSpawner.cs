@@ -22,6 +22,10 @@ public class CustomerSpawner : MonoBehaviour
     [Tooltip("Maximum number of customers allowed at the same time.")]
     public int maxCustomers = 2;
 
+    // Runtime only. The tutorial pauses automatic spawning while it
+    // controls the first customer; normal play leaves this true.
+    bool spawningEnabled = true;
+
     int currentCustomers = 0;
 
     // =========================================================
@@ -53,6 +57,18 @@ public class CustomerSpawner : MonoBehaviour
 
             yield return new WaitForSeconds(delay);
 
+            if (!spawningEnabled)
+                continue;
+
+            if (currentCustomers > 0 && !AnyCustomerAlive())
+            {
+                Debug.LogWarning(
+                    "[SPAWNER] Customer count was stale. Resetting."
+                );
+
+                currentCustomers = 0;
+            }
+
             if (currentCustomers < maxCustomers)
             {
                 SpawnCustomer();
@@ -64,7 +80,7 @@ public class CustomerSpawner : MonoBehaviour
     // SPAWN CUSTOMER
     // =========================================================
 
-    void SpawnCustomer()
+    CustomerOrder SpawnCustomer(ItemData forcedOrder = null)
     {
         // -----------------------------------------------------
         // BASIC CHECKS
@@ -76,7 +92,7 @@ public class CustomerSpawner : MonoBehaviour
                 "[SPAWNER] Customer Prefab is missing!"
             );
 
-            return;
+            return null;
         }
 
         if (spawnPoint == null)
@@ -85,7 +101,7 @@ public class CustomerSpawner : MonoBehaviour
                 "[SPAWNER] Spawn Point is missing!"
             );
 
-            return;
+            return null;
         }
 
         if (counterPoint == null)
@@ -94,36 +110,40 @@ public class CustomerSpawner : MonoBehaviour
                 "[SPAWNER] Counter Point is missing!"
             );
 
-            return;
+            return null;
         }
 
         // -----------------------------------------------------
         // FIND UNLOCKED ORDERS
         // -----------------------------------------------------
 
-        List<ItemData> unlockedOrders =
-            GetUnlockedOrders();
+        List<ItemData> unlockedOrders = null;
 
-        // If unlock system isn't working,
-        // still allow the first two dishes.
-        if (unlockedOrders.Count == 0)
+        if (forcedOrder == null)
         {
-            Debug.LogWarning(
-                "[SPAWNER] No unlocked orders found. " +
-                "Using first two dishes as default."
-            );
+            unlockedOrders = GetUnlockedOrders();
 
-            unlockedOrders =
-                GetDefaultOrders();
-        }
+            // If unlock system isn't working,
+            // still allow the first two dishes.
+            if (unlockedOrders.Count == 0)
+            {
+                Debug.LogWarning(
+                    "[SPAWNER] No unlocked orders found. " +
+                    "Using first two dishes as default."
+                );
 
-        if (unlockedOrders.Count == 0)
-        {
-            Debug.LogError(
-                "[SPAWNER] No customer orders available!"
-            );
+                unlockedOrders =
+                    GetDefaultOrders();
+            }
 
-            return;
+            if (unlockedOrders.Count == 0)
+            {
+                Debug.LogError(
+                    "[SPAWNER] No customer orders available!"
+                );
+
+                return null;
+            }
         }
 
         // -----------------------------------------------------
@@ -183,7 +203,21 @@ public class CustomerSpawner : MonoBehaviour
         CustomerOrder order =
             customerObj.GetComponent<CustomerOrder>();
 
-        if (order != null)
+        if (order == null)
+        {
+            return null;
+        }
+
+        if (forcedOrder != null)
+        {
+            order.SetOrder(forcedOrder);
+
+            Debug.Log(
+                "[SPAWNER] Tutorial customer ordered: " +
+                forcedOrder.itemName
+            );
+        }
+        else
         {
             ItemData chosen =
                 unlockedOrders[
@@ -203,6 +237,25 @@ public class CustomerSpawner : MonoBehaviour
                 );
             }
         }
+
+        return order;
+    }
+
+    // =========================================================
+    // TUTORIAL SUPPORT
+    // =========================================================
+
+    public void SetSpawningEnabled(bool enabled)
+    {
+        spawningEnabled = enabled;
+    }
+
+    public CustomerOrder ForceSpawn(ItemData forcedOrder)
+    {
+        if (currentCustomers >= maxCustomers)
+            return null;
+
+        return SpawnCustomer(forcedOrder);
     }
 
     // =========================================================
@@ -372,5 +425,15 @@ public class CustomerSpawner : MonoBehaviour
     public int GetCurrentCustomers()
     {
         return currentCustomers;
+    }
+
+    static bool AnyCustomerAlive()
+    {
+        CustomerAI[] customers =
+            UnityEngine.Object.FindObjectsByType<CustomerAI>(
+                FindObjectsSortMode.None
+            );
+
+        return customers.Length > 0;
     }
 }

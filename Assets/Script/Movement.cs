@@ -34,13 +34,33 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space) && !PauseMenu.Pause)
+        if(Input.GetKeyDown(KeyCode.Space) && !IsInputBlocked())
         {
             ApplyJump();
         }
 
         Interact();
         HandleMenuShortcuts();
+    }
+
+    public bool IsInputBlocked()
+    {
+        if (PauseMenu.Pause)
+            return true;
+
+        if (UIManager.Instance != null &&
+            UIManager.Instance.IsMenuOpen)
+        {
+            return true;
+        }
+
+        if (CookingUIManager.Instance != null &&
+            CookingUIManager.Instance.IsOpen)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public void Interact()
@@ -95,6 +115,9 @@ public class Movement : MonoBehaviour
 
     void ApplyMovement()
     {
+        if (IsInputBlocked())
+            return;
+
         float x;
         float z;
     

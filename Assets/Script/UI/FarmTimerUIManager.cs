@@ -13,6 +13,8 @@ public class FarmTimerUIManager : MonoBehaviour
     public float refreshInterval = 0.25f;
 
     float refreshTimer;
+    int lastScreenWidth;
+    int lastScreenHeight;
 
     void Awake()
     {
@@ -31,37 +33,100 @@ public class FarmTimerUIManager : MonoBehaviour
         if (timerPanel != null && timerListText != null)
             return;
 
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = UIRoot.FindGameCanvas();
         if (canvas == null)
             return;
 
-        timerPanel = new GameObject("FarmTimerPanel");
+        timerPanel = new GameObject("FarmTimerPanel", typeof(RectTransform));
         timerPanel.transform.SetParent(canvas.transform, false);
-        RectTransform rect = timerPanel.AddComponent<RectTransform>();
+        RectTransform rect = timerPanel.GetComponent<RectTransform>();
         rect.anchorMin = new Vector2(1f, 1f);
         rect.anchorMax = new Vector2(1f, 1f);
         rect.pivot = new Vector2(1f, 1f);
-        rect.anchoredPosition = new Vector2(-16, -16);
-        rect.sizeDelta = new Vector2(220, 140);
+        rect.anchoredPosition = new Vector2(-250, -140);
+        rect.sizeDelta = new Vector2(360, 230);
         Image bg = timerPanel.AddComponent<Image>();
-        bg.color = new Color(0.08f, 0.12f, 0.08f, 0.75f);
+        bg.color = new Color(0.08f, 0.12f, 0.08f, 0.86f);
+        bg.raycastTarget = false;
 
         GameObject textObj = new GameObject("Text");
         textObj.transform.SetParent(timerPanel.transform, false);
         RectTransform textRect = textObj.AddComponent<RectTransform>();
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = new Vector2(8, 8);
-        textRect.offsetMax = new Vector2(-8, -8);
+        textRect.offsetMin = new Vector2(10, 8);
+        textRect.offsetMax = new Vector2(-10, -8);
         timerListText = textObj.AddComponent<Text>();
         timerListText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        timerListText.fontSize = 13;
+        timerListText.fontSize = 24;
         timerListText.alignment = TextAnchor.UpperLeft;
-        timerListText.color = Color.white;
+        timerListText.color = new Color(1f, 0.96f, 0.88f);
+        timerListText.raycastTarget = false;
+
+        Shadow textShadow = textObj.AddComponent<Shadow>();
+        textShadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
+        textShadow.effectDistance = new Vector2(1f, -1f);
+
+        ApplyResponsiveLayout();
+    }
+
+    void ApplyResponsiveLayout()
+    {
+        if (timerPanel == null)
+            return;
+
+        RectTransform rect = timerPanel.GetComponent<RectTransform>();
+
+        if (rect == null)
+            return;
+
+        float aspect =
+            Screen.height > 0
+                ? (float)Screen.width / Screen.height
+                : 1.777f;
+
+        if (aspect < 1.65f)
+        {
+            // Narrow/4:3: sit above the inventory button so it does not
+            // collide with the tutorial card or the clock.
+            rect.anchorMin = new Vector2(1f, 0f);
+            rect.anchorMax = new Vector2(1f, 0f);
+            rect.pivot = new Vector2(1f, 0f);
+            rect.anchoredPosition = new Vector2(-16f, 170f);
+        }
+        else
+        {
+            // Wide: keep it on the upper right, below the clock.
+            rect.anchorMin = new Vector2(1f, 1f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.pivot = new Vector2(1f, 1f);
+            rect.anchoredPosition = new Vector2(-250f, -140f);
+        }
+
+        rect.sizeDelta = new Vector2(360f, 230f);
+
+        lastScreenWidth = Screen.width;
+        lastScreenHeight = Screen.height;
     }
 
     void Update()
     {
+        if (Screen.width != lastScreenWidth ||
+            Screen.height != lastScreenHeight)
+        {
+            ApplyResponsiveLayout();
+        }
+
+        if (PauseMenu.Pause ||
+            (UIManager.Instance != null && UIManager.Instance.IsMenuOpen) ||
+            (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen))
+        {
+            if (timerPanel != null)
+                timerPanel.SetActive(false);
+
+            return;
+        }
+
         refreshTimer -= Time.deltaTime;
 
         if (refreshTimer > 0f)
@@ -100,15 +165,36 @@ public class FarmTimerUIManager : MonoBehaviour
         var sb = new StringBuilder();
         sb.AppendLine("Crops:");
 
+        const int maxLines = 5;
         int index = 1;
+        int total = 0;
+
         foreach (CropBehaviour crop in crops)
         {
             if (crop == null || crop.SeedToGrow == null)
                 continue;
 
-            string cropName = crop.SeedToGrow.itemName;
+            total++;
+
+            if (index > maxLines)
+                continue;
+
+            string cropName = null;
+
+            if (crop.SeedToGrow.cropToYield != null)
+                cropName = crop.SeedToGrow.cropToYield.name;
+
+            if (string.IsNullOrEmpty(cropName))
+                cropName = crop.SeedToGrow.itemName;
+
             if (string.IsNullOrEmpty(cropName))
                 cropName = crop.SeedToGrow.name;
+
+            cropName = cropName
+                .Replace(" Crop", "")
+                .Replace(" Seed", "")
+                .Replace(" seed", "")
+                .Trim();
 
             if (crop.cropState == CropBehaviour.CropState.Harvestable)
             {
@@ -123,6 +209,11 @@ public class FarmTimerUIManager : MonoBehaviour
             }
 
             index++;
+        }
+
+        if (total > maxLines)
+        {
+            sb.AppendLine("+" + (total - maxLines) + " more");
         }
 
         timerListText.text = sb.ToString();

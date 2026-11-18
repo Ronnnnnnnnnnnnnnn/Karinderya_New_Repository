@@ -76,7 +76,7 @@ public class GameTimestamp
 
     public DayOfTheWeek GetDayOfTheWeek()
     {
-        int daysPassed= YearsToDays(year) + SeasonsToDays(season) + day;
+        int daysPassed = YearsToDays(year) + SeasonsToDays(season) + (day - 1);
         
         int dayIndex = daysPassed % 7;
 

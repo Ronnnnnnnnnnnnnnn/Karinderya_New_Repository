@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -14,6 +15,9 @@ public class NotificationManager : MonoBehaviour
 
     Coroutine currentRoutine;
 
+    readonly Queue<string> pendingMessages =
+        new Queue<string>();
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -28,6 +32,8 @@ public class NotificationManager : MonoBehaviour
 
     private void Start()
     {
+        pendingMessages.Clear();
+
         if(notificationText != null)
         {
             notificationText.text = "";
@@ -43,26 +49,38 @@ public class NotificationManager : MonoBehaviour
             return;
         }
 
-        if(currentRoutine != null)
-        {
-            StopCoroutine(currentRoutine);
-        }
+        if (string.IsNullOrEmpty(message))
+            return;
 
-        currentRoutine = StartCoroutine(
-            ShowRoutine(message)
-        );
+        pendingMessages.Enqueue(message);
+
+        if (currentRoutine == null)
+        {
+            currentRoutine = StartCoroutine(ShowRoutine());
+        }
     }
 
-    IEnumerator ShowRoutine(string message)
+    IEnumerator ShowRoutine()
     {
-        notificationText.gameObject.SetActive(true);
-        notificationText.text = message;
+        while (pendingMessages.Count > 0)
+        {
+            string message = pendingMessages.Dequeue();
 
-        yield return new WaitForSeconds(displayTime);
+            notificationText.gameObject.SetActive(true);
+            notificationText.text = message;
+
+            yield return new WaitForSeconds(displayTime);
+        }
 
         notificationText.text = "";
         notificationText.gameObject.SetActive(false);
 
         currentRoutine = null;
+
+        // A message can arrive on the same frame the queue empties.
+        if (pendingMessages.Count > 0)
+        {
+            currentRoutine = StartCoroutine(ShowRoutine());
+        }
     }
 }

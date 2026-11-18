@@ -104,6 +104,23 @@ public class CropBehaviour : MonoBehaviour
                 hoursToGrow
             );
 
+        // Growth is real-time, but the duration should still come from
+        // SeedData.daysToGrow. At timeScale = 1, one in-game minute is
+        // one real second, so 3 in-game hours = 180 real seconds.
+        float gameMinutesPerSecond =
+            TimeManager.Instance != null
+                ? Mathf.Max(0.01f, TimeManager.Instance.timeScale)
+                : 1f;
+
+        if (maxGrowth > 0f)
+        {
+            maxGrowSeconds = maxGrowth / gameMinutesPerSecond;
+        }
+        else
+        {
+            maxGrowSeconds = Mathf.Max(1f, maxGrowSeconds);
+        }
+
         // In real-time mode 'growth' is the elapsed grow time in seconds,
         // so a loaded crop continues where it left off.
         this.growth = growth;

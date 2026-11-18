@@ -48,9 +48,12 @@ public class RecipeUnlockManager : MonoBehaviour
         if (recipe == null)
             return false;
 
-        // Free recipes are automatically unlocked
-        if (recipe.unlockCost <= 0)
+        // Free recipes are automatically unlocked.
+        if (recipe.unlockedByDefault ||
+            recipe.unlockCost <= 0)
+        {
             return true;
+        }
 
         return unlockedRecipes.Contains(recipe);
     }

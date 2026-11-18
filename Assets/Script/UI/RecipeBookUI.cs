@@ -7,10 +7,15 @@ public class RecipeBookUI : MonoBehaviour
 
     void Start()
     {
-        if(recipeBookPanel != null)
+        if (recipeBookPanel == null ||
+            !recipeBookPanel.scene.IsValid())
         {
-            recipeBookPanel.SetActive(false);
+            enabled = false;
+            gameObject.SetActive(false);
+            return;
         }
+
+        recipeBookPanel.SetActive(false);
     }
 
     void Update()

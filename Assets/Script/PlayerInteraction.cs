@@ -80,6 +80,7 @@ public class PlayerInteraction : MonoBehaviour
                 selectedBuffet = null;
                 selectedCustomer = null;
 
+                HideUI();
                 SelectLand(land);
             }
 
@@ -298,6 +299,19 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
+        // =========================================
+        // WORLD ITEM / CROP
+        // =========================================
+
+        if (selectedInteractable != null)
+        {
+            selectedInteractable.Pickup();
+
+            HideUI();
+
+            return;
+        }
+
         Debug.Log(
             "[PLAYER] Nothing to interact"
         );
@@ -346,11 +360,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             HideUI();
 
-            CookingUIManager
-                .EnsureInstance()
-                .OpenRecipeBook(
-                    selectedPot
-                );
+            selectedPot.Interact();
 
             return;
         }

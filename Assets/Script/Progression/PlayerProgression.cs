@@ -27,7 +27,17 @@ public class PlayerProgression : MonoBehaviour
 
     public void OnDishServed(int coinsReward)
     {
+        int previousLevel = Level;
+
         dishesServed++;
+
+        if (Level > previousLevel &&
+            NotificationManager.Instance != null)
+        {
+            NotificationManager.Instance.ShowMessage(
+                "Level " + Level + "!"
+            );
+        }
     }
 
     public float GetSpawnDelay()

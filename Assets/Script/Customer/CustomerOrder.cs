@@ -1,8 +1,13 @@
+using System;
 using TMPro;
 using UnityEngine;
 
 public class CustomerOrder : MonoBehaviour
 {
+    // Fired when a customer is finished, either served or angry.
+    // The tutorial uses this to advance without polling private state.
+    public static event Action<CustomerOrder, bool> CustomerFinished;
+
     [Header("Order")]
     public ItemData requestedServing;
 
@@ -69,13 +74,6 @@ public class CustomerOrder : MonoBehaviour
         waitingStarted = true;
 
         timer = patienceTime;
-
-        if (NotificationManager.Instance != null)
-        {
-            NotificationManager.Instance.ShowMessage(
-                "Customer Waiting!"
-            );
-        }
     }
 
     public void SetOrder(ItemData serving)
@@ -181,6 +179,8 @@ public class CustomerOrder : MonoBehaviour
         {
             ai.LeaveHappy();
         }
+
+        CustomerFinished?.Invoke(this, true);
     }
 
     void LeaveAngry()
@@ -206,12 +206,17 @@ public class CustomerOrder : MonoBehaviour
             " Coins (Compensation)"
         );
 
+        MaterialPropertyBlock angryBlock =
+            new MaterialPropertyBlock();
+
         foreach (Renderer rend in renderers)
         {
             if (rend != null)
             {
-                rend.material.color =
-                    angryColor;
+                rend.GetPropertyBlock(angryBlock);
+                angryBlock.SetColor("_BaseColor", angryColor);
+                angryBlock.SetColor("_Color", angryColor);
+                rend.SetPropertyBlock(angryBlock);
             }
         }
 
@@ -222,6 +227,8 @@ public class CustomerOrder : MonoBehaviour
         {
             ai.LeaveAngry();
         }
+
+        CustomerFinished?.Invoke(this, false);
 
         enabled = false;
     }

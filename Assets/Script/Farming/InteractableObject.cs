@@ -11,6 +11,28 @@ public class InteractableObject : MonoBehaviour
 
     public virtual void Pickup()
     {
+        if (item == null || InventoryManager.Instance == null)
+            return;
+
+        // Never overwrite a held item. Try to put it back first; if
+        // there is no room, leave the world item where it is.
+        if (InventoryManager.Instance.SlotEquipped(
+                InventorySlot.InventoryType.Item))
+        {
+            if (!InventoryManager.Instance.HandToInventory(
+                    InventorySlot.InventoryType.Item))
+            {
+                if (NotificationManager.Instance != null)
+                {
+                    NotificationManager.Instance.ShowMessage(
+                        "Inventory Full!"
+                    );
+                }
+
+                return;
+            }
+        }
+
         InventoryManager.Instance.EquipHandSlot(item);
         InventoryManager.Instance.RenderHand();
 

@@ -1,7 +1,4 @@
-
 using UnityEngine;
-
-
 
 public class InfiniteIngredient : InteractableObject
 
@@ -13,15 +10,10 @@ public class InfiniteIngredient : InteractableObject
 
         InventoryManager.Instance.AddItem(item);
 
-
-
         UIManager.Instance.RenderInventory();
-
-
 
         Debug.Log("Received " + item.itemName);
 
     }
 
 }
-

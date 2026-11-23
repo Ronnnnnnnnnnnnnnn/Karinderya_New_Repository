@@ -25,11 +25,6 @@ public class AudioManager : MonoBehaviour
     [Range(0f, 1f)]
     public float randomAmbientVolume = 0.7f;
 
-
-    // =========================================================
-    // GAMEPLAY SOUND EFFECTS
-    // =========================================================
-
     [Header("Gameplay Sound Effects")]
     public AudioClip pickupSound;
     public AudioClip ingredientDropSound;
@@ -39,20 +34,10 @@ public class AudioManager : MonoBehaviour
     public AudioClip buttonClickSound;
     public AudioClip errorSound;
 
-
-    // =========================================================
-    // CUSTOMER SOUNDS
-    // =========================================================
-
     [Header("Customer Sounds")]
     public AudioClip customerArrivalSound;
     public AudioClip customerHappySound;
     public AudioClip customerAngrySound;
-
-
-    // =========================================================
-    // FARMING SOUNDS
-    // =========================================================
 
     [Header("Farming Sounds")]
     public AudioClip hoeSound;
@@ -60,32 +45,17 @@ public class AudioManager : MonoBehaviour
     public AudioClip waterSound;
     public AudioClip witherSound;
 
-
-    // =========================================================
-    // RADIO MUSIC
-    // =========================================================
-
     [Header("Radio Music")]
     public AudioClip sundayRadioMusic;
 
     [Tooltip("Radio music loops when enabled.")]
     public bool radioLoop = true;
 
-
-    // =========================================================
-    // GENERAL AMBIENT SOUND
-    // =========================================================
-
     [Header("General Ambient")]
     public AudioClip ambientLoop;
 
     [Tooltip("Automatically start the ambient loop when the Playing Scene starts.")]
     public bool playAmbientOnStart = true;
-
-
-    // =========================================================
-    // RANDOM PROVINCIAL AMBIENCE
-    // =========================================================
 
     [Header("Random Provincial Ambience")]
 
@@ -94,7 +64,6 @@ public class AudioManager : MonoBehaviour
 
     [Tooltip("Different walis tingting recordings. One will be randomly selected.")]
     public AudioClip[] walisTingtingSounds;
-
 
     [Header("Rooster Timing")]
     public bool playRooster = true;
@@ -105,7 +74,6 @@ public class AudioManager : MonoBehaviour
     [Tooltip("Maximum seconds before another rooster sound.")]
     public float roosterMaxDelay = 60f;
 
-
     [Header("Walis Tingting Timing")]
     public bool playWalisTingting = true;
 
@@ -115,14 +83,8 @@ public class AudioManager : MonoBehaviour
     [Tooltip("Maximum seconds before another sweeping sound.")]
     public float walisMaxDelay = 120f;
 
-
     private Coroutine roosterCoroutine;
     private Coroutine walisCoroutine;
-
-
-    // =========================================================
-    // UNITY
-    // =========================================================
 
     private void Awake()
     {
@@ -165,22 +127,13 @@ public class AudioManager : MonoBehaviour
         return created;
     }
 
-
     private void Start()
     {
         StartBackgroundAudio();
     }
 
-
-    // =========================================================
-    // START BACKGROUND AUDIO
-    // =========================================================
-
     private void StartBackgroundAudio()
     {
-        // -------------------------
-        // GENERAL AMBIENT
-        // -------------------------
 
         if (playAmbientOnStart &&
             ambientLoop != null &&
@@ -192,11 +145,6 @@ public class AudioManager : MonoBehaviour
             ambientSource.Play();
         }
 
-
-        // -------------------------
-        // RANDOM ROOSTER
-        // -------------------------
-
         if (playRooster &&
             roosterSounds != null &&
             roosterSounds.Length > 0 &&
@@ -204,11 +152,6 @@ public class AudioManager : MonoBehaviour
         {
             roosterCoroutine = StartCoroutine(RoosterRoutine());
         }
-
-
-        // -------------------------
-        // RANDOM WALIS TINGTING
-        // -------------------------
 
         if (playWalisTingting &&
             walisTingtingSounds != null &&
@@ -219,11 +162,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-
-    // =========================================================
-    // PLAY RADIO
-    // =========================================================
-
     public void PlayRadio()
     {
         if (sundayRadioMusic == null ||
@@ -232,20 +170,13 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        // Stop whatever music is currently playing.
         musicSource.Stop();
 
-        // Play radio music.
         musicSource.clip = sundayRadioMusic;
         musicSource.loop = radioLoop;
         musicSource.volume = musicVolume;
         musicSource.Play();
     }
-
-
-    // =========================================================
-    // STOP RADIO / MUSIC
-    // =========================================================
 
     public void StopRadio()
     {
@@ -255,11 +186,6 @@ public class AudioManager : MonoBehaviour
             musicSource.clip = null;
         }
     }
-
-
-    // =========================================================
-    // RANDOM ROOSTER
-    // =========================================================
 
     private IEnumerator RoosterRoutine()
     {
@@ -299,11 +225,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-
-    // =========================================================
-    // RANDOM WALIS TINGTING
-    // =========================================================
-
     private IEnumerator WalisTingtingRoutine()
     {
         while (true)
@@ -342,11 +263,6 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-
-    // =========================================================
-    // PLAY SFX
-    // =========================================================
-
     public void PlaySFX(AudioClip clip)
     {
         if (clip != null &&
@@ -358,11 +274,6 @@ public class AudioManager : MonoBehaviour
             );
         }
     }
-
-
-    // =========================================================
-    // PLAY MUSIC
-    // =========================================================
 
     public void PlayMusic(AudioClip clip)
     {
@@ -378,11 +289,6 @@ public class AudioManager : MonoBehaviour
         musicSource.Play();
     }
 
-
-    // =========================================================
-    // STOP MUSIC
-    // =========================================================
-
     public void StopMusic()
     {
         if (musicSource != null)
@@ -390,11 +296,6 @@ public class AudioManager : MonoBehaviour
             musicSource.Stop();
         }
     }
-
-
-    // =========================================================
-    // PLAY AMBIENT
-    // =========================================================
 
     public void PlayAmbient(AudioClip clip)
     {
@@ -410,11 +311,6 @@ public class AudioManager : MonoBehaviour
         ambientSource.Play();
     }
 
-
-    // =========================================================
-    // STOP AMBIENT
-    // =========================================================
-
     public void StopAmbient()
     {
         if (ambientSource != null)
@@ -422,11 +318,6 @@ public class AudioManager : MonoBehaviour
             ambientSource.Stop();
         }
     }
-
-
-    // =========================================================
-    // PLAY RANDOM AMBIENT SOUND
-    // =========================================================
 
     public void PlayRandomAmbient(AudioClip[] clips)
     {
@@ -456,20 +347,10 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-
-    // =========================================================
-    // BUTTON CLICK
-    // =========================================================
-
     public void PlayButtonClick()
     {
         PlaySFX(buttonClickSound);
     }
-
-
-    // =========================================================
-    // CLEANUP
-    // =========================================================
 
     private void OnDestroy()
     {

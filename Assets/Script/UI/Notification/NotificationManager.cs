@@ -36,6 +36,24 @@ public class NotificationManager : MonoBehaviour
 
         if(notificationText != null)
         {
+            RectTransform rect =
+                notificationText.rectTransform;
+
+            rect.sizeDelta = new Vector2(620f, 92f);
+            rect.anchoredPosition = new Vector2(0f, -300f);
+
+            notificationText.fontSize = 24f;
+            notificationText.alignment =
+                TextAlignmentOptions.Center;
+            notificationText.textWrappingMode =
+                TextWrappingModes.Normal;
+            notificationText.overflowMode =
+                TextOverflowModes.Overflow;
+            notificationText.outlineWidth = 0.18f;
+            notificationText.outlineColor =
+                new Color(0.03f, 0.02f, 0.01f, 1f);
+            notificationText.raycastTarget = false;
+
             notificationText.text = "";
             notificationText.gameObject.SetActive(false);
         }
@@ -77,7 +95,6 @@ public class NotificationManager : MonoBehaviour
 
         currentRoutine = null;
 
-        // A message can arrive on the same frame the queue empties.
         if (pendingMessages.Count > 0)
         {
             currentRoutine = StartCoroutine(ShowRoutine());

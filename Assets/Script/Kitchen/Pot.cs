@@ -36,7 +36,6 @@ public class Pot : MonoBehaviour
     RecipeData activeRecipe;
     ItemData cookedDish;
 
-    // Read-only state for the tutorial and other systems.
     public bool IsCooking => cooking;
     public bool HasCookedDish => cooked;
     public ItemData CookedDish => cookedDish;
@@ -97,8 +96,6 @@ public class Pot : MonoBehaviour
 
         if (cooking) return;
 
-        // Left-clicking an idle pot now opens the recipe book, the
-        // same way E does. Previously left-click did nothing here.
         CookingUIManager.EnsureInstance().OpenRecipeBook(this);
     }
 
@@ -133,7 +130,6 @@ public class Pot : MonoBehaviour
             return false;
         }
 
-        // Remove the required ingredients from inventory
         InventoryManager.Instance.ConsumeItems(
             recipeToCook.ingredients
         );
@@ -145,7 +141,6 @@ public class Pot : MonoBehaviour
             ingredientText.gameObject.SetActive(false);
         }
 
-        // 🔊 COOKING START SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
@@ -207,7 +202,6 @@ public class Pot : MonoBehaviour
             dishName + " Cooked!"
         );
 
-        // 🔊 COOKING COMPLETE SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
@@ -223,7 +217,6 @@ public class Pot : MonoBehaviour
             return;
         }
 
-        // Keep the dish in the pot if the bag is full
         if (!InventoryManager.Instance.AddItem(cookedDish))
         {
             return;
@@ -233,7 +226,6 @@ public class Pot : MonoBehaviour
             cookedDish.itemName + " Taken"
         );
 
-        // 🔊 DISH TAKE SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RegrowableHarvestBehaviour : InteractableObject
 {
-    CropBehaviour parentCrop; 
+    CropBehaviour parentCrop;
 
     public void SetParent(CropBehaviour parentCrop)
     {
@@ -20,7 +20,6 @@ public class RegrowableHarvestBehaviour : InteractableObject
             return;
         }
 
-        // Never overwrite a held item. Try to put it back first.
         if (InventoryManager.Instance.SlotEquipped(
                 InventorySlot.InventoryType.Item))
         {

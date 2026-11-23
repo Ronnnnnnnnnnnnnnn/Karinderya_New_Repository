@@ -23,6 +23,9 @@ public class PlayerProgression : MonoBehaviour
         }
 
         Instance = this;
+
+        if (SaveManager.HasSave)
+            dishesServed = SaveManager.Data.dishesServed;
     }
 
     public void OnDishServed(int coinsReward)

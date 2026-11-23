@@ -11,14 +11,13 @@ public class MainMenu : MonoBehaviour
 
     void Start()
     {
-        // Coming back from the game leaves the cursor locked and hidden
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         if (PauseMenu.InMainMenu)
         {
-            // The game is frozen behind this menu: keep it frozen
-            // and offer to resume it
+
             SetPlayLabel("Resume");
             return;
         }
@@ -48,7 +47,7 @@ public class MainMenu : MonoBehaviour
 
     public void Play()
     {
-        // Resume the game that is still loaded behind the menu
+
         if (PauseMenu.InMainMenu)
         {
             PauseMenu.ResumeGame(gameObject.scene);

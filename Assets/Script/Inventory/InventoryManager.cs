@@ -16,6 +16,94 @@ public class InventoryManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        if (SaveManager.HasSave)
+        {
+            LoadFromSave(SaveManager.Data);
+        }
+    }
+
+    public void WriteSave(SaveData data)
+    {
+        data.toolSlots = ExportSlots(toolSlots);
+        data.itemSlots = ExportSlots(itemSlots);
+        data.equippedTool = ExportSlot(equippedToolSlot);
+        data.equippedItem = ExportSlot(equippedItemSlot);
+    }
+
+    public void LoadFromSave(SaveData data)
+    {
+        if (data == null)
+            return;
+
+        toolSlots = ImportSlots(data.toolSlots, toolSlots.Length);
+        itemSlots = ImportSlots(data.itemSlots, itemSlots.Length);
+        equippedToolSlot = ImportSlot(data.equippedTool);
+        equippedItemSlot = ImportSlot(data.equippedItem);
+    }
+
+    static List<SlotSave> ExportSlots(ItemSlotData[] slots)
+    {
+        List<SlotSave> result = new List<SlotSave>();
+
+        foreach (ItemSlotData slot in slots)
+        {
+            result.Add(ExportSlot(slot));
+        }
+
+        return result;
+    }
+
+    static SlotSave ExportSlot(ItemSlotData slot)
+    {
+        if (slot == null || slot.IsEmpty())
+        {
+            return new SlotSave
+            {
+                itemName = "",
+                quantity = 0
+            };
+        }
+
+        return new SlotSave
+        {
+            itemName = slot.itemData.name,
+            quantity = slot.quantity
+        };
+    }
+
+    ItemSlotData[] ImportSlots(
+        List<SlotSave> saves,
+        int length)
+    {
+        ItemSlotData[] result = new ItemSlotData[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = saves != null && i < saves.Count
+                ? ImportSlot(saves[i])
+                : new ItemSlotData(null, 0);
+        }
+
+        return result;
+    }
+
+    ItemSlotData ImportSlot(SlotSave save)
+    {
+        if (save == null ||
+            string.IsNullOrEmpty(save.itemName) ||
+            itemIndex == null)
+        {
+            return new ItemSlotData(null, 0);
+        }
+
+        ItemData item =
+            itemIndex.GetItemFromString(save.itemName);
+
+        if (item == null)
+            return new ItemSlotData(null, 0);
+
+        return new ItemSlotData(item, save.quantity);
     }
 
     public ItemIndex itemIndex;
@@ -61,8 +149,6 @@ public class InventoryManager : MonoBehaviour
             inventoryToAlter[slotIndex] =
                 new ItemSlotData(handToEquip);
 
-            // Assign to the hand of the SAME type. EquipHandSlot() would
-            // route an empty slot to the item hand and wipe the held item.
             if (inventoryType == InventorySlot.InventoryType.Item)
             {
                 equippedItemSlot = slotToEquip;
@@ -369,8 +455,6 @@ public class InventoryManager : MonoBehaviour
             return true;
         }
 
-        // Count how many of each item the recipe needs
-        // (an ingredient may be listed more than once)
         Dictionary<ItemData, int> needed =
             new Dictionary<ItemData, int>();
 
@@ -446,7 +530,6 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    // Returns true if there is room for one more of this item
     public bool HasRoomFor(ItemData item)
     {
         if (item == null)
@@ -471,7 +554,6 @@ public class InventoryManager : MonoBehaviour
         return false;
     }
 
-    // Returns false (and adds nothing) when the inventory is full
     public bool AddItem(ItemData item)
     {
         if (!HasRoomFor(item))
@@ -507,9 +589,6 @@ public class InventoryManager : MonoBehaviour
         }
 
         UIManager.Instance.RenderInventory();
-
-        // No sound here.
-        // Specific gameplay actions handle their own sounds.
 
         return true;
     }

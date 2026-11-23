@@ -7,8 +7,6 @@ public class RecipeBookCatalog : ScriptableObject
 
     static RecipeBookCatalog cached;
 
-    // FindObjectOfType can't find ScriptableObject assets reliably,
-    // so look through loaded objects and then through the Pots.
     public static RecipeBookCatalog Find()
     {
         if (cached != null)

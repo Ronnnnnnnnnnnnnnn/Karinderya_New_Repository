@@ -1,38 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour, ITimeTracker
 {
     public static UIManager Instance { get; private set; }
     [Header("Status Bar")]
     public Image toolEquipSlot;
-    public Text toolQuantityText; 
+    public Text toolQuantityText;
     public Text timeText;
-    public Text dateText; 
-
+    public Text dateText;
 
     [Header("Inventory System")]
     public GameObject inventoryPanel;
 
-    public HandInventorySlot toolHandSlot; 
+    public HandInventorySlot toolHandSlot;
 
     public InventorySlot[] toolSlots;
 
     public HandInventorySlot itemHandSlot;
 
     public InventorySlot[] itemSlots;
-   
+
     public Text itemNameText;
-    public Text itemDescriptionText; 
+    public Text itemDescriptionText;
 
     [Header("Currency")]
     public Text coinText;
 
     [Header("Shop")]
     public GameObject shopPanel;
-
 
     private void Awake()
     {
@@ -64,9 +62,6 @@ public class UIManager : MonoBehaviour, ITimeTracker
         if (canvas == null)
             return;
 
-        // Reuse the project's existing Time Info object instead of
-        // creating a second clock. It is a child of the Status Bar and
-        // starts disabled, so move it to the HUD and make it visible.
         if (timeText != null && dateText != null)
         {
             Transform root = timeText.transform.parent;
@@ -126,7 +121,6 @@ public class UIManager : MonoBehaviour, ITimeTracker
             }
         }
 
-        // Fallback if a scene has no Time Info objects.
         GameObject panel =
             new GameObject("TimeDisplay", typeof(RectTransform));
 
@@ -286,7 +280,8 @@ public class UIManager : MonoBehaviour, ITimeTracker
 
     public bool IsMenuOpen =>
         (inventoryPanel != null && inventoryPanel.activeSelf) ||
-        (shopPanel != null && shopPanel.activeSelf);
+        (shopPanel != null && shopPanel.activeSelf) ||
+        MissionNotebookUI.IsOpen;
 
     public void ToggleInventoryPanel()
     {
@@ -330,7 +325,7 @@ public class UIManager : MonoBehaviour, ITimeTracker
         }
 
         itemNameText.text = GetItemDisplayName(data);
-        itemDescriptionText.text = data.description; 
+        itemDescriptionText.text = data.description;
     }
 
     static string GetItemDisplayName(ItemData data)
@@ -344,7 +339,7 @@ public class UIManager : MonoBehaviour, ITimeTracker
     public void ClockUpdate(GameTimestamp timestamp)
     {
         int hours = timestamp.hour;
-        int minutes = timestamp.minute; 
+        int minutes = timestamp.minute;
 
         string prefix = hours >= 12 ? "PM " : "AM ";
 

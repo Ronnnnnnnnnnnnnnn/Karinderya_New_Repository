@@ -6,7 +6,6 @@ public class InteractableObject : MonoBehaviour
 {
     public ItemData item;
 
-    // Set by CropBehaviour so a picked-up crop is also removed from the land
     public System.Action onPickedUp;
 
     public virtual void Pickup()
@@ -14,8 +13,6 @@ public class InteractableObject : MonoBehaviour
         if (item == null || InventoryManager.Instance == null)
             return;
 
-        // Never overwrite a held item. Try to put it back first; if
-        // there is no room, leave the world item where it is.
         if (InventoryManager.Instance.SlotEquipped(
                 InventorySlot.InventoryType.Item))
         {
@@ -36,7 +33,6 @@ public class InteractableObject : MonoBehaviour
         InventoryManager.Instance.EquipHandSlot(item);
         InventoryManager.Instance.RenderHand();
 
-        // 🔊 PHYSICAL ITEM PICKUP SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(

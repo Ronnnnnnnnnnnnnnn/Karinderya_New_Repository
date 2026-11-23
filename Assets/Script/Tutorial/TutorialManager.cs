@@ -3,15 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// A lightweight, data-free tutorial for the current prototype.
-/// It guides the player through the first sale, the shop, and the
-/// first planting cycle without requiring any scene prefab setup.
-///
-/// The tutorial is created by TutorialBootstrap when the PlayingScene
-/// loads. It pauses the automatic customer spawner until the player
-/// reaches the serving step, so the first customer can be controlled.
-/// </summary>
 public class TutorialManager : MonoBehaviour
 {
     enum Step
@@ -32,7 +23,6 @@ public class TutorialManager : MonoBehaviour
         Complete
     }
 
-    // The visible numbered steps. Welcome and Complete are bookends.
     static readonly Step[] Steps =
     {
         Step.Move,
@@ -73,14 +63,14 @@ public class TutorialManager : MonoBehaviour
     float nextCustomerSpawnTime;
     float scanTimer;
 
-    // UI
+    public bool IsFinished => finished;
+
     GameObject tutorialCanvas;
     Text titleText;
     Text objectiveText;
     Text hintText;
     Text progressText;
 
-    // World marker
     GameObject markerRoot;
     Transform markerBeam;
     Transform markerTarget;
@@ -90,6 +80,13 @@ public class TutorialManager : MonoBehaviour
 
     void Start()
     {
+        if (SaveManager.HasCompletedTutorial)
+        {
+            finished = true;
+            enabled = false;
+            return;
+        }
+
         player = FindPlayer();
         spawner = UnityEngine.Object.FindFirstObjectByType<CustomerSpawner>();
         meatItem = FindMeatItem();
@@ -97,8 +94,6 @@ public class TutorialManager : MonoBehaviour
         if (player != null)
             playerStartPosition = player.position;
 
-        // The tutorial controls the first customer. Normal spawning
-        // resumes when the tutorial ends or is skipped.
         if (spawner != null)
             spawner.SetSpawningEnabled(false);
 
@@ -125,7 +120,6 @@ public class TutorialManager : MonoBehaviour
         if (finished)
             return;
 
-        // Hide the tutorial while the game is paused or behind the main menu.
         if (PauseMenu.Pause || PauseMenu.InMainMenu)
         {
             SetUiVisible(false);
@@ -167,10 +161,6 @@ public class TutorialManager : MonoBehaviour
 
         return false;
     }
-
-    // =========================================================
-    // STEP FLOW
-    // =========================================================
 
     void SetStep(Step newStep)
     {
@@ -290,7 +280,7 @@ public class TutorialManager : MonoBehaviour
                 break;
 
             case Step.GetMeat:
-                // If the scene has no meat pickup, don't trap the player.
+
                 if (meatItem == null || HasMeat())
                     Advance();
                 break;
@@ -381,10 +371,6 @@ public class TutorialManager : MonoBehaviour
         }
     }
 
-    // =========================================================
-    // CUSTOMER
-    // =========================================================
-
     void OnCustomerFinished(CustomerOrder order, bool served)
     {
         if (step != Step.ServeCustomer)
@@ -447,8 +433,6 @@ public class TutorialManager : MonoBehaviour
         {
             tutorialCustomer = order;
 
-            // Give the first customer a little extra patience while
-            // the player learns the serving controls.
             tutorialCustomer.patienceTime = 90f;
 
             SetMarker(order.transform, 2.8f);
@@ -459,10 +443,6 @@ public class TutorialManager : MonoBehaviour
             nextCustomerSpawnTime = Time.time + 1f;
         }
     }
-
-    // =========================================================
-    // COMPLETE / SKIP
-    // =========================================================
 
     void CompleteTutorial()
     {
@@ -497,6 +477,8 @@ public class TutorialManager : MonoBehaviour
 
         if (markerRoot != null)
             markerRoot.SetActive(false);
+
+        SaveManager.SaveCurrent();
     }
 
     void SkipTutorial()
@@ -524,11 +506,9 @@ public class TutorialManager : MonoBehaviour
             NotificationManager.Instance.ShowMessage("Tutorial skipped.");
 
         Debug.Log("[TUTORIAL] Skipped");
-    }
 
-    // =========================================================
-    // UI
-    // =========================================================
+        SaveManager.SaveCurrent();
+    }
 
     void UpdateStepUi()
     {
@@ -713,10 +693,6 @@ public class TutorialManager : MonoBehaviour
         return text;
     }
 
-    // =========================================================
-    // WORLD MARKER
-    // =========================================================
-
     void BuildPathGuide()
     {
         if (pathGuide != null)
@@ -872,10 +848,6 @@ public class TutorialManager : MonoBehaviour
                 SetMarker(target, 2.8f);
         }
     }
-
-    // =========================================================
-    // WORLD LOOKUPS
-    // =========================================================
 
     static Transform FindPlayer()
     {
@@ -1109,10 +1081,6 @@ public class TutorialManager : MonoBehaviour
         return nearest;
     }
 
-    // =========================================================
-    // INVENTORY / WORLD STATE
-    // =========================================================
-
     ItemData GetEquippedItem()
     {
         if (InventoryManager.Instance == null)
@@ -1289,10 +1257,6 @@ public class TutorialManager : MonoBehaviour
 
         return false;
     }
-
-    // =========================================================
-    // TEXT
-    // =========================================================
 
     static string GetStepTitle(Step value)
     {

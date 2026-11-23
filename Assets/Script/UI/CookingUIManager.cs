@@ -287,8 +287,7 @@ public class CookingUIManager : MonoBehaviour
 
         if (!activePot.TryStartCooking(selectedRecipe))
         {
-            // TryStartCooking already shows the specific reason
-            // (locked, not enough ingredients, etc.).
+
             return;
         }
 

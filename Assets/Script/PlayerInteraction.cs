@@ -18,6 +18,8 @@ public class PlayerInteraction : MonoBehaviour
 
     CustomerOrder selectedCustomer = null;
 
+    MissionBoard selectedMissionBoard = null;
+
     public GameObject interactUI;
 
     void Start()
@@ -28,9 +30,15 @@ public class PlayerInteraction : MonoBehaviour
 
     void Update()
     {
-        // Game is frozen behind the main menu (its camera is off)
+
         if (PauseMenu.InMainMenu)
             return;
+
+        if (MissionNotebookUI.IsOpen)
+        {
+            ClearSelections();
+            return;
+        }
 
         Ray ray =
             Camera.main.ScreenPointToRay(
@@ -55,17 +63,9 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // DETECT OBJECTS
-    // =====================================================
-
     void OnInteractableHit(RaycastHit hit)
     {
         Collider other = hit.collider;
-
-        // =================================================
-        // LAND
-        // =================================================
 
         if (other.CompareTag("Land"))
         {
@@ -74,11 +74,12 @@ public class PlayerInteraction : MonoBehaviour
 
             if (land != null)
             {
-                // Drop stale non-land selections
+
                 selectedInteractable = null;
                 selectedPot = null;
                 selectedBuffet = null;
                 selectedCustomer = null;
+                selectedMissionBoard = null;
 
                 HideUI();
                 SelectLand(land);
@@ -87,15 +88,8 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // Anything else means we're no longer looking at land
         DeselectLand();
 
-        // =================================================
-        // ITEM
-        // =================================================
-
-        // Look on parents too (collider may be on a child), and don't
-        // depend on the "Item" tag. Ignore the model held in the hand.
         InteractableObject interactable =
             other.GetComponentInParent<InteractableObject>();
 
@@ -114,15 +108,12 @@ public class PlayerInteraction : MonoBehaviour
             selectedPot = null;
             selectedBuffet = null;
             selectedCustomer = null;
+            selectedMissionBoard = null;
 
             ShowUI();
 
             return;
         }
-
-        // =================================================
-        // POT
-        // =================================================
 
         Pot pot =
             other.GetComponentInParent<Pot>();
@@ -134,6 +125,7 @@ public class PlayerInteraction : MonoBehaviour
             selectedInteractable = null;
             selectedBuffet = null;
             selectedCustomer = null;
+            selectedMissionBoard = null;
 
             ShowUI();
 
@@ -143,10 +135,6 @@ public class PlayerInteraction : MonoBehaviour
 
             return;
         }
-
-        // =================================================
-        // BUFFET
-        // =================================================
 
         BuffetContainer buffet =
             other.GetComponentInParent<BuffetContainer>();
@@ -158,6 +146,7 @@ public class PlayerInteraction : MonoBehaviour
             selectedInteractable = null;
             selectedPot = null;
             selectedCustomer = null;
+            selectedMissionBoard = null;
 
             HideUI();
 
@@ -169,9 +158,26 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // =================================================
-        // CUSTOMER
-        // =================================================
+        MissionBoard missionBoard =
+            other.GetComponentInParent<MissionBoard>();
+
+        if (missionBoard != null)
+        {
+            selectedMissionBoard = missionBoard;
+
+            selectedInteractable = null;
+            selectedPot = null;
+            selectedBuffet = null;
+            selectedCustomer = null;
+
+            ShowUI();
+
+            Debug.Log(
+                "[INTERACT] Looking at Mission Board"
+            );
+
+            return;
+        }
 
         CustomerOrder customer =
             other.GetComponentInParent<CustomerOrder>();
@@ -183,6 +189,7 @@ public class PlayerInteraction : MonoBehaviour
             selectedInteractable = null;
             selectedPot = null;
             selectedBuffet = null;
+            selectedMissionBoard = null;
 
             HideUI();
 
@@ -196,10 +203,6 @@ public class PlayerInteraction : MonoBehaviour
         ClearSelections();
     }
 
-    // =====================================================
-    // CLEAR
-    // =====================================================
-
     void ClearSelections()
     {
         selectedInteractable = null;
@@ -209,6 +212,8 @@ public class PlayerInteraction : MonoBehaviour
         selectedBuffet = null;
 
         selectedCustomer = null;
+
+        selectedMissionBoard = null;
 
         DeselectLand();
 
@@ -227,10 +232,6 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    // =====================================================
-    // LAND
-    // =====================================================
-
     void SelectLand(Land land)
     {
         if (selectedLand != null)
@@ -245,19 +246,11 @@ public class PlayerInteraction : MonoBehaviour
         land.ShowTimer(true);
     }
 
-    // =====================================================
-    // LEFT CLICK INTERACT
-    // =====================================================
-
     public void Interact()
     {
         Debug.Log(
             "[PLAYER] Left Click"
         );
-
-        // =========================================
-        // LAND
-        // =========================================
 
         if (selectedLand != null)
         {
@@ -266,20 +259,12 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // =========================================
-        // POT
-        // =========================================
-
         if (selectedPot != null)
         {
             selectedPot.Interact();
 
             return;
         }
-
-        // =========================================
-        // BUFFET
-        // =========================================
 
         if (selectedBuffet != null)
         {
@@ -288,9 +273,12 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // =========================================
-        // CUSTOMER
-        // =========================================
+        if (selectedMissionBoard != null)
+        {
+            selectedMissionBoard.Open();
+
+            return;
+        }
 
         if (selectedCustomer != null)
         {
@@ -298,10 +286,6 @@ public class PlayerInteraction : MonoBehaviour
 
             return;
         }
-
-        // =========================================
-        // WORLD ITEM / CROP
-        // =========================================
 
         if (selectedInteractable != null)
         {
@@ -317,19 +301,11 @@ public class PlayerInteraction : MonoBehaviour
         );
     }
 
-    // =====================================================
-    // E INTERACT
-    // =====================================================
-
     public void ItemInteract()
     {
         Debug.Log(
             "[PLAYER] E Interact"
         );
-
-        // =========================================
-        // CLOSE COOKING UI
-        // =========================================
 
         if (CookingUIManager.Instance != null &&
             CookingUIManager.Instance.IsOpen)
@@ -341,9 +317,12 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // =========================================
-        // BUFFET
-        // =========================================
+        if (selectedMissionBoard != null)
+        {
+            selectedMissionBoard.Open();
+
+            return;
+        }
 
         if (selectedBuffet != null)
         {
@@ -351,10 +330,6 @@ public class PlayerInteraction : MonoBehaviour
 
             return;
         }
-
-        // =========================================
-        // POT
-        // =========================================
 
         if (selectedPot != null)
         {
@@ -364,10 +339,6 @@ public class PlayerInteraction : MonoBehaviour
 
             return;
         }
-
-        // =========================================
-        // PUT ITEM BACK
-        // =========================================
 
         if (InventoryManager.Instance.SlotEquipped(
             InventorySlot.InventoryType.Item))
@@ -381,10 +352,6 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        // =========================================
-        // PICK UP ITEM
-        // =========================================
-
         if (selectedInteractable != null)
         {
             selectedInteractable.Pickup();
@@ -394,10 +361,6 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
     }
-
-    // =====================================================
-    // UI
-    // =====================================================
 
     void ShowUI()
     {

@@ -21,7 +21,6 @@ public class RecipeUnlockManager : MonoBehaviour
 
         Instance = this;
 
-        // Add starting recipes
         if (startingUnlockedRecipes != null)
         {
             foreach (RecipeData recipe in startingUnlockedRecipes)
@@ -37,18 +36,119 @@ public class RecipeUnlockManager : MonoBehaviour
                 }
             }
         }
+
+        if (SaveManager.HasSave)
+            LoadFromSave(SaveManager.Data);
     }
 
-    // =====================================================
-    // CHECK UNLOCK
-    // =====================================================
+    public void WriteSave(SaveData data)
+    {
+        if (data == null)
+            return;
+
+        data.unlockedRecipes = new List<string>();
+
+        foreach (RecipeData recipe in unlockedRecipes)
+        {
+            if (recipe != null &&
+                !string.IsNullOrEmpty(recipe.recipeName))
+            {
+                data.unlockedRecipes.Add(recipe.recipeName);
+            }
+        }
+    }
+
+    public void LoadFromSave(SaveData data)
+    {
+        if (data == null ||
+            data.unlockedRecipes == null)
+        {
+            return;
+        }
+
+        RecipeBookCatalog catalog = RecipeBookCatalog.Find();
+
+        if (catalog == null || catalog.recipes == null)
+            return;
+
+        foreach (string recipeName in data.unlockedRecipes)
+        {
+            RecipeData recipe = FindRecipe(catalog, recipeName);
+
+            if (recipe != null)
+                unlockedRecipes.Add(recipe);
+        }
+    }
+
+    public bool GrantRecipe(RecipeData recipe)
+    {
+        if (recipe == null || IsUnlocked(recipe))
+            return false;
+
+        unlockedRecipes.Add(recipe);
+
+        BuffetContainer[] buffets =
+            FindObjectsByType<BuffetContainer>(
+                FindObjectsSortMode.None
+            );
+
+        foreach (BuffetContainer buffet in buffets)
+        {
+            if (buffet != null &&
+                buffet.buffetRecipe == recipe)
+            {
+                buffet.RefreshLockVisual();
+            }
+        }
+
+        if (NotificationManager.Instance != null)
+        {
+            NotificationManager.Instance.ShowMessage(
+                recipe.recipeName + " Unlocked!"
+            );
+        }
+
+        return true;
+    }
+
+    public RecipeData FindRecipeByName(string recipeName)
+    {
+        RecipeBookCatalog catalog = RecipeBookCatalog.Find();
+
+        if (catalog == null)
+            return null;
+
+        return FindRecipe(catalog, recipeName);
+    }
+
+    static RecipeData FindRecipe(
+        RecipeBookCatalog catalog,
+        string recipeName)
+    {
+        if (catalog == null ||
+            catalog.recipes == null ||
+            string.IsNullOrEmpty(recipeName))
+        {
+            return null;
+        }
+
+        foreach (RecipeData recipe in catalog.recipes)
+        {
+            if (recipe != null &&
+                recipe.recipeName == recipeName)
+            {
+                return recipe;
+            }
+        }
+
+        return null;
+    }
 
     public bool IsUnlocked(RecipeData recipe)
     {
         if (recipe == null)
             return false;
 
-        // Free recipes are automatically unlocked.
         if (recipe.unlockedByDefault ||
             recipe.unlockCost <= 0)
         {
@@ -57,10 +157,6 @@ public class RecipeUnlockManager : MonoBehaviour
 
         return unlockedRecipes.Contains(recipe);
     }
-
-    // =====================================================
-    // UNLOCK
-    // =====================================================
 
     public bool UnlockRecipe(RecipeData recipe)
     {

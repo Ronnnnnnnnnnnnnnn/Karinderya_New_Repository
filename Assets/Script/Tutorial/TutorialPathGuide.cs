@@ -1,12 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-/// <summary>
-/// Draws a breadcrumb trail of chevrons on the ground for the tutorial.
-/// It follows the same target transform as the tutorial's world marker.
-/// NavMesh paths are used when available; otherwise it falls back to a
-/// straight ground line.
-/// </summary>
 public class TutorialPathGuide : MonoBehaviour
 {
     const int MaxArrows = 12;
@@ -94,10 +88,6 @@ public class TutorialPathGuide : MonoBehaviour
         AnimateArrows();
     }
 
-    // =========================================================
-    // PATH
-    // =========================================================
-
     void UpdatePath()
     {
         if (arrows == null || arrows.Length == 0)
@@ -140,7 +130,6 @@ public class TutorialPathGuide : MonoBehaviour
             return false;
         }
 
-        // Don't start the trail on a far-away NavMesh island.
         if (Vector3.Distance(startHit.position, start) > 1.5f)
             return false;
 
@@ -216,8 +205,6 @@ public class TutorialPathGuide : MonoBehaviour
 
         Vector3 direction = flat.normalized;
 
-        // If there is no NavMesh path, only draw a short directional
-        // trail. A full straight line can cut through walls.
         if (length > fallbackLength)
             length = fallbackLength;
 
@@ -302,8 +289,6 @@ public class TutorialPathGuide : MonoBehaviour
             float floorHeight =
                 player.position.y + groundOffset;
 
-            // Ignore tables/roofs/characters above the floor; the trail
-            // should stay on the walking surface.
             if (hit.point.y > player.position.y + 0.75f)
                 point.y = floorHeight;
             else
@@ -360,10 +345,6 @@ public class TutorialPathGuide : MonoBehaviour
         }
     }
 
-    // =========================================================
-    // BUILD
-    // =========================================================
-
     void BuildArrows()
     {
         arrows = new GameObject[MaxArrows];
@@ -397,7 +378,6 @@ public class TutorialPathGuide : MonoBehaviour
         arrowMesh = new Mesh();
         arrowMesh.name = "TutorialPathChevron";
 
-        // Flat chevron pointing toward +Z.
         Vector3[] vertices =
         {
             new Vector3(0f, 0f, 0.30f),

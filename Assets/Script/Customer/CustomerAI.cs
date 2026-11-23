@@ -17,21 +17,32 @@ public class CustomerAI : MonoBehaviour
     [HideInInspector]
     public CustomerSpawner spawner;
 
+    [HideInInspector]
+    public int serviceSpotIndex = -1;
+
     Animator anim;
     Transform targetPoint;
     bool leaving;
     bool reachedCounter;
     bool isMoving;
+    bool releasedServiceSpot;
     CustomerOrder order;
+    Collider interactionCollider;
 
     void Start()
     {
         anim = GetComponentInChildren<Animator>();
         order = GetComponent<CustomerOrder>();
+        interactionCollider = GetComponent<Collider>();
 
         targetPoint = counterPoint;
 
         Debug.Log("[AI] Walking to counter");
+    }
+
+    void OnDestroy()
+    {
+        ReleaseServiceSpot();
     }
 
     void Update()
@@ -76,10 +87,6 @@ public class CustomerAI : MonoBehaviour
                 }
             }
 
-            // =====================================================
-            // CUSTOMER ARRIVED AT COUNTER
-            // =====================================================
-
             if (!reachedCounter && !leaving)
             {
                 reachedCounter = true;
@@ -88,7 +95,6 @@ public class CustomerAI : MonoBehaviour
                     "[AI] Reached counter"
                 );
 
-                // 🔊 CUSTOMER ARRIVAL SOUND
                 if (AudioManager.Instance != null)
                 {
                     AudioManager.Instance.PlaySFX(
@@ -99,7 +105,9 @@ public class CustomerAI : MonoBehaviour
                 if (NotificationManager.Instance != null)
                 {
                     NotificationManager.Instance.ShowMessage(
-                        "Customer At Counter!"
+                        order != null && order.isRegular
+                            ? "Regular At Counter!"
+                            : "Customer At Counter!"
                     );
                 }
 
@@ -111,18 +119,8 @@ public class CustomerAI : MonoBehaviour
                 return;
             }
 
-
-            // =====================================================
-            // CUSTOMER LEAVING
-            // =====================================================
-
             if (leaving)
             {
-                if (spawner != null)
-                {
-                    spawner.CustomerLeft();
-                }
-
                 Debug.Log(
                     "[AI] Customer destroyed"
                 );
@@ -145,11 +143,6 @@ public class CustomerAI : MonoBehaviour
             Time.deltaTime;
     }
 
-
-    // =========================================================
-    // LEAVE HAPPY
-    // =========================================================
-
     public void LeaveHappy()
     {
         if (NotificationManager.Instance != null)
@@ -159,7 +152,6 @@ public class CustomerAI : MonoBehaviour
             );
         }
 
-        // 🔊 CUSTOMER HAPPY SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
@@ -173,18 +165,20 @@ public class CustomerAI : MonoBehaviour
 
         leaving = true;
 
+        if (interactionCollider != null)
+            interactionCollider.enabled = false;
+
+        if (order != null)
+            order.HideOrderVisuals();
+
+        ReleaseServiceSpot();
+
         targetPoint = exitPoint;
     }
-
-
-    // =========================================================
-    // LEAVE ANGRY
-    // =========================================================
 
     public void LeaveAngry()
     {
 
-        // 🔊 CUSTOMER ANGRY SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
@@ -198,13 +192,29 @@ public class CustomerAI : MonoBehaviour
 
         leaving = true;
 
+        if (interactionCollider != null)
+            interactionCollider.enabled = false;
+
+        if (order != null)
+            order.HideOrderVisuals();
+
+        ReleaseServiceSpot();
+
         targetPoint = exitPoint;
     }
 
+    void ReleaseServiceSpot()
+    {
+        if (releasedServiceSpot)
+            return;
 
-    // =========================================================
-    // UPDATE ANIMATION
-    // =========================================================
+        releasedServiceSpot = true;
+
+        if (spawner != null)
+        {
+            spawner.CustomerLeft(this);
+        }
+    }
 
     void UpdateAnimation()
     {

@@ -37,15 +37,14 @@ public class CropBehaviour : MonoBehaviour
 
     float plantRealTime;
     float saveTimer;
-    bool useRealTimeGrowth = true;
+
+    bool useRealTimeGrowth = false;
 
     public SeedData SeedToGrow => seedToGrow;
 
     public void Plant(int landID, SeedData seedToGrow)
     {
-        // Small starting health so a crop that was watered once isn't
-        // wilted on the very next tick (tune this to change how forgiving
-        // the watering rule is).
+
         LoadCrop(
             landID,
             seedToGrow,
@@ -62,7 +61,6 @@ public class CropBehaviour : MonoBehaviour
             health
         );
 
-        // 🔊 PLANTING SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
@@ -104,9 +102,6 @@ public class CropBehaviour : MonoBehaviour
                 hoursToGrow
             );
 
-        // Growth is real-time, but the duration should still come from
-        // SeedData.daysToGrow. At timeScale = 1, one in-game minute is
-        // one real second, so 3 in-game hours = 180 real seconds.
         float gameMinutesPerSecond =
             TimeManager.Instance != null
                 ? Mathf.Max(0.01f, TimeManager.Instance.timeScale)
@@ -121,8 +116,6 @@ public class CropBehaviour : MonoBehaviour
             maxGrowSeconds = Mathf.Max(1f, maxGrowSeconds);
         }
 
-        // In real-time mode 'growth' is the elapsed grow time in seconds,
-        // so a loaded crop continues where it left off.
         this.growth = growth;
         this.health = health;
 
@@ -152,8 +145,7 @@ public class CropBehaviour : MonoBehaviour
         }
         else
         {
-            // The ripe crop now stays on the land (so it can dry out).
-            // Picking it up removes the crop from the land.
+
             InteractableObject pickup =
                 harvestable.GetComponent<
                     InteractableObject
@@ -182,9 +174,6 @@ public class CropBehaviour : MonoBehaviour
         SwitchState(cropState);
     }
 
-    // Ripe crops should look about as big as the carrot and potato.
-    // Other models come from different FBX files with different units,
-    // so some (kalabasa, ampalaya, labanos) end up tiny.
     void MatchHarvestableSize(ItemData cropToYield)
     {
         ItemIndex index =
@@ -218,7 +207,6 @@ public class CropBehaviour : MonoBehaviour
                 continue;
             }
 
-            // The reference crops themselves are left exactly as designed
             if (reference == cropToYield)
             {
                 return;
@@ -255,7 +243,6 @@ public class CropBehaviour : MonoBehaviour
         float factor =
             targetSize / currentSize;
 
-        // Only enlarge: never shrink a model that is already big
         if (factor <= 1.05f)
         {
             return;
@@ -272,7 +259,6 @@ public class CropBehaviour : MonoBehaviour
             factor;
     }
 
-    // Size of a prefab as it would appear under this crop
     float MeasureModelSize(GameObject prefab)
     {
         GameObject temp =
@@ -291,8 +277,6 @@ public class CropBehaviour : MonoBehaviour
         return size;
     }
 
-    // "Average" size of the renderers: cube root of the bounding volume,
-    // so tall and round models can be compared fairly
     static float MeasureSize(GameObject model)
     {
         Renderer[] renderers =
@@ -337,9 +321,6 @@ public class CropBehaviour : MonoBehaviour
         );
     }
 
-    // The ripe crop reuses the item's model prefab. Some of those prefabs
-    // (e.g. kalabasa, ampalaya) have a large offset on their root, which
-    // puts the ripe crop far away from the plot so it looks like it vanished.
     void PlaceHarvestableOnPlot()
     {
         Renderer[] renderers =
@@ -367,7 +348,6 @@ public class CropBehaviour : MonoBehaviour
         Vector3 origin =
             transform.position;
 
-        // Already sitting on the plot: leave it as designed
         if (Vector3.Distance(
                 bounds.center,
                 origin) <= 1.5f)
@@ -388,7 +368,6 @@ public class CropBehaviour : MonoBehaviour
             "). Moving it onto the plot."
         );
 
-        // Center it horizontally on the plot and sit it on the soil
         harvestable.transform.position +=
             new Vector3(
                 origin.x - bounds.center.x,
@@ -397,7 +376,6 @@ public class CropBehaviour : MonoBehaviour
             );
     }
 
-    // The player needs a collider on the ripe crop to be able to target it
     void EnsureHarvestableHasCollider()
     {
         if (harvestable.GetComponentInChildren<
@@ -486,7 +464,6 @@ public class CropBehaviour : MonoBehaviour
                 elapsed / maxGrowSeconds
             );
 
-        // Keep the save data current
         saveTimer -= Time.deltaTime;
 
         if (saveTimer <= 0f)
@@ -546,17 +523,18 @@ public class CropBehaviour : MonoBehaviour
             float remaining =
                 maxGrowth - growth;
 
-            return Mathf.Clamp(
-                remaining *
-                (
-                    maxGrowSeconds /
-                    Mathf.Max(
-                        maxGrowth,
-                        1f
+            float clockSpeed =
+                TimeManager.Instance != null
+                    ? Mathf.Max(
+                        0.01f,
+                        TimeManager.Instance.timeScale
                     )
-                ),
+                    : 1f;
+
+            return Mathf.Clamp(
+                remaining / clockSpeed,
                 0f,
-                maxGrowSeconds
+                maxGrowth / clockSpeed
             );
         }
 
@@ -577,8 +555,6 @@ public class CropBehaviour : MonoBehaviour
             health++;
         }
 
-        // Real-time mode: Update() owns growth and state changes.
-        // Watering only keeps the crop healthy.
         if (useRealTimeGrowth)
         {
             LandManager.Instance.OnCropStateChange(
@@ -622,7 +598,6 @@ public class CropBehaviour : MonoBehaviour
     {
         health--;
 
-        // A ripe crop left on dry land eventually wilts too
         if (health <= 0 &&
             cropState != CropState.Seed &&
             cropState != CropState.Wilted)
@@ -631,7 +606,6 @@ public class CropBehaviour : MonoBehaviour
                 CropState.Wilted
             );
 
-            // 🔊 WITHER SOUND
             if (AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlaySFX(
@@ -704,8 +678,7 @@ public class CropBehaviour : MonoBehaviour
 
         if (useRealTimeGrowth)
         {
-            // Restart at (at least) the Seedling stage. Without this,
-            // Update() sees an old plant time and re-harvests instantly.
+
             float fraction =
                 seedToGrow.daysToGrow > 0f
                     ? 1f -

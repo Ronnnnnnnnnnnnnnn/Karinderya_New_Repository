@@ -18,6 +18,9 @@ public class CurrencyManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        if (SaveManager.HasSave)
+            coins = SaveManager.Data.coins;
     }
 
     void Start()
@@ -29,10 +32,6 @@ public class CurrencyManager : MonoBehaviour
 
         UIManager.Instance.UpdateCoinUI(coins);
     }
-
-    // =====================================================
-    // SPEND
-    // =====================================================
 
     public bool SpendCoins(int amount)
     {
@@ -62,15 +61,10 @@ public class CurrencyManager : MonoBehaviour
         return false;
     }
 
-    // =====================================================
-    // ADD
-    // =====================================================
-
     public void AddCoins(int amount)
     {
         coins += amount;
 
-        // Prevent negative coins
         if (coins < 0)
             coins = 0;
 

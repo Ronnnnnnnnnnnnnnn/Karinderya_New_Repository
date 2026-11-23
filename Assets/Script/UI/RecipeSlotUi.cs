@@ -14,15 +14,12 @@ public class RecipeSlotUI : MonoBehaviour
 
     public void Setup(RecipeData recipe)
     {
-        // DISH
 
         dishSprite.sprite =
             recipe.resultDish.itemSprite;
 
         dishName.text =
             recipe.resultDish.itemName;
-
-        // HIDE ALL INGREDIENT SLOTS
 
         for(int i = 0;
             i < ingredientSprites.Length;
@@ -33,10 +30,9 @@ public class RecipeSlotUI : MonoBehaviour
                 .SetActive(false);
         }
 
-        // SHOW RECIPE INGREDIENTS
-
         for(int i = 0;
-            i < recipe.ingredients.Length;
+            i < recipe.ingredients.Length &&
+            i < ingredientSprites.Length;
             i++)
         {
             ingredientSprites[i]

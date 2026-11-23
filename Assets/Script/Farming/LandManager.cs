@@ -5,9 +5,15 @@ using UnityEngine;
 
 public class LandManager : MonoBehaviour
 {
-    public static LandManager Instance { get; private set; } 
+    public static LandManager Instance { get; private set; }
 
-    public static Tuple<List<LandSaveState>, List<CropSaveState>> farmData = null; 
+    public static Tuple<List<LandSaveState>, List<CropSaveState>> farmData = null;
+
+    [Header("Farm Size")]
+    [Min(1)]
+    public int maxActivePlots = 16;
+
+    public bool IsLoaded { get; private set; }
 
     List<Land> landPlots = new List<Land>();
 
@@ -33,11 +39,15 @@ public class LandManager : MonoBehaviour
         }
     }
 
-
     void OnEnable()
     {
+        if (farmData == null && SaveManager.HasSave)
+        {
+            farmData = SaveManager.CreateFarmDataFromSave();
+        }
+
         RegisterLandPlots();
-        StartCoroutine(LoadFarmData()); 
+        StartCoroutine(LoadFarmData());
     }
 
     IEnumerator LoadFarmData()
@@ -46,26 +56,97 @@ public class LandManager : MonoBehaviour
         if (farmData != null)
         {
             ImportLandData(farmData.Item1);
-            ImportCropData(farmData.Item2);           
+            ImportCropData(farmData.Item2);
         }
-    }
 
+        IsLoaded = true;
+    }
 
     private void OnDestroy()
     {
-        farmData = new Tuple<List<LandSaveState>, List<CropSaveState>>(landData, cropData);        
+        farmData = new Tuple<List<LandSaveState>, List<CropSaveState>>(landData, cropData);
     }
 #region Registering and Deregistering
     void RegisterLandPlots()
     {
-        foreach(Transform landTransform in transform)
+        List<Land> allPlots = new List<Land>();
+
+        foreach (Transform landTransform in transform)
         {
             Land land = landTransform.GetComponent<Land>();
+
+            if (land != null)
+                allPlots.Add(land);
+        }
+
+        allPlots.Sort(
+            (a, b) =>
+            {
+                float zA = a.transform.localPosition.z;
+                float zB = b.transform.localPosition.z;
+                return zB.CompareTo(zA);
+            }
+        );
+
+        int activeCount = Mathf.Clamp(
+            maxActivePlots,
+            1,
+            Mathf.Max(1, allPlots.Count)
+        );
+
+        for (int i = 0; i < allPlots.Count; i++)
+        {
+            Land land = allPlots[i];
+
+            if (i >= activeCount)
+            {
+                land.gameObject.SetActive(false);
+                continue;
+            }
+
             landPlots.Add(land);
-
             landData.Add(new LandSaveState());
-
             land.id = landPlots.Count - 1;
+        }
+    }
+
+    public void WriteSave(SaveData data)
+    {
+        if (data == null)
+            return;
+
+        data.land = new List<LandSlotSave>();
+        data.crops = new List<CropSlotSave>();
+
+        foreach (LandSaveState land in landData)
+        {
+            GameTimestamp watered = land.lastWatered;
+
+            data.land.Add(
+                new LandSlotSave
+                {
+                    status = (int)land.landStatus,
+                    year = watered != null ? watered.year : 0,
+                    season = watered != null ? (int)watered.season : 0,
+                    day = watered != null ? watered.day : 0,
+                    hour = watered != null ? watered.hour : 0,
+                    minute = watered != null ? watered.minute : 0
+                }
+            );
+        }
+
+        foreach (CropSaveState crop in cropData)
+        {
+            data.crops.Add(
+                new CropSlotSave
+                {
+                    landID = crop.landID,
+                    seedName = crop.seedToGrow,
+                    cropState = (int)crop.cropState,
+                    growth = crop.growth,
+                    health = crop.health
+                }
+            );
         }
     }
 
@@ -76,7 +157,7 @@ public class LandManager : MonoBehaviour
 
     public void DeregisterCrop(int landID)
     {
-        cropData.RemoveAll(x => x.landID == landID); 
+        cropData.RemoveAll(x => x.landID == landID);
     }
 #endregion
 
@@ -102,30 +183,57 @@ public class LandManager : MonoBehaviour
 #region Loading Data
     public void ImportLandData(List<LandSaveState> landDatasetToLoad)
     {
-        for(int i =0; i < landDatasetToLoad.Count; i++)
+        if (landDatasetToLoad == null)
+            return;
+
+        int count = Mathf.Min(
+            landDatasetToLoad.Count,
+            landPlots.Count
+        );
+
+        for (int i = 0; i < count; i++)
         {
             LandSaveState landDataToLoad = landDatasetToLoad[i];
             landPlots[i].LoadLandData(landDataToLoad.landStatus, landDataToLoad.lastWatered);
-            
         }
 
-        landData = landDatasetToLoad; 
+        landData = new List<LandSaveState>();
+
+        for (int i = 0; i < landPlots.Count; i++)
+        {
+            landData.Add(
+                i < landDatasetToLoad.Count
+                    ? landDatasetToLoad[i]
+                    : new LandSaveState()
+            );
+        }
     }
 
-       public void ImportCropData(List<CropSaveState> cropDatasetToLoad)
+    public void ImportCropData(List<CropSaveState> cropDatasetToLoad)
     {
-        cropData = cropDatasetToLoad;
+        if (cropDatasetToLoad == null)
+            return;
 
-        // Iterate a copy: loading a crop may modify cropData
+        cropData = new List<CropSaveState>();
+
         foreach (CropSaveState cropSave in new List<CropSaveState>(cropDatasetToLoad))
         {
+            if (cropSave.landID < 0 ||
+                cropSave.landID >= landPlots.Count)
+            {
+                continue;
+            }
+
             Land landToPlant = landPlots[cropSave.landID];
-            CropBehaviour cropToPlant = landToPlant.SpawnCrop();
-            Debug.Log(cropToPlant.gameObject); 
-            SeedData seedToGrow = (SeedData) InventoryManager.Instance.itemIndex.GetItemFromString(cropSave.seedToGrow);
-            cropToPlant.LoadCrop(cropSave.landID, seedToGrow, cropSave.cropState, cropSave.growth, cropSave.health); 
+            SeedData seedToGrow = InventoryManager.Instance.itemIndex.GetItemFromString(cropSave.seedToGrow) as SeedData;
+
+            if (seedToGrow != null)
+            {
+                cropData.Add(cropSave);
+                CropBehaviour cropToPlant = landToPlant.SpawnCrop();
+                cropToPlant.LoadCrop(cropSave.landID, seedToGrow, cropSave.cropState, cropSave.growth, cropSave.health);
+            }
         }
-        
     }
 #endregion
 

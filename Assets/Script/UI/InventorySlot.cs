@@ -7,10 +7,10 @@ using UnityEngine.UI;
 public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     ItemData itemToDisplay;
-    int quantity; 
+    int quantity;
 
     public Image itemDisplayImage;
-    public Text quantityText; 
+    public Text quantityText;
 
     public enum InventoryType
     {
@@ -18,7 +18,7 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
     public InventoryType inventoryType;
 
-    int slotIndex; 
+    int slotIndex;
 
     public void Display(ItemSlotData itemSlot)
     {
@@ -30,7 +30,7 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         if(itemToDisplay != null)
         {
             itemDisplayImage.sprite = itemToDisplay.thumbnail;
-            
+
             if(quantity > 1)
             {
                 quantityText.text = quantity.ToString();
@@ -38,12 +38,11 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
             itemDisplayImage.gameObject.SetActive(true);
 
-            return; 
+            return;
         }
 
         itemDisplayImage.gameObject.SetActive(false);
 
-        
     }
 
     public virtual void OnPointerClick(PointerEventData eventData)
@@ -55,7 +54,6 @@ public class InventorySlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     {
         this.slotIndex = slotIndex;
     }
-
 
     public void OnPointerEnter(PointerEventData eventData)
     {

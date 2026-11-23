@@ -63,6 +63,21 @@ public class GameplayBootstrap : MonoBehaviour
             "PlayerProgression",
             gameObject.scene
         );
+
+        EnsureManager<DayNightCycle>(
+            "DayNightCycle",
+            gameObject.scene
+        );
+
+        EnsureManager<SaveManager>(
+            "SaveManager",
+            gameObject.scene
+        );
+
+        EnsureManager<HudStatusUI>(
+            "HudStatusUI",
+            gameObject.scene
+        );
     }
 
     static void EnsureManager<T>(

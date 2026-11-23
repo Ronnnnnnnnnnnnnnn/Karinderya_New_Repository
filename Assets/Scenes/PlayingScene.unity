@@ -30552,7 +30552,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuffetContainer
   storedDish: {fileID: 11400000, guid: 255cce0cb596673459f7a00e91627554, type: 2}
   servings: 0
-  maxServings: 10
+  maxServings: 4
   buffetRecipe: {fileID: 11400000, guid: ba2d9270da124ff4c851228317f77020, type: 2}
   dishRenderer: {fileID: 1409403189}
   servingsText: {fileID: 463434994}
@@ -53130,7 +53130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuffetContainer
   storedDish: {fileID: 11400000, guid: f9a3b502c6d74e85b0c23d8e7f412567, type: 2}
   servings: 0
-  maxServings: 10
+  maxServings: 4
   buffetRecipe: {fileID: 11400000, guid: 223fec89a656d26419a4c0daa7d15b7d, type: 2}
   dishRenderer: {fileID: 418035157}
   servingsText: {fileID: 1921072811}
@@ -125810,7 +125810,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuffetContainer
   storedDish: {fileID: 11400000, guid: 5f6233e55f1fb0943a8197a8cd86e6d0, type: 2}
   servings: 0
-  maxServings: 10
+  maxServings: 4
   buffetRecipe: {fileID: 11400000, guid: cf98495f80ef9cd41893f410c33459ab, type: 2}
   dishRenderer: {fileID: 473380062}
   servingsText: {fileID: 1450063166}
@@ -150245,7 +150245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuffetContainer
   storedDish: {fileID: 11400000, guid: e8f4a201b3c54d64a9e12f7c8d901234, type: 2}
   servings: 0
-  maxServings: 10
+  maxServings: 4
   buffetRecipe: {fileID: 11400000, guid: 4eec2be2db1be994e87c06e5ee00307a, type: 2}
   dishRenderer: {fileID: 758362609}
   servingsText: {fileID: 1249223639}
@@ -153671,18 +153671,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomerSpawner
   customerPrefab: {fileID: 7863717239894689049, guid: c252ed42a4f227149bac577650242284, type: 3}
-  spawnPoint: {fileID: 1452126975}
-  counterPoint: {fileID: 665686841}
+  spawnPoint: {fileID: 1669678739}
   exitPoint: {fileID: 1669678739}
-  lookPoint: {fileID: 1099712310}
+  customerEntrances:
+  - {fileID: 1669678739}
+  - {fileID: 1700000008}
+  - {fileID: 1700000010}
+  serviceSpots:
+  - counterPoint: {fileID: 665686841}
+    lookPoint: {fileID: 1099712310}
+  - counterPoint: {fileID: 1955719241}
+    lookPoint: {fileID: 334071081}
+  - counterPoint: {fileID: 1700000004}
+    lookPoint: {fileID: 1700000006}
   possibleOrders:
   - {fileID: 11400000, guid: 15ee5986744a5174d906e5a8682a123e, type: 2}
   - {fileID: 11400000, guid: b2e5f6a70348596c1d4e8f9a0b1c2d3e, type: 2}
   - {fileID: 11400000, guid: c3f6a7b81459607d2e5f9a0b1c2d3e4f, type: 2}
   - {fileID: 11400000, guid: 8d97b8ee485e6bc45a2253c0198fae84, type: 2}
   - {fileID: 11400000, guid: d4a7b8c92560718e3f6a0b1c2d3e4f5a, type: 2}
-  spawnDelay: 10
-  maxCustomers: 1
+  initialSpawnDelay: 5
+  maxCustomers: 3
+  spawnSpread: 0.35
+  useTimeOfDay: 1
+  lunchStartHour: 11
+  lunchEndHour: 14
+  dinnerStartHour: 17
+  dinnerEndHour: 21
+  lateNightStartHour: 22
+  lateNightEndHour: 6
+  lunchMaxCustomers: 2
+  dinnerMaxCustomers: 3
+  normalMaxCustomers: 2
+  lateNightMaxCustomers: 1
+  normalDelayMin: 9
+  normalDelayMax: 15
+  rushDelayMin: 3.5
+  rushDelayMax: 6.5
+  lateDelayMin: 16
+  lateDelayMax: 24
+  rushMaxChance: 0.8
+  offPeakSecondCustomerChance: 0.3
+  rushRewardMultiplier: 1.25
 --- !u!4 &1452126975
 Transform:
   m_ObjectHideFlags: 0
@@ -153692,7 +153722,7 @@ Transform:
   m_GameObject: {fileID: 1452126973}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -97.16615, y: 0.2, z: 54.89}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -191351,7 +191381,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuffetContainer
   storedDish: {fileID: 11400000, guid: a7c2e891d4f6483b9e56a1c0d8234ef5, type: 2}
   servings: 0
-  maxServings: 10
+  maxServings: 4
   buffetRecipe: {fileID: 11400000, guid: 7980de26209aee14da63ff867215d46b, type: 2}
   dishRenderer: {fileID: 1395724616}
   servingsText: {fileID: 407794982}
@@ -203229,7 +203259,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1669678739}
   m_Layer: 0
-  m_Name: Customer Exit (1)
+  m_Name: Customer Entrance 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -203244,7 +203274,7 @@ Transform:
   m_GameObject: {fileID: 1669678738}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -100, y: 0.035, z: 53}
+  m_LocalPosition: {x: -8, y: 0.2, z: 13}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -266198,6 +266228,165 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 956437434}
   m_SourcePrefab: {fileID: 100100000, guid: d335c703a939c0745a93d6f65fd7ccfb, type: 3}
+--- !u!1 &1700000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1700000002}
+  m_Layer: 0
+  m_Name: Customer Points
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1700000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1700000004}
+  - {fileID: 1700000008}
+  - {fileID: 1700000010}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1700000003
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1700000004}
+  m_Layer: 0
+  m_Name: Customer Counter3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1700000004
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700000003}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.43, y: 0.17877, z: 5.999}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1700000006}
+  m_Father: {fileID: 1700000002}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1700000005
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1700000006}
+  m_Layer: 0
+  m_Name: CounterLookPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1700000006
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700000005}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.6, y: 1.26, z: 0.38}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1700000004}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1700000007
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1700000008}
+  m_Layer: 0
+  m_Name: Customer Entrance 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1700000008
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700000007}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1, y: 0.2, z: 15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1700000002}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1700000009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1700000010}
+  m_Layer: 0
+  m_Name: Customer Entrance 3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1700000010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1700000009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8, y: 0.2, z: 13}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1700000002}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -266227,6 +266416,7 @@ SceneRoots:
   - {fileID: 1494212530}
   - {fileID: 1140474474}
   - {fileID: 1669678739}
+  - {fileID: 1700000002}
   - {fileID: 665686841}
   - {fileID: 1955719241}
   - {fileID: 1452126975}

@@ -30,10 +30,63 @@ public class BuffetContainer : MonoBehaviour
     void Start()
     {
         CacheHintSprite();
+
+        if (SaveManager.HasSave &&
+            buffetRecipe != null)
+        {
+            BuffetSlotSave saved =
+                SaveManager.FindBuffetSave(
+                    buffetRecipe.recipeName
+                );
+
+            if (saved != null)
+                LoadFromSave(saved);
+        }
+
         UpdateVisuals();
         UpdateLockVisual();
 
         Debug.Log("[BUFFET] Ready: " + GetBuffetName());
+    }
+
+    public BuffetSlotSave WriteSave()
+    {
+        return new BuffetSlotSave
+        {
+            recipeName = buffetRecipe != null
+                ? buffetRecipe.recipeName
+                : "",
+            storedDishName = storedDish != null
+                ? storedDish.name
+                : "",
+            servings = servings
+        };
+    }
+
+    public void LoadFromSave(BuffetSlotSave saved)
+    {
+        if (saved == null)
+            return;
+
+        if (string.IsNullOrEmpty(saved.storedDishName) ||
+            InventoryManager.Instance == null ||
+            InventoryManager.Instance.itemIndex == null)
+        {
+            storedDish = null;
+            servings = 0;
+            return;
+        }
+
+        ItemData dish =
+            InventoryManager.Instance.itemIndex.GetItemFromString(
+                saved.storedDishName
+            );
+
+        storedDish = dish;
+        servings = Mathf.Clamp(saved.servings, 0, maxServings);
+
+        if (storedDish == null)
+            servings = 0;
     }
 
     public void Interact()
@@ -174,7 +227,6 @@ public class BuffetContainer : MonoBehaviour
 
         UpdateVisuals();
 
-        // 🔊 BUFFET PLACE SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
@@ -201,7 +253,6 @@ public class BuffetContainer : MonoBehaviour
                 ? storedDish.servingVersion
                 : storedDish;
 
-        // Don't use up a serving if the bag is full
         if (!InventoryManager.Instance.AddItem(serving))
         {
             return;
@@ -214,7 +265,6 @@ public class BuffetContainer : MonoBehaviour
             storedDish.itemName
         );
 
-        // 🔊 BUFFET SERVING TAKE SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
@@ -282,6 +332,11 @@ public class BuffetContainer : MonoBehaviour
                 dishRenderer.enabled = true;
             }
         }
+    }
+
+    public void RefreshLockVisual()
+    {
+        UpdateLockVisual();
     }
 
     void UpdateLockVisual()

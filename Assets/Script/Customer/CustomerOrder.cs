@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class CustomerOrder : MonoBehaviour
 {
-    // Fired when a customer is finished, either served or angry.
-    // The tutorial uses this to advance without polling private state.
+
     public static event Action<CustomerOrder, bool> CustomerFinished;
 
     [Header("Order")]
@@ -13,6 +12,12 @@ public class CustomerOrder : MonoBehaviour
 
     [Header("Reward")]
     public int rewardCoins = 60;
+
+    [HideInInspector]
+    public bool isRushCustomer;
+
+    [HideInInspector]
+    public bool isRegular;
 
     [Header("Patience")]
     public float patienceTime = 60f;
@@ -36,6 +41,13 @@ public class CustomerOrder : MonoBehaviour
 
     [Header("Angry")]
     public Color angryColor = Color.red;
+
+    static readonly Color LabelNormalColor =
+        new Color(1f, 0.96f, 0.85f, 1f);
+    static readonly Color LabelWarningColor =
+        new Color(1f, 0.78f, 0.25f, 1f);
+    static readonly Color LabelCriticalColor =
+        new Color(1f, 0.35f, 0.28f, 1f);
 
     Renderer[] renderers;
 
@@ -98,6 +110,44 @@ public class CustomerOrder : MonoBehaviour
         );
     }
 
+    public void ConfigureLabel(int slotIndex)
+    {
+        if (orderText == null)
+            return;
+
+        RectTransform rect = orderText.rectTransform;
+
+        rect.sizeDelta = new Vector2(16f, 1.2f);
+        rect.anchoredPosition = new Vector2(
+            0f,
+            4.85f + Mathf.Max(0, slotIndex) * 1.15f
+        );
+
+        orderText.fontSize = 0.9f;
+        orderText.fontStyle = FontStyles.Bold;
+        orderText.textWrappingMode = TextWrappingModes.NoWrap;
+        orderText.overflowMode = TextOverflowModes.Overflow;
+        orderText.outlineWidth = 0.15f;
+        orderText.outlineColor =
+            new Color(0.04f, 0.03f, 0.02f, 1f);
+        orderText.color = LabelNormalColor;
+    }
+
+    public void HideOrderVisuals()
+    {
+        if (orderText != null)
+            orderText.gameObject.SetActive(false);
+
+        if (orderSprite != null)
+            orderSprite.gameObject.SetActive(false);
+    }
+
+    public void SetRegular()
+    {
+        isRegular = true;
+        UpdateVisuals();
+    }
+
     public void TryServe()
     {
         if (served) return;
@@ -111,7 +161,6 @@ public class CustomerOrder : MonoBehaviour
                 "Hold A Dish!"
             );
 
-            // 🔊 ERROR SOUND
             PlayErrorSound();
 
             return;
@@ -133,13 +182,11 @@ public class CustomerOrder : MonoBehaviour
                 "Wrong Dish!"
             );
 
-            // 🔊 WRONG DISH SOUND
             PlayErrorSound();
 
             return;
         }
 
-        // Correct dish
         InventoryManager.Instance.ConsumeItem(
             InventoryManager.Instance.GetEquippedSlot(
                 InventorySlot.InventoryType.Item
@@ -160,14 +207,15 @@ public class CustomerOrder : MonoBehaviour
         }
 
         NotificationManager.Instance.ShowMessage(
-            "+" + rewardCoins + " Coins!"
+            "+" + rewardCoins + " Coins!" +
+            (isRushCustomer ? " (Rush)" : "") +
+            (isRegular ? " (Regular)" : "")
         );
 
         Debug.Log(
             "[CUSTOMER] Served correctly"
         );
 
-        // 🔊 CUSTOMER SERVED SOUND
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(
@@ -220,7 +268,6 @@ public class CustomerOrder : MonoBehaviour
             }
         }
 
-        // 🔊 CUSTOMER ANGRY / ERROR SOUND
         PlayErrorSound();
 
         if (ai != null)
@@ -287,6 +334,7 @@ public class CustomerOrder : MonoBehaviour
         if (orderText != null)
         {
             orderText.text =
+                (isRegular ? "* " : "") +
                 requestedServing.itemName;
         }
 
@@ -303,10 +351,29 @@ public class CustomerOrder : MonoBehaviour
             requestedServing != null)
         {
             orderText.text =
+                (isRegular ? "* " : "") +
                 requestedServing.itemName +
-                "\n" +
+                "  " +
                 Mathf.Ceil(timer).ToString() +
                 "s";
+
+            float patienceLeft =
+                patienceTime > 0f
+                    ? timer / patienceTime
+                    : 0f;
+
+            if (patienceLeft <= 0.25f)
+            {
+                orderText.color = LabelCriticalColor;
+            }
+            else if (patienceLeft <= 0.5f)
+            {
+                orderText.color = LabelWarningColor;
+            }
+            else
+            {
+                orderText.color = LabelNormalColor;
+            }
         }
     }
 }

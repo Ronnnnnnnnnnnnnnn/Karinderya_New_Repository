@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Karinderya — Gameplay &amp; Systems Documentation</title>
+<style>
+    @page {
+        size: A4;
+        margin: 16mm 15mm 18mm 15mm;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        background: #ffffff;
+        color: #2b241d;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 10.5pt;
+        line-height: 1.5;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .cover {
+        min-height: 250mm;
+        padding: 32mm 18mm 20mm 18mm;
+        background:
+            linear-gradient(160deg, #20301f 0%, #31492f 52%, #5b3a20 100%);
+        color: #f8efdc;
+        page-break-after: always;
+        position: relative;
+    }
+
+    .cover .eyebrow {
+        letter-spacing: 4px;
+        font-size: 9pt;
+        text-transform: uppercase;
+        color: #e7c46b;
+        margin-bottom: 10mm;
+    }
+
+    .cover h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 44pt;
+        line-height: 1;
+        letter-spacing: 1px;
+        color: #f8efdc;
+        text-shadow: 0 1px 0 #1a2518;
+    }
+
+    .cover h2 {
+        margin: 5mm 0 0 0;
+        font-size: 17pt;
+        font-weight: 400;
+        color: #f1dcae;
+    }
+
+    .cover .rule {
+        width: 55mm;
+        height: 3px;
+        background: #d4a942;
+        margin: 10mm 0;
+    }
+
+    .cover p {
+        max-width: 125mm;
+        color: #efe4cc;
+        font-size: 11pt;
+    }
+
+    .cover .meta {
+        position: absolute;
+        left: 18mm;
+        bottom: 22mm;
+        font-size: 9.5pt;
+        color: #d8c69d;
+    }
+
+    .cover .badge {
+        display: inline-block;
+        margin-top: 12mm;
+        padding: 3mm 5mm;
+        border: 1px solid #d4a942;
+        color: #f7e6bb;
+        font-size: 9pt;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: Georgia, "Times New Roman", serif;
+        color: #2d241c;
+    }
+
+    h1 {
+        font-size: 24pt;
+        border-bottom: 2px solid #c49a3d;
+        padding-bottom: 2mm;
+        margin: 0 0 6mm 0;
+    }
+
+    h2 {
+        font-size: 16pt;
+        margin: 9mm 0 3mm 0;
+        color: #3c4f35;
+    }
+
+    h3 {
+        font-size: 12.5pt;
+        margin: 6mm 0 2mm 0;
+        color: #614528;
+    }
+
+    p {
+        margin: 0 0 3.5mm 0;
+    }
+
+    ul, ol {
+        margin: 0 0 4mm 5mm;
+        padding-left: 4mm;
+    }
+
+    li {
+        margin-bottom: 1.5mm;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 4mm 0 6mm 0;
+        font-size: 9.3pt;
+    }
+
+    th {
+        background: #3d5136;
+        color: #f9efda;
+        text-align: left;
+        padding: 2.4mm 2.5mm;
+        border: 1px solid #9eab90;
+    }
+
+    td {
+        padding: 2.2mm 2.5mm;
+        border: 1px solid #d7cfbe;
+        vertical-align: top;
+    }
+
+    tr:nth-child(even) td {
+        background: #f7f2e7;
+    }
+
+    .section {
+        page-break-before: always;
+    }
+
+    .lead {
+        font-size: 11.5pt;
+        color: #4c4134;
+    }
+
+    .callout {
+        border-left: 4px solid #b8862f;
+        background: #fbf5e8;
+        padding: 3mm 4mm;
+        margin: 4mm 0;
+    }
+
+    .callout strong {
+        color: #6b4621;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4mm;
+        margin: 4mm 0;
+    }
+
+    .card {
+        border: 1px solid #d5c9b4;
+        background: #fbf7ee;
+        padding: 4mm;
+        min-height: 28mm;
+    }
+
+    .card h3 {
+        margin-top: 0;
+        font-size: 11.5pt;
+    }
+
+    .tag {
+        display: inline-block;
+        background: #e8dcc1;
+        color: #5e4327;
+        padding: 0.8mm 2mm;
+        border-radius: 2mm;
+        font-size: 8pt;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+        margin-right: 1.5mm;
+    }
+
+    .toc {
+        margin-top: 8mm;
+    }
+
+    .toc td {
+        border: none;
+        border-bottom: 1px dotted #c5b99f;
+        padding: 2mm 1mm;
+        background: transparent !important;
+    }
+
+    .toc .num {
+        width: 10mm;
+        color: #9d7b39;
+        font-weight: 700;
+    }
+
+    .small {
+        font-size: 8.8pt;
+        color: #655b4d;
+    }
+
+    .mono {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 9pt;
+        background: #f2ecdf;
+        padding: 0.8mm 1.5mm;
+    }
+
+    .flow {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 3mm;
+        margin: 5mm 0;
+    }
+
+    .flow .step {
+        background: #eef1e7;
+        border: 1px solid #b6c2a8;
+        padding: 3mm;
+        text-align: center;
+        font-size: 9.5pt;
+    }
+
+    .flow .step strong {
+        display: block;
+        color: #33472d;
+        margin-bottom: 1.5mm;
+    }
+
+    .footer-note {
+        margin-top: 8mm;
+        border-top: 1px solid #d8cdb7;
+        padding-top: 2mm;
+        font-size: 8.5pt;
+        color: #766a58;
+    }
+
+    .checklist li {
+        list-style: none;
+        margin-left: -5mm;
+    }
+
+    .checklist li::before {
+        content: "☐";
+        margin-right: 2.5mm;
+        color: #9a7932;
+    }
+</style>
+</head>
+<body>
+
+<section class="cover">
+    <div class="eyebrow">Gameplay &amp; Systems Documentation</div>
+    <h1>KARINDERYA</h1>
+    <h2>A cozy Filipino karinderya management game</h2>
+    <div class="rule"></div>
+    <p>
+        Start with a small village food stall. Farm ingredients, cook Filipino
+        dishes, serve the lunch and dinner crowds, keep the village's trust,
+        and grow the karinderya one day at a time.
+    </p>
+    <div class="badge">Vertical Slice · Daily Play Build</div>
+    <div class="meta">
+        Version 1.0 · November 24, 2026<br>
+        Unity 6 · Windows · Single-player
+    </div>
+</section>
+
+<section>
+    <h1>Contents</h1>
+    <table class="toc">
+        <tr><td class="num">01</td><td>Game Overview</td></tr>
+        <tr><td class="num">02</td><td>Quick Start &amp; Controls</td></tr>
+        <tr><td class="num">03</td><td>The Day Loop</td></tr>
+        <tr><td class="num">04</td><td>Farming</td></tr>
+        <tr><td class="num">05</td><td>Cooking &amp; Dishes</td></tr>
+        <tr><td class="num">06</td><td>Buffets &amp; Servings</td></tr>
+        <tr><td class="num">07</td><td>Customers &amp; Rushes</td></tr>
+        <tr><td class="num">08</td><td>Regular Customers</td></tr>
+        <tr><td class="num">09</td><td>Requests &amp; Missions</td></tr>
+        <tr><td class="num">10</td><td>Trust &amp; Progression</td></tr>
+        <tr><td class="num">11</td><td>Economy</td></tr>
+        <tr><td class="num">12</td><td>Save &amp; Continue</td></tr>
+        <tr><td class="num">13</td><td>HUD &amp; UI Guide</td></tr>
+        <tr><td class="num">14</td><td>Time &amp; Day/Night</td></tr>
+        <tr><td class="num">15</td><td>Technical Architecture</td></tr>
+        <tr><td class="num">16</td><td>Current Limitations</td></tr>
+        <tr><td class="num">17</td><td>Roadmap</td></tr>
+        <tr><td class="num">18</td><td>Professor Demo Script</td></tr>
+        <tr><td class="num">19</td><td>Tuning Reference</td></tr>
+    </table>
+
+    <div class="callout">
+        <strong>At a glance.</strong>
+        A single-player, first-person/third-person 3D cooking and business
+        game. The core loop is farming, cooking, stocking buffets, serving
+        customers during rush hours, completing daily requests, and closing
+        the stall to advance to the next morning.
+    </div>
+
+    <h2>Design pillars</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Filipino village warmth</h3>
+            <p>Karinderya food, Tagalog dish names, village customers, and a
+            small neighborhood business instead of a generic restaurant.</p>
+        </div>
+        <div class="card">
+            <h3>Prep, then rush</h3>
+            <p>Mornings are for farming and cooking. Lunch and dinner are
+            short, busy service windows where preparation pays off.</p>
+        </div>
+        <div class="card">
+            <h3>Daily requests</h3>
+            <p>The request board gives the day a shape without turning the
+            game into a giant quest log.</p>
+        </div>
+        <div class="card">
+            <h3>Visible growth</h3>
+            <p>Coins, village trust, regulars, more recipes, and a more
+            confident karinderya over time.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <h1>01 · Game Overview</h1>
+    <p class="lead">
+        Karinderya is a cozy management game about feeding a Filipino village
+        from a small food stall.
+    </p>
+
+    <h2>Player fantasy</h2>
+    <p>
+        You own a modest karinderya. You grow vegetables behind the stall,
+        cook familiar Filipino dishes in pots, place the cooked food on
+        buffet trays, and serve customers who arrive from the village paths.
+        The day has a rhythm: prep, lunch, afternoon errands, dinner, close,
+        repeat.
+    </p>
+
+    <h2>What the player does</h2>
+    <ul>
+        <li>Plant and water crops, then harvest ingredients.</li>
+        <li>Cook dishes from recipes at the pots.</li>
+        <li>Stock buffets, take individual servings, and serve customers.</li>
+        <li>Read daily requests from a physical request board.</li>
+        <li>Manage coins, seed costs, recipe unlocks, and the daily stall fee.</li>
+        <li>Build village trust, which unlocks recipes, regulars, and catering.</li>
+        <li>Close the stall, review the day summary, and continue the next morning.</li>
+    </ul>
+
+    <h2>Current build scope</h2>
+    <table>
+        <tr><th>Area</th><th>Implemented</th></tr>
+        <tr><td>Farming</td><td>16 active plots, 9 crops, watering, growth, harvest, regrowable crops</td></tr>
+        <tr><td>Cooking</td><td>5 dishes, unlockable recipes, pot cooking timers</td></tr>
+        <tr><td>Serving</td><td>3 service counters, customer orders, patience, tipping</td></tr>
+        <tr><td>Rushes</td><td>Lunch and dinner windows, 1–3 simultaneous customers, rush tips</td></tr>
+        <tr><td>Customers</td><td>Boy, girl, old man, old woman color types; regular customers</td></tr>
+        <tr><td>Requests</td><td>Two daily requests, dish requests, earnings, clean shift, catering</td></tr>
+        <tr><td>Trust</td><td>Recipe rewards, regulars, catering unlock</td></tr>
+        <tr><td>Day/night</td><td>Clock, sunrise/day/dusk/night lighting, night tint</td></tr>
+        <tr><td>Save</td><td>Auto-load, autosave, save on quit/main menu/day close</td></tr>
+        <tr><td>Presentation</td><td>Runtime request board, notebook UI, HUD rush/request strip, day summary</td></tr>
+    </table>
+
+    <div class="callout">
+        <strong>Important framing.</strong>
+        This is a playable vertical slice with daily progression, not a
+        finished seven-day campaign. The current content is designed so a
+        player can return across sessions and continue the same day and farm.
+    </div>
+</section>
+
+<section class="section">
+    <h1>02 · Quick Start &amp; Controls</h1>
+
+    <h2>Controls</h2>
+    <table>
+        <tr><th>Input</th><th>Action</th></tr>
+        <tr><td>W A S D</td><td>Move</td></tr>
+        <tr><td>Mouse</td><td>Look / camera</td></tr>
+        <tr><td>Left click</td><td>Interact with the object under the crosshair</td></tr>
+        <tr><td>E</td><td>Context action: read the request board, use a pot/buffet, pick up, water, etc.</td></tr>
+        <tr><td>I</td><td>Open or close the inventory</td></tr>
+        <tr><td>B</td><td>Open or close the seed shop</td></tr>
+        <tr><td>Esc</td><td>Close the notebook or open the pause menu</td></tr>
+        <tr><td>F1</td><td>Skip the tutorial</td></tr>
+    </table>
+
+    <h2>First five minutes</h2>
+    <ol>
+        <li>Play the tutorial, or press <strong>F1</strong> to skip it.</li>
+        <li>Walk to the <strong>REQUESTS</strong> board at the front of the karinderya.</li>
+        <li>Look at the board and press <strong>E</strong> to open the request notebook.</li>
+        <li>Check the day, time, trust, and the two active requests.</li>
+        <li>Go to the farm, till a plot, buy a seed, plant it, and water it.</li>
+        <li>Cook a recipe at a pot, stock the matching buffet, and take a serving.</li>
+        <li>Serve a customer by looking at them and left-clicking while holding the correct serving.</li>
+        <li>Open the board again and click <strong>Close Stall / End Day</strong> when the customers and crops are settled.</li>
+    </ol>
+
+    <h2>Where everything is</h2>
+    <table>
+        <tr><th>Place</th><th>Purpose</th></tr>
+        <tr><td>Front of the karinderya</td><td>Request board, customer counters, serving area</td></tr>
+        <tr><td>Kitchen</td><td>Pots, buffets, ingredient pickups, cooking</td></tr>
+        <tr><td>Farm behind the karinderya</td><td>16 active crop plots</td></tr>
+        <tr><td>Seed shop</td><td>Buy seeds with coins</td></tr>
+        <tr><td>Request notebook</td><td>Read requests, check trust, close the day</td></tr>
+    </table>
+</section>
+
+<section class="section">
+    <h1>03 · The Day Loop</h1>
+
+    <p class="lead">
+        A full day is about 24 real minutes at the default clock speed, from
+        6:00 AM to the next morning. The player can close the stall early to
+        advance the day once the customers and growing crops are handled.
+    </p>
+
+    <div class="flow">
+        <div class="step"><strong>Morning</strong>Buy seeds, plant, water, harvest, cook, stock buffets.</div>
+        <div class="step"><strong>Lunch</strong>11:00–14:00. Up to 2 customers. Rush tips active.</div>
+        <div class="step"><strong>Afternoon</strong>Errands, farming, restocking, requests, trust management.</div>
+        <div class="step"><strong>Dinner</strong>17:00–21:00. Up to 3 customers. The big service window.</div>
+        <div class="step"><strong>Close</strong>Serve the last customers, harvest crops, review requests, end the day.</div>
+        <div class="step"><strong>Next Day</strong>6:00 AM. Daily stall fee, new requests, saved progress.</div>
+    </div>
+
+    <h2>Phase table</h2>
+    <table>
+        <tr><th>Phase</th><th>Time</th><th>Customer cap</th><th>Notes</th></tr>
+        <tr><td>Dawn / morning</td><td>6:00–11:00</td><td>1–2</td><td>Prep time. Normal arrival delays.</td></tr>
+        <tr><td>Lunch rush</td><td>11:00–14:00</td><td>2</td><td>Faster arrivals, +25% customer tips.</td></tr>
+        <tr><td>Afternoon</td><td>14:00–17:00</td><td>1–2</td><td>Restock, farm, finish requests.</td></tr>
+        <tr><td>Dinner rush</td><td>17:00–21:00</td><td>3</td><td>The largest crowd. +25% customer tips.</td></tr>
+        <tr><td>Late evening</td><td>21:00–22:00</td><td>1–2</td><td>Closing window.</td></tr>
+        <tr><td>Late night</td><td>22:00–6:00</td><td>1</td><td>Slow traffic. The world is dark.</td></tr>
+    </table>
+
+    <h2>Closing the stall</h2>
+    <ul>
+        <li>Open the request notebook and click <strong>Close Stall / End Day</strong>.</li>
+        <li>The game refuses to close while customers are still waiting.</li>
+        <li>The game refuses to close while crops are still in Seed or Seedling state.</li>
+        <li>Completed requests pay out. Unfinished requests expire and cost trust.</li>
+        <li>The daily stall fee is deducted.</li>
+        <li>A day summary card appears with requests completed, net coins, and trust gained.</li>
+        <li>The clock advances to 6:00 AM and new requests are posted.</li>
+        <li>Progress is saved automatically after the close.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Daily fee:</strong> the stall costs ₱25 per completed day.
+        The fee is charged at close and is included in the day summary.
+    </div>
+</section>
+
+<section class="section">
+    <h1>04 · Farming</h1>
+
+    <p class="lead">
+        Farming is the ingredient supply chain. Meat is available from a
+        reusable kitchen pickup; vegetables come from the farm.
+    </p>
+
+    <h2>Farm loop</h2>
+    <ol>
+        <li>Buy a seed from the shop. Seeds cost ₱10–₱25 each.</li>
+        <li>Equip the hoe and till a soil plot into farmland.</li>
+        <li>Equip the seed and plant it.</li>
+        <li>Equip the watering can and water the plot.</li>
+        <li>Wait for the crop to grow. Water lasts 3 game hours.</li>
+        <li>Harvest the ripe crop by looking at it and clicking/pressing E.</li>
+        <li>Use the ingredient at a pot, or let a regrowable crop reset for another harvest.</li>
+    </ol>
+
+    <h2>Farm size</h2>
+    <p>
+        The scene originally contained a very large field. The current build
+        activates the <strong>16 plots closest to the karinderya</strong> and
+        disables the rest at runtime. This makes the farm a deliberate garden
+        instead of a mass-production field.
+    </p>
+
+    <h2>Crop reference</h2>
+    <table>
+        <tr>
+            <th>Crop</th>
+            <th>Grow time</th>
+            <th>Real time at 1×</th>
+            <th>Regrow</th>
+            <th>Seed price</th>
+            <th>Used by</th>
+        </tr>
+        <tr><td>Carrot</td><td>1.5 game hours</td><td>90 sec</td><td>No</td><td>₱10</td><td>Kaldereta, Giniling</td></tr>
+        <tr><td>Okra</td><td>1.5 game hours</td><td>90 sec</td><td>1.5 h</td><td>₱12</td><td>Pakbet, Dinengdeng</td></tr>
+        <tr><td>Potato</td><td>3 game hours</td><td>180 sec</td><td>No</td><td>₱15</td><td>Kaldereta, Giniling</td></tr>
+        <tr><td>Labanos</td><td>3 game hours</td><td>180 sec</td><td>No</td><td>₱15</td><td>Sinigang</td></tr>
+        <tr><td>Sitaw</td><td>3 game hours</td><td>180 sec</td><td>3 h</td><td>₱15</td><td>Sinigang</td></tr>
+        <tr><td>Tomato</td><td>3 game hours</td><td>180 sec</td><td>3 h</td><td>₱15</td><td>Sinigang</td></tr>
+        <tr><td>Ampalaya</td><td>4.5 game hours</td><td>270 sec</td><td>No</td><td>₱20</td><td>Pakbet</td></tr>
+        <tr><td>Talong</td><td>4.5 game hours</td><td>270 sec</td><td>3 h</td><td>₱20</td><td>Pakbet</td></tr>
+        <tr><td>Kalabasa</td><td>6 game hours</td><td>360 sec</td><td>No</td><td>₱25</td><td>Pakbet, Dinengdeng</td></tr>
+    </table>
+
+    <h2>Watering and wilting</h2>
+    <ul>
+        <li>Water lasts 3 game hours.</li>
+        <li>While watered, the crop grows using the game clock.</li>
+        <li>If the plot dries before the crop matures, growth stops and the crop can begin to wilt.</li>
+        <li>Slow crops such as Kalabasa and Ampalaya need a second watering to reach harvest.</li>
+        <li>A crop that has matured stays harvestable, but it can still wilt if left dry for too long.</li>
+        <li>The farm HUD shows the first few crops and their remaining time.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Day-end safety:</strong> the Close Stall button will not skip
+        past Seed or Seedling crops. Harvest them or clear them with the shovel
+        before ending the day.
+    </div>
+
+    <h2>What farming is for</h2>
+    <p>
+        Vegetables are the limiting ingredient for the later recipes. The
+        first two dishes can be cooked from the starting carrots and potatoes,
+        but Pakbet, Dinengdeng, and Sinigang require farmed crops.
+    </p>
+</section>
+
+<section class="section">
+    <h1>05 · Cooking &amp; Dishes</h1>
+
+    <p class="lead">
+        Cooking turns ingredients into a whole dish. The dish is then placed
+        in a buffet, which portions it into individual servings for customers.
+    </p>
+
+    <h2>Cooking loop</h2>
+    <ol>
+        <li>Hold the required ingredients and approach an idle pot.</li>
+        <li>Open the recipe book with E or left-click.</li>
+        <li>Select a recipe and press Start Cooking.</li>
+        <li>Wait for the cooking timer.</li>
+        <li>Take the cooked dish from the pot.</li>
+        <li>Place the dish in its matching buffet.</li>
+    </ol>
+
+    <h2>Recipe reference</h2>
+    <table>
+        <tr>
+            <th>Dish</th>
+            <th>Ingredients</th>
+            <th>Cook time</th>
+            <th>Selling price</th>
+            <th>Unlock cost</th>
+        </tr>
+        <tr><td>Kaldereta</td><td>Meat + Carrot + Potato</td><td>10 sec</td><td>₱60</td><td>Free</td></tr>
+        <tr><td>Giniling</td><td>Meat + Carrot + Potato</td><td>10 sec</td><td>₱60</td><td>Free</td></tr>
+        <tr><td>Pakbet</td><td>Okra + Ampalaya + Kalabasa + Talong</td><td>15 sec</td><td>₱75</td><td>₱500</td></tr>
+        <tr><td>Dinengdeng</td><td>Meat + Okra + Kalabasa</td><td>20 sec</td><td>₱85</td><td>₱1,000</td></tr>
+        <tr><td>Sinigang</td><td>Meat + Sitaw + Labanos + Tomato</td><td>30 sec</td><td>₱95</td><td>₱1,500</td></tr>
+    </table>
+
+    <div class="callout">
+        <strong>Meat is reusable.</strong>
+        The kitchen meat pickup is an infinite ingredient source. Farming is
+        therefore about vegetables, not meat.
+    </div>
+
+    <h2>Recipe unlocks</h2>
+    <ul>
+        <li>Kaldereta and Giniling are available from the start.</li>
+        <li>Pakbet, Dinengdeng, and Sinigang can be purchased at their buffet stations.</li>
+        <li>Trust rewards can also unlock Pakbet, Dinengdeng, and Sinigang for free.</li>
+        <li>If a trust reward recipe was already purchased, the player receives coin compensation instead.</li>
+    </ul>
+</section>
+
+<section class="section">
+    <h1>06 · Buffets &amp; Servings</h1>
+
+    <p class="lead">
+        A cooked dish is not served directly. It is placed on a buffet tray,
+        which turns it into individual servings.
+    </p>
+
+    <h2>How a buffet works</h2>
+    <ol>
+        <li>Hold the finished dish.</li>
+        <li>Look at the buffet that matches the dish.</li>
+        <li>Press E to place the dish. The tray fills with <strong>4 servings</strong>.</li>
+        <li>Press E again to take one serving into the hand.</li>
+        <li>Serve the customer while holding that serving.</li>
+    </ol>
+
+    <p>
+        Each buffet holds only its own recipe. A Kaldereta dish cannot go into
+        the Sinigang tray. The buffet visibly counts down its remaining
+        servings.
+    </p>
+
+    <div class="callout">
+        <strong>Economy effect:</strong> one cooked dish now produces 4
+        servings. That makes ingredient costs, recipe unlocks, and the daily
+        stall fee matter without making the loop feel grindy.
+    </div>
+
+    <h2>Why buffets matter</h2>
+    <ul>
+        <li>They let the player batch-prepare before a rush.</li>
+        <li>They convert one cooking action into several customer transactions.</li>
+        <li>They create a visible stock target: "Do I have enough servings for dinner?"</li>
+        <li>They limit the benefit of over-cooking because trays run out.</li>
+    </ul>
+</section>
+
+<section class="section">
+    <h1>07 · Customers &amp; Rushes</h1>
+
+    <p class="lead">
+        Customers arrive from the village-side entrances and take one of the
+        three service counters. The player can serve them in any order.
+    </p>
+
+    <h2>Customer flow</h2>
+    <ol>
+        <li>A customer spawns from a random front entrance.</li>
+        <li>They walk to a free counter.</li>
+        <li>Their order appears above their head with a patience timer.</li>
+        <li>The player prepares or takes the correct serving.</li>
+        <li>Look at the customer and left-click to serve.</li>
+        <li>The customer pays, leaves a notification, and walks away.</li>
+    </ol>
+
+    <h2>Patience</h2>
+    <ul>
+        <li>Standard patience is 60 seconds.</li>
+        <li>The tutorial customer receives extra patience.</li>
+        <li>The order label turns yellow at 50% patience and red at 25%.</li>
+        <li>An angry customer costs compensation and one point of village trust.</li>
+    </ul>
+
+    <h2>Rush hours</h2>
+    <table>
+        <tr><th>Rush</th><th>Window</th><th>Max customers</th><th>Bonus</th></tr>
+        <tr><td>Lunch</td><td>11:00–14:00</td><td>2</td><td>+25% customer tips</td></tr>
+        <tr><td>Dinner</td><td>17:00–21:00</td><td>3</td><td>+25% customer tips</td></tr>
+    </table>
+
+    <p>
+        Off-peak hours usually have one customer, with a chance of a second.
+        Late night has one customer and much slower arrivals.
+    </p>
+
+    <h2>Customer types</h2>
+    <table>
+        <tr><th>Type</th><th>Color</th><th>Spawn weight</th></tr>
+        <tr><td>Boy</td><td>Light blue</td><td>30%</td></tr>
+        <tr><td>Girl</td><td>Pink</td><td>30%</td></tr>
+        <tr><td>Old man</td><td>Slate gray</td><td>20%</td></tr>
+        <tr><td>Old woman</td><td>Lavender</td><td>20%</td></tr>
+    </table>
+
+    <p>
+        Only the character mesh is tinted. The order label and dish icon stay
+        readable. The existing angry red tint overrides the type color when a
+        customer leaves upset.
+    </p>
+
+    <h2>Three counters, no queue</h2>
+    <p>
+        The wide front of the karinderya uses three service spots. If all
+        three are occupied, no new customer spawns until one leaves. There is
+        no separate waiting line yet; the counters are the queue.
+    </p>
+</section>
+
+<section class="section">
+    <h1>08 · Regular Customers</h1>
+
+    <p class="lead">
+        At 40 village trust, the karinderya starts attracting regulars.
+    </p>
+
+    <ul>
+        <li>Each new customer has a 25% chance to be a regular after the unlock.</li>
+        <li>Regulars pay 25% more.</li>
+        <li>Regulars have 15 extra seconds of patience.</li>
+        <li>Their order label is marked with a leading <span class="mono">*</span>.</li>
+        <li>The arrival notification says "Regular At Counter!"</li>
+        <li>Serving a regular shows "(Regular)" in the coin notification.</li>
+    </ul>
+
+    <p>
+        This is the first version of the regular system. Named regulars with
+        standing orders and friendship progress are planned for a later
+        content pass.
+    </p>
+</section>
+
+<section class="section">
+    <h1>09 · Requests &amp; Missions</h1>
+
+    <p class="lead">
+        The request board is the mission system. It is intentionally diegetic:
+        the player walks to a physical board and reads a notebook instead of
+        staring at a permanent quest log.
+    </p>
+
+    <h2>How requests work</h2>
+    <ul>
+        <li>Two requests are active each business day.</li>
+        <li>Requests are generated at 6:00 AM or after the tutorial.</li>
+        <li>They track successful customer service, specific dishes, customer earnings, or clean service.</li>
+        <li>Progress is event-driven: the game listens for completed customer transactions.</li>
+        <li>Requests complete automatically and pay coins and trust.</li>
+        <li>A missed time window or unfinished day request expires and costs 1 trust.</li>
+        <li>There is no game-over state; a missed request is a setback, not a restart.</li>
+    </ul>
+
+    <h2>Request rotation</h2>
+    <table>
+        <tr><th>Day cycle</th><th>Request 1</th><th>Request 2</th></tr>
+        <tr>
+            <td>Cycle 0 (Day 1, 4, 7…)</td>
+            <td><strong>Lunch Crowd</strong><br>Serve 2 customers, 11:00–14:00<br>₱120, +5 trust</td>
+            <td><strong>Villager Request</strong><br>Serve 1 specific unlocked dish<br>₱150, +6 trust</td>
+        </tr>
+        <tr>
+            <td>Cycle 1 (Day 2, 5, 8…)</td>
+            <td><strong>Dinner Full House</strong><br>Serve 3 customers, 17:00–21:00<br>₱200, +8 trust</td>
+            <td><strong>Market Money</strong><br>Earn ₱250 from customers<br>₱100, +5 trust</td>
+        </tr>
+        <tr>
+            <td>Cycle 2 (Day 3, 6, 9…)</td>
+            <td><strong>Clean Shift</strong> (below 60 trust)<br>Serve at least 1 customer, no angry customers<br>₱120, +8 trust<br><br><strong>Barangay Catering</strong> (60+ trust)<br>Serve 5 customers by 21:00<br>₱500, +15 trust</td>
+            <td><strong>Villager Request</strong><br>Serve 1 specific unlocked dish<br>₱150, +6 trust</td>
+        </tr>
+    </table>
+
+    <p class="small">
+        If no suitable dish is available, the dish request falls back to a
+        customer-earnings request. Duplicate request IDs are skipped.
+    </p>
+
+    <h2>The notebook</h2>
+    <ul>
+        <li>Shows the day, time, and village trust.</li>
+        <li>Shows two request cards with requester, description, progress, time window, reward, and status.</li>
+        <li>Completed requests are marked COMPLETE; expired requests are marked MISSED.</li>
+        <li>The footer explains why closing is blocked: waiting customers or growing crops.</li>
+        <li>The notebook pauses gameplay time while open.</li>
+    </ul>
+
+    <h2>Day summary</h2>
+    <p>
+        After closing the stall, a summary card appears:
+    </p>
+    <div class="callout">
+        <strong>DAY COMPLETE</strong><br>
+        Day 3 complete — 2/2 requests · ₱420 · +8 trust
+    </div>
+    <p>
+        The card is the player's proof that the day moved forward. It is not a
+        separate menu system; it sits on top of the request notebook.
+    </p>
+</section>
+
+<section class="section">
+    <h1>10 · Trust &amp; Progression</h1>
+
+    <p class="lead">
+        Village trust is the long-term relationship score. It rises when the
+        player completes requests and falls when customers leave angry or
+        requests are missed.
+    </p>
+
+    <table>
+        <tr><th>Trust</th><th>Reward</th><th>Meaning</th></tr>
+        <tr><td>Start</td><td>10 trust</td><td>The village is willing to give the new stall a chance.</td></tr>
+        <tr><td>20</td><td>Pakbet recipe free, or ₱200 if already owned</td><td>The village starts trusting your cooking.</td></tr>
+        <tr><td>40</td><td>Regular customers unlocked</td><td>The stall has repeat visitors.</td></tr>
+        <tr><td>60</td><td>Dinengdeng recipe free, or ₱300 if already owned; Barangay Catering can appear</td><td>The karinderya is becoming a village institution.</td></tr>
+        <tr><td>80</td><td>Sinigang recipe free, or ₱400 if already owned</td><td>The village trusts you with its signature dishes.</td></tr>
+        <tr><td>100</td><td>Maximum trust</td><td>Future festival and ending content can use this ceiling.</td></tr>
+    </table>
+
+    <h2>Trust changes</h2>
+    <ul>
+        <li>Completing a request: + request trust reward.</li>
+        <li>An angry customer: −1 trust, once per day.</li>
+        <li>An expired or missed request: −1 trust.</li>
+        <li>Trust is clamped between 0 and 100.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Design intent:</strong> trust should be visible and useful.
+        It is not just a score. It changes the recipe pool, the customer pool,
+        and the mission pool.
+    </div>
+</section>
+
+<section class="section">
+    <h1>11 · Economy</h1>
+
+    <p class="lead">
+        The economy is built around preparation costs, serving revenue, recipe
+        unlocks, and a small daily upkeep.
+    </p>
+
+    <h2>Starting state</h2>
+    <table>
+        <tr><th>Item</th><th>Value</th></tr>
+        <tr><td>Starting coins</td><td>₱100</td></tr>
+        <tr><td>Starting vegetables</td><td>2 Carrots, 2 Potatoes</td></tr>
+        <tr><td>Meat</td><td>Infinite reusable kitchen pickup</td></tr>
+        <tr><td>Farm plots</td><td>16 active plots</td></tr>
+        <tr><td>Daily stall fee</td><td>₱25 per completed day</td></tr>
+    </table>
+
+    <h2>Money in</h2>
+    <ul>
+        <li>Customer payments: ₱60–₱95 per serving, plus rush and regular bonuses.</li>
+        <li>Request rewards: ₱100–₱500.</li>
+        <li>Trust fallback rewards if a recipe was already purchased.</li>
+    </ul>
+
+    <h2>Money out</h2>
+    <ul>
+        <li>Seeds: ₱10–₱25 each.</li>
+        <li>Recipe unlocks: ₱500 Pakbet, ₱1,000 Dinengdeng, ₱1,500 Sinigang.</li>
+        <li>Daily stall fee: ₱25 per day.</li>
+        <li>Angry customers: compensation is deducted from coins.</li>
+    </ul>
+
+    <h2>Revenue example</h2>
+    <p>
+        A Kaldereta dish costs vegetables to grow and produces 4 servings at
+        ₱60 each, or ₱240 before rush bonuses. A dinner regular at rush time
+        pays more, while a missed day still charges the stall fee. The player
+        is encouraged to stock the right dishes rather than cook endlessly.
+    </p>
+
+    <div class="callout">
+        <strong>Balance note:</strong> the economy is intentionally tighter
+        than the earlier prototype, but it is still tunable. Seed prices,
+        serving capacity, recipe costs, mission rewards, and the daily fee are
+        all data values in the project.
+    </div>
+</section>
+
+<section class="section">
+    <h1>12 · Save &amp; Continue</h1>
+
+    <p class="lead">
+        The game is designed to be played across real days. It auto-loads the
+        last save and keeps the day, farm, kitchen, and mission state.
+    </p>
+
+    <h2>Save behavior</h2>
+    <table>
+        <tr><th>Event</th><th>Save?</th></tr>
+        <tr><td>Game starts</td><td>Automatically loads the save if one exists</td></tr>
+        <tr><td>Every 20 seconds</td><td>Autosave</td></tr>
+        <tr><td>Quit application</td><td>Save</td></tr>
+        <tr><td>Application pause</td><td>Save</td></tr>
+        <tr><td>Return to main menu</td><td>Save</td></tr>
+        <tr><td>Close Stall / End Day</td><td>Save after the new day begins</td></tr>
+        <tr><td>Tutorial complete or skipped</td><td>Save requested</td></tr>
+    </table>
+
+    <h2>What is saved</h2>
+    <ul>
+        <li>Day, time, season, and clock speed.</li>
+        <li>Coins and total dishes served.</li>
+        <li>Tutorial completion.</li>
+        <li>Unlocked recipes and claimed trust rewards.</li>
+        <li>Inventory slots and equipped tool/item.</li>
+        <li>Active 16 farm plots, soil state, last watering time.</li>
+        <li>Planted crops, growth, health, and crop state.</li>
+        <li>Buffet contents and servings.</li>
+        <li>Mission state, progress, reputation, day counters, and last day summary.</li>
+    </ul>
+
+    <h2>What is not saved</h2>
+    <ul>
+        <li>Customers currently walking, waiting, or leaving.</li>
+        <li>The player's exact position and camera rotation.</li>
+        <li>Open menus and UI state.</li>
+        <li>Notifications currently in the queue.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Save file:</strong>
+        <span class="mono">Application.persistentDataPath/karinderya_save.json</span><br>
+        There is one save slot. To start a fresh game, quit the game and delete
+        this file. A New Game button is a planned menu addition.
+    </div>
+
+    <h2>Continue flow</h2>
+    <ol>
+        <li>Launch the game and enter the gameplay scene.</li>
+        <li>The save is preloaded before the scene starts.</li>
+        <li>If the tutorial was completed, it is skipped automatically.</li>
+        <li>The clock loads at the saved day and time.</li>
+        <li>Inventory, farm, buffets, recipes, and missions load.</li>
+        <li>The player continues exactly at the stall.</li>
+    </ol>
+</section>
+
+<section class="section">
+    <h1>13 · HUD &amp; UI Guide</h1>
+
+    <table>
+        <tr><th>UI element</th><th>Location</th><th>Purpose</th></tr>
+        <tr><td>Clock and date</td><td>Top center</td><td>Current time, day, season, day of the week.</td></tr>
+        <tr><td>Rush / request strip</td><td>Below the clock</td><td>Lunch/dinner countdown, active request count, village trust.</td></tr>
+        <tr><td>Farm timer panel</td><td>Top right</td><td>Shows a few active crops and remaining time; hides when no crops.</td></tr>
+        <tr><td>Status bar</td><td>Bottom left</td><td>Equipped tool and inventory shortcut area.</td></tr>
+        <tr><td>Notifications</td><td>Bottom center</td><td>Arrivals, rewards, trust changes, missed requests.</td></tr>
+        <tr><td>Request board</td><td>Front of the karinderya</td><td>Physical board with a warm light and "E to read" prompt.</td></tr>
+        <tr><td>Request notebook</td><td>Opened from board</td><td>Request cards, progress, trust, day summary, Close Stall.</td></tr>
+        <tr><td>Customer order label</td><td>Above customer</td><td>Dish name, patience timer, regular marker, warning colors.</td></tr>
+        <tr><td>Interaction prompt</td><td>World / center</td><td>Context hint for interacting with an object.</td></tr>
+    </table>
+
+    <h2>HUD philosophy</h2>
+    <ul>
+        <li>The player should always know the time, the next rush, and whether requests are active.</li>
+        <li>The HUD should not become a permanent quest log.</li>
+        <li>Requests live on the board, but a small active-request count is always visible.</li>
+        <li>Farm information appears only when crops exist and is hidden during menus.</li>
+        <li>World-space labels should never cover each other; customer labels are staggered by counter.</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Current UI style:</strong> warm paper, wood, cream, gold, and
+        harvest green. The request notebook and day summary use a dark
+        paper/ledger look. The long-term goal is to replace the remaining
+        flat prototype panels with rounded paper and wood treatments.
+    </div>
+</section>
+
+<section class="section">
+    <h1>14 · Time &amp; Day/Night</h1>
+
+    <p class="lead">
+        The clock is the single source of truth for customer phases, rush
+        windows, missions, crop growth, and visual lighting.
+    </p>
+
+    <h2>Clock rules</h2>
+    <ul>
+        <li>The game starts on Day 1 at 6:00 AM.</li>
+        <li>At <span class="mono">TimeManager.timeScale = 1</span>, one game minute passes per real second.</li>
+        <li>A full 24-hour day takes about 24 real minutes.</li>
+        <li>Days advance at midnight; the business day rolls over at 6:00 AM.</li>
+        <li>The clock drives lunch, dinner, late-night customer behavior.</li>
+    </ul>
+
+    <h2>Day/night lighting</h2>
+    <table>
+        <tr><th>Period</th><th>Hours</th><th>Visual</th></tr>
+        <tr><td>Night</td><td>19:00–5:00</td><td>Dim blue light, dark screen tint</td></tr>
+        <tr><td>Dawn</td><td>5:00–7:00</td><td>Warm low sun, fading tint</td></tr>
+        <tr><td>Day</td><td>7:00–17:00</td><td>Bright, warm directional light</td></tr>
+        <tr><td>Dusk</td><td>17:00–19:00</td><td>Orange sun, fading light</td></tr>
+    </table>
+
+    <p>
+        The directional light rotates across the sky, changes color and
+        intensity, ambient light dims at night, and a full-screen tint sits
+        below the HUD so the clock, notebook, and notifications remain
+        readable.
+    </p>
+
+    <h2>Demo speed</h2>
+    <p>
+        The <span class="mono">TimeManager.timeScale</span> field can be raised
+        in the Inspector to reach lunch or dinner faster. This speeds up the
+        clock, day/night cycle, crop growth, and mission windows. Customer
+        spawn/patience uses real time, so 3–4× is a good demo speed; 10× makes
+        the rushes too short.
+    </p>
+</section>
+
+<section class="section">
+    <h1>15 · Technical Architecture</h1>
+
+    <h2>Main systems</h2>
+    <table>
+        <tr><th>System</th><th>Files</th><th>Responsibility</th></tr>
+        <tr>
+            <td>Clock</td>
+            <td>Time Manager.cs, Game Timestamp.cs, ITimeTracker.cs</td>
+            <td>Game time, day/season rollover, listener notifications.</td>
+        </tr>
+        <tr>
+            <td>Day/Night</td>
+            <td>DayNightCycle.cs</td>
+            <td>Sun rotation, light color/intensity, ambient, night tint.</td>
+        </tr>
+        <tr>
+            <td>Customers</td>
+            <td>CustomerSpawner.cs, CustomerAI.cs, CustomerOrder.cs, CustomerAppearance.cs</td>
+            <td>Arrivals, counter assignment, orders, patience, service, type colors, regulars.</td>
+        </tr>
+        <tr>
+            <td>Missions</td>
+            <td>MissionManager.cs, MissionDefinition.cs</td>
+            <td>Daily generation, progress, trust, rewards, day summary, save data.</td>
+        </tr>
+        <tr>
+            <td>Missions UI</td>
+            <td>MissionBoard.cs, MissionNotebookUI.cs, MissionBootstrap.cs</td>
+            <td>Physical board, notebook cards, day summary overlay, runtime install.</td>
+        </tr>
+        <tr>
+            <td>Farming</td>
+            <td>LandManager.cs, Land.cs, CropBehaviour.cs, RegrowableHarvestBehaviour.cs</td>
+            <td>16 active plots, clock growth, water, harvest, regrow, save state.</td>
+        </tr>
+        <tr>
+            <td>Cooking</td>
+            <td>Pot.cs, CookingUIManager.cs, RecipeData.cs, RecipeUnlockManager.cs</td>
+            <td>Recipe selection, ingredient check, cooking timer, unlocks.</td>
+        </tr>
+        <tr>
+            <td>Buffets</td>
+            <td>BuffetContainer.cs</td>
+            <td>Dish storage, 4 servings, serving retrieval, save state.</td>
+        </tr>
+        <tr>
+            <td>Economy</td>
+            <td>CurrencyManager.cs, ShopManager.cs, SeedData.cs</td>
+            <td>Coins, seed purchases, customer/request rewards, daily fee.</td>
+        </tr>
+        <tr>
+            <td>Save</td>
+            <td>SaveManager.cs, SaveData.cs</td>
+            <td>Preload, capture, JSON write, autosave, load hooks across systems.</td>
+        </tr>
+        <tr>
+            <td>HUD</td>
+            <td>HudStatusUI.cs, UIManager.cs, NotificationManager.cs, FarmTimerUIManager.cs</td>
+            <td>Clock, rush/request strip, farm timers, notifications, menus.</td>
+        </tr>
+    </table>
+
+    <h2>Event flow</h2>
+    <div class="flow">
+        <div class="step"><strong>Customer served</strong>CustomerOrder fires CustomerFinished(success).</div>
+        <div class="step"><strong>Mission progress</strong>MissionManager checks dish, coins, time window, and NoAngry state.</div>
+        <div class="step"><strong>Feedback</strong>Coins, trust, notification, day-summary counters update.</div>
+    </div>
+
+    <div class="flow">
+        <div class="step"><strong>Clock tick</strong>TimeManager notifies registered trackers every game minute.</div>
+        <div class="step"><strong>Systems react</strong>Land grows, Hud updates, mission windows expire, day rolls over.</div>
+        <div class="step"><strong>Visuals follow</strong>DayNightCycle reads the same timestamp.</div>
+    </div>
+
+    <h2>Save architecture</h2>
+    <ul>
+        <li>A JSON snapshot is written to the persistent data path.</li>
+        <li>The snapshot is loaded before the scene starts.</li>
+        <li>Each manager loads its own slice during Awake or Start.</li>
+        <li>Autosave begins after the scene is ready.</li>
+        <li>Farm saving waits for the active plot list to finish loading.</li>
+    </ul>
+
+    <h2>Data-driven tuning</h2>
+    <ul>
+        <li>Seed growth, regrow, and price values: SeedData assets.</li>
+        <li>Recipe ingredients, cook time, price, unlock cost: RecipeData assets.</li>
+        <li>Buffet capacity: BuffetContainer maxServings in the scene.</li>
+        <li>Farm size: LandManager maxActivePlots.</li>
+        <li>Rush windows and customer caps: CustomerSpawner.</li>
+        <li>Mission rewards, trust thresholds, daily fee: MissionManager.</li>
+        <li>Clock speed: TimeManager.timeScale.</li>
+    </ul>
+</section>
+
+<section class="section">
+    <h1>16 · Current Limitations</h1>
+
+    <p class="lead">
+        These are the honest boundaries of the current build. They are useful
+        to state clearly in a presentation rather than pretending the game is
+        finished.
+    </p>
+
+    <ul>
+        <li>One save slot. No cloud save or profile menu.</li>
+        <li>No New Game button yet; delete the save file to reset.</li>
+        <li>Customers in the scene are not saved; they respawn after load.</li>
+        <li>Player position, camera, and open menus are not saved.</li>
+        <li>No seven-day festival or ending yet.</li>
+        <li>Catering is a large same-day order, not a multi-day catering contract.</li>
+        <li>Regulars are probability-based customers, not named recurring characters yet.</li>
+        <li>No staff, furniture upgrades, or decoration system yet.</li>
+        <li>The farm uses 16 active plots selected from a much larger scene field.</li>
+        <li>Final balance and Play Mode QA still need a dedicated pass.</li>
+        <li>UI uses a mix of legacy UI text and TextMeshPro; a full typography pass is planned.</li>
+        <li>Localization, rebinding, and accessibility settings are not in yet.</li>
+    </ul>
+
+    <h2>What this build is good for</h2>
+    <ul>
+        <li>Demonstrating the core daily loop.</li>
+        <li>Showing a diegetic mission system and trust progression.</li>
+        <li>Showing integrated time, day/night, farming, customers, cooking, and saving.</li>
+        <li>Showing a solid vertical-slice foundation for a longer game.</li>
+    </ul>
+</section>
+
+<section class="section">
+    <h1>17 · Roadmap</h1>
+
+    <h2>Next priorities</h2>
+    <ol>
+        <li><strong>New Game / Continue menu</strong> with a clear save-slot UI.</li>
+        <li><strong>Named regulars</strong> with preferences and standing orders.</li>
+        <li><strong>Multi-day catering</strong> and a seven-day festival arc.</li>
+        <li><strong>Upgrades and decorations</strong>: more trays, a second pot, seating, paint, plants.</li>
+        <li><strong>Stronger UI art</strong>: rounded paper, wood, icons, portraits, animated stamps.</li>
+        <li><strong>More recipes and crops</strong>, including seasonal availability and market prices.</li>
+        <li><strong>More customer behavior</strong>: small talk, preferences, patience by type.</li>
+        <li><strong>Full accessibility</strong>: text scaling, colorblind-safe type markers, rebinding, localization.</li>
+        <li><strong>Balance and QA</strong>: economy, crop timing, save edge cases, long-session testing.</li>
+    </ol>
+
+    <h2>Long-term vision</h2>
+    <p>
+        A seven-day village festival arc in which the karinderya grows from a
+        humble stall into the place where the whole barangay gathers. The
+        current request board and trust system are the first layer of that arc.
+    </p>
+</section>
+
+<section class="section">
+    <h1>18 · Professor Demo Script</h1>
+
+    <p class="lead">
+        A focused 15–20 minute demonstration that shows the loop, the systems,
+        and the technical structure without waiting through a full day.
+    </p>
+
+    <ol>
+        <li><strong>Start the game.</strong> If a save exists, it auto-loads; if not, the tutorial starts.</li>
+        <li><strong>Skip the tutorial</strong> with F1 for a clean demo.</li>
+        <li><strong>Open the request board.</strong> Show the two requests, time, trust, and notebook.</li>
+        <li><strong>Show the HUD.</strong> Point out the clock, rush countdown, active requests, and trust.</li>
+        <li><strong>Raise TimeManager.timeScale</strong> to 3–4 in the Inspector to reach lunch quickly.</li>
+        <li><strong>Show the farm.</strong> Plant, water, and explain growth times and the 16-plot garden.</li>
+        <li><strong>Cook and stock.</strong> Make a dish, place it in a buffet, show 4 servings.</li>
+        <li><strong>Serve lunch.</strong> Show order labels, patience colors, rush tips, and mission completion.</li>
+        <li><strong>Open the board again.</strong> Show request progress and the Close Stall button.</li>
+        <li><strong>End the day.</strong> Show the day summary card, time jump, new requests, and autosave.</li>
+        <li><strong>Optional:</strong> show a regular customer with the star marker after trust 40.</li>
+        <li><strong>Optional:</strong> show the day/night cycle by advancing time.</li>
+    </ol>
+
+    <h2>What to say</h2>
+    <div class="callout">
+        "The game is built around a single source of truth for time. The clock
+        drives the day/night visuals, the lunch and dinner customer rushes, the
+        mission windows, and crop growth. The request board is diegetic: the
+        player reads a physical board, and a mission manager listens to the
+        existing customer-finished event to update requests without polling.
+        The save system preserves the day, farm, kitchen, buffets, inventory,
+        recipes, and mission state across sessions."
+    </div>
+
+    <h2>Features to highlight</h2>
+    <ul>
+        <li>Event-driven mission tracking instead of a hard-coded quest loop.</li>
+        <li>Time-of-day customer phases with different caps and rewards.</li>
+        <li>Clock-driven farming with different crop durations and water management.</li>
+        <li>Trust rewards that change the actual game systems.</li>
+        <li>Automatic save/Continue for daily play.</li>
+        <li>Runtime-generated board and notebook UI without fragile scene wiring.</li>
+    </ul>
+</section>
+
+<section class="section">
+    <h1>19 · Tuning Reference</h1>
+
+    <table>
+        <tr><th>Want to change…</th><th>Where</th></tr>
+        <tr><td>Day length / demo speed</td><td><span class="mono">TimeManager.timeScale</span></td></tr>
+        <tr><td>Lunch/dinner hours</td><td><span class="mono">CustomerSpawner</span> phase fields</td></tr>
+        <tr><td>Customer caps</td><td><span class="mono">CustomerSpawner</span> phase max fields</td></tr>
+        <tr><td>Rush tip bonus</td><td><span class="mono">CustomerSpawner.rushRewardMultiplier</span></td></tr>
+        <tr><td>Regular chance/tip/patience</td><td><span class="mono">MissionManager</span> regular fields</td></tr>
+        <tr><td>Crop growth and seed price</td><td><span class="mono">SeedData</span> assets</td></tr>
+        <tr><td>Farm size</td><td><span class="mono">LandManager.maxActivePlots</span></td></tr>
+        <tr><td>Water duration</td><td>Land.cs clock check (3 hours)</td></tr>
+        <tr><td>Dish ingredients / price / unlock</td><td><span class="mono">RecipeData</span> assets</td></tr>
+        <tr><td>Buffet servings</td><td>Buffet maxServings in the scene</td></tr>
+        <tr><td>Mission pool and rewards</td><td><span class="mono">MissionManager</span> builders</td></tr>
+        <tr><td>Trust thresholds</td><td><span class="mono">MissionManager.CheckTrustRewards</span></td></tr>
+        <tr><td>Daily stall fee</td><td><span class="mono">MissionManager.dailyStallFee</span></td></tr>
+        <tr><td>Autosave interval</td><td><span class="mono">SaveManager.autosaveInterval</span></td></tr>
+    </table>
+
+    <h2>QA checklist</h2>
+    <ul class="checklist">
+        <li>Start with no save, finish or skip tutorial, confirm tutorial does not repeat after restart.</li>
+        <li>Plant and water a fast crop and a slow crop; confirm both mature with correct timing.</li>
+        <li>Close the day with a Seedling crop; confirm the Close Stall guard.</li>
+        <li>Complete a request; restart; confirm progress and reward are preserved.</li>
+        <li>Stock a buffet, restart, confirm dish and servings remain.</li>
+        <li>Unlock a recipe through trust and confirm the buffet updates.</li>
+        <li>Reach 40 trust and confirm the regular star, tip, and patience.</li>
+        <li>Reach 60 trust and confirm the catering request appears on cycle 2.</li>
+        <li>End a day and confirm the summary card, stall fee, and autosave.</li>
+        <li>Delete the save file and confirm a clean new game.</li>
+    </ul>
+
+    <div class="footer-note">
+        Karinderya — Gameplay &amp; Systems Documentation · Version 1.0 ·
+        November 24, 2026. This document describes the current playable
+        vertical slice. Values may change during balance passes.
+    </div>
+</section>
+
+</body>
+</html>

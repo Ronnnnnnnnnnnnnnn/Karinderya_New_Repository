@@ -87,8 +87,7 @@ public class FarmTimerUIManager : MonoBehaviour
 
         if (aspect < 1.65f)
         {
-            // Narrow/4:3: sit above the inventory button so it does not
-            // collide with the tutorial card or the clock.
+
             rect.anchorMin = new Vector2(1f, 0f);
             rect.anchorMax = new Vector2(1f, 0f);
             rect.pivot = new Vector2(1f, 0f);
@@ -96,7 +95,7 @@ public class FarmTimerUIManager : MonoBehaviour
         }
         else
         {
-            // Wide: keep it on the upper right, below the clock.
+
             rect.anchorMin = new Vector2(1f, 1f);
             rect.anchorMax = new Vector2(1f, 1f);
             rect.pivot = new Vector2(1f, 1f);

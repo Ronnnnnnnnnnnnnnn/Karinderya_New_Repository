@@ -23,7 +23,7 @@ public class GameTimestamp
         Thursday,
         Friday
     }
-    public int day; 
+    public int day;
     public int hour;
     public int minute;
 
@@ -53,10 +53,10 @@ public class GameTimestamp
             minute = 0;
             hour++;
         }
-        
+
         if(hour >= 24)
         {
-            hour = 0;   
+            hour = 0;
             day++;
         }
 
@@ -77,7 +77,7 @@ public class GameTimestamp
     public DayOfTheWeek GetDayOfTheWeek()
     {
         int daysPassed = YearsToDays(year) + SeasonsToDays(season) + (day - 1);
-        
+
         int dayIndex = daysPassed % 7;
 
         return(DayOfTheWeek)dayIndex;
@@ -89,7 +89,7 @@ public class GameTimestamp
     public static float DaysToHours(float days)
     {
         return days * 24f;
-    
+
     }
     public static int SeasonsToDays(Season season)
     {

@@ -28,5 +28,5 @@ MonoBehaviour:
   seedling: {fileID: 8503867007417135164, guid: 8fbaaa4376df37f43bb951a607c824d0, type: 3}
   regrowable: 0
   daysToRegrow: 0
-  buyPrice: 10
+  buyPrice: 15
   sellPrice: 5

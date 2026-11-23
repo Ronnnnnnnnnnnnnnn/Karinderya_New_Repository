@@ -8,11 +8,8 @@ public class PauseMenu : MonoBehaviour
 {
     public static bool Pause = false;
 
-    // True once the player has gone back to the main menu from the game.
-    // The game scene is kept (frozen and hidden) so the menu can Resume it.
     public static bool GameInProgress = false;
 
-    // True while the main menu is shown on top of the frozen game
     public static bool InMainMenu = false;
 
     static Scene gameScene;
@@ -23,7 +20,6 @@ public class PauseMenu : MonoBehaviour
 
     public GameObject PauseMenuCanvas;
 
-    // Static fields survive "Enter Play Mode without domain reload"
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics()
     {
@@ -47,6 +43,12 @@ public class PauseMenu : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Escape))
         {
+            if (MissionNotebookUI.IsOpen)
+            {
+                MissionNotebookUI.CloseNotebook();
+                return;
+            }
+
             if(Pause)
             {
                 Play();
@@ -71,20 +73,17 @@ public class PauseMenu : MonoBehaviour
         Pause = false;
     }
 
-    // =========================================================
-    // MAIN MENU (keeps the game so it can be resumed)
-    // =========================================================
-
     public void MainMenuButton()
     {
+        SaveManager.SaveCurrent();
+        MissionNotebookUI.CloseNotebook();
+
         int menuIndex = SceneManager.GetActiveScene().buildIndex - 1;
 
         gameScene = gameObject.scene;
 
         PauseMenuCanvas.SetActive(false);
 
-        // Freeze the game: scaled time stops timers, crops,
-        // customers and cooking. Pause blocks player input.
         Time.timeScale = 0f;
         Pause = true;
 
@@ -93,10 +92,8 @@ public class PauseMenu : MonoBehaviour
         GameInProgress = true;
         InMainMenu = true;
 
-        // Don't let Escape toggle the in-game pause while in the menu
         enabled = false;
 
-        // The game locks and hides the cursor; the menu needs it back
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -112,7 +109,6 @@ public class PauseMenu : MonoBehaviour
         };
     }
 
-    // Called by the main menu's Resume button
     public static void ResumeGame(Scene menuScene)
     {
         foreach (Behaviour b in hiddenBehaviours)
@@ -142,8 +138,6 @@ public class PauseMenu : MonoBehaviour
         SceneManager.UnloadSceneAsync(menuScene);
     }
 
-    // Hide everything the player sees and hears, without deactivating
-    // objects (that would kill running coroutines such as the clock)
     static void HideGame(Scene scene)
     {
         hiddenBehaviours.Clear();

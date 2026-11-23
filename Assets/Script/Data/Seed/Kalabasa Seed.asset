@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Kalabasa Seed
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
   itemName: Buto ng Kalabasa
-  description: Pampalinaw ng mata. Tatlong oras bago tumubo
+  description: Pampalinaw ng mata. Mga 6 na oras bago tumubo
   thumbnail: {fileID: -695356662, guid: 5730ba83c6f95fe40b7641ce3c24ba9b, type: 3}
   itemSprite: {fileID: -695356662, guid: 5730ba83c6f95fe40b7641ce3c24ba9b, type: 3}
   gameModel: {fileID: 8792448630162995384, guid: 22cac02b2f4921247a3c9cbfd51a18ad, type: 3}
@@ -23,10 +23,10 @@ MonoBehaviour:
   isServing: 0
   cookedDish: {fileID: 0}
   servingVersion: {fileID: 0}
-  daysToGrow: 0.125
+  daysToGrow: 0.25
   cropToYield: {fileID: 11400000, guid: 5d702a453776a8b40b42919a5f7a0e3a, type: 2}
   seedling: {fileID: 7007357791264644090, guid: 0803990683826134d99405b9322a79fd, type: 3}
   regrowable: 0
   daysToRegrow: 0
-  buyPrice: 10
+  buyPrice: 25
   sellPrice: 5

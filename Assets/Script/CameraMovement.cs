@@ -29,7 +29,7 @@ public class CameraMovement : MonoBehaviour
         playerObject = movement.playerObj;
         CameraParent();
     }
-    
+
 #region Movement Methods
     void Update()
     {

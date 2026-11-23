@@ -1,10 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Finds the game's main HUD canvas. Runtime UI helpers should use this
-/// instead of FindObjectOfType&lt;Canvas&gt;() so they never attach
-/// themselves to the tutorial overlay or a world-space customer canvas.
-/// </summary>
 public static class UIRoot
 {
     public static Canvas FindGameCanvas()

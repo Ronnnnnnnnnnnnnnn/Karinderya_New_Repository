@@ -17,7 +17,7 @@ public class Movement : MonoBehaviour
     public float jumpStrength = 1.5f;
 
     [Header("Physics")]
-    public float gravity = -9.8f; 
+    public float gravity = -9.8f;
     public float groundedForce = -2f;
     private Vector3 _velocity;
 
@@ -48,6 +48,9 @@ public class Movement : MonoBehaviour
         if (PauseMenu.Pause)
             return true;
 
+        if (MissionNotebookUI.IsOpen)
+            return true;
+
         if (UIManager.Instance != null &&
             UIManager.Instance.IsMenuOpen)
         {
@@ -68,11 +71,13 @@ public class Movement : MonoBehaviour
         if (PauseMenu.Pause)
             return;
 
-        // Inventory / shop open: clicks belong to the UI, not the world
+        if (MissionNotebookUI.IsOpen ||
+            MissionNotebookUI.ShouldSuppressWorldInput)
+            return;
+
         if (UIManager.Instance != null && UIManager.Instance.IsMenuOpen)
             return;
 
-        // Cooking UI open: only E (which closes it) is allowed
         bool cookingOpen =
             CookingUIManager.Instance != null &&
             CookingUIManager.Instance.IsOpen;
@@ -87,6 +92,9 @@ public class Movement : MonoBehaviour
     void HandleMenuShortcuts()
     {
         if (PauseMenu.Pause || UIManager.Instance == null)
+            return;
+
+        if (MissionNotebookUI.IsOpen)
             return;
 
         if (CookingUIManager.Instance != null && CookingUIManager.Instance.IsOpen)
@@ -107,7 +115,7 @@ public class Movement : MonoBehaviour
 
     void LateUpdate()
     {
-        
+
     }
     #endregion
 
@@ -120,10 +128,9 @@ public class Movement : MonoBehaviour
 
         float x;
         float z;
-    
+
             x = Input.GetAxisRaw("Horizontal");
             z = Input.GetAxisRaw("Vertical");
-       
 
         Vector3 moveDir = orientation.forward * z + orientation.right * x;
         moveDir.y = 0;

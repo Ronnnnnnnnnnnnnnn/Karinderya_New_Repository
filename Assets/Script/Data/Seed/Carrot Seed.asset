@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Carrot Seed
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
   itemName: 
-  description: Buto ng carrots.  Tatlong oras bago tumubo
+  description: Buto ng carrots. Mabilis tumubo sa 1.5 oras
   thumbnail: {fileID: -861978453, guid: f7f69b477b81b1943aaa77ccd8287c29, type: 3}
   itemSprite: {fileID: 0}
   gameModel: {fileID: 8792448630162995384, guid: 22cac02b2f4921247a3c9cbfd51a18ad, type: 3}
@@ -23,7 +23,7 @@ MonoBehaviour:
   isServing: 0
   cookedDish: {fileID: 0}
   servingVersion: {fileID: 0}
-  daysToGrow: 0.125
+  daysToGrow: 0.0625
   cropToYield: {fileID: 11400000, guid: d23daf02d633c3a4ba2a19a80e9005e5, type: 2}
   seedling: {fileID: 8503867007417135164, guid: 73aab0fff2cd3c5489d4e8d686638e34, type: 3}
   regrowable: 0

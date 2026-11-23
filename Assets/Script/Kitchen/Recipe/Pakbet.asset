@@ -17,6 +17,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3883ed80ebec1184e8e32f6f47d97aac, type: 2}
   - {fileID: 11400000, guid: 37270c4d01f651d409d712104c7bf755, type: 2}
   - {fileID: 11400000, guid: 5d702a453776a8b40b42919a5f7a0e3a, type: 2}
+  - {fileID: 11400000, guid: 622860c270976194bb722154d6f5b80d, type: 2}
   resultDish: {fileID: 11400000, guid: f9a3b502c6d74e85b0c23d8e7f412567, type: 2}
   cookTime: 15
   unlockedByDefault: 0

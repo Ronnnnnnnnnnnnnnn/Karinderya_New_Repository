@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Okra seed
   m_EditorClassIdentifier: Assembly-CSharp::SeedData
   itemName: Buto ng Okra
-  description: Buto ng okra. Tatlong oras bago tumubo
+  description: Buto ng okra. Mabilis tumubo sa 1.5 oras
   thumbnail: {fileID: 21300000, guid: 6e1198f1f68620046b5501b6f0577bb5, type: 3}
   itemSprite: {fileID: 21300000, guid: 6e1198f1f68620046b5501b6f0577bb5, type: 3}
   gameModel: {fileID: 8792448630162995384, guid: 22cac02b2f4921247a3c9cbfd51a18ad, type: 3}
@@ -23,10 +23,10 @@ MonoBehaviour:
   isServing: 0
   cookedDish: {fileID: 0}
   servingVersion: {fileID: 0}
-  daysToGrow: 0.125
+  daysToGrow: 0.0625
   cropToYield: {fileID: 11400000, guid: 51bb373ddcb686e4f84ed50fb17da38b, type: 2}
   seedling: {fileID: 3699918654475473860, guid: 27ff4a104a35d4f4aab0d114364760a7, type: 3}
   regrowable: 1
-  daysToRegrow: 0.125
-  buyPrice: 10
+  daysToRegrow: 0.0625
+  buyPrice: 12
   sellPrice: 5

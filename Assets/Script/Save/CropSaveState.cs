@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public  struct CropSaveState 
+public  struct CropSaveState
 {
     public int landID;
 

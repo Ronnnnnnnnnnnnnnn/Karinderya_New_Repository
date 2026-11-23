@@ -14,7 +14,6 @@ public class MainMenuAudioManager : MonoBehaviour
     [Tooltip("Automatically play the main menu music when the scene starts.")]
     public bool playMusicOnStart = true;
 
-
     private void Start()
     {
         if (playMusicOnStart &&

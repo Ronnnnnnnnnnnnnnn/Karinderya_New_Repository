@@ -901,6 +901,26 @@
         <tr><td>Tutorial complete or skipped</td><td>Save requested</td></tr>
     </table>
 
+    <h2>How the save system works</h2>
+    <ul>
+        <li><span class="mono">SaveManager</span> is the central save controller.</li>
+        <li>On save, <span class="mono">SaveManager.Capture()</span> asks the gameplay systems to write their state into a serializable <span class="mono">SaveData</span> object.</li>
+        <li>The object is converted to readable JSON with <span class="mono">JsonUtility.ToJson(data, true)</span>.</li>
+        <li>The JSON is written to a single file under <span class="mono">Application.persistentDataPath</span>.</li>
+        <li>On startup, <span class="mono">SaveManager.Preload()</span> reads the file before the gameplay scene loads.</li>
+        <li>Each manager then restores its own slice of the data, including time, coins, inventory, recipes, farm plots, crops, buffets, and missions.</li>
+        <li>Autosave runs every 20 seconds, and explicit saves happen on quit, pause, main menu, tutorial completion, and day close.</li>
+    </ul>
+
+    <h2>Where the save file lives</h2>
+    <p>The runtime path is:</p>
+    <p class="mono">Application.persistentDataPath/karinderya_save.json</p>
+    <p>On Windows, with the project's current company/product settings, the full path is:</p>
+    <p class="mono">%USERPROFILE%\AppData\LocalLow\DefaultCompany\Karinderya\karinderya_save.json</p>
+    <p>To open the folder, press <strong>Win + R</strong> and paste:</p>
+    <p class="mono">%USERPROFILE%\AppData\LocalLow\DefaultCompany\Karinderya</p>
+    <p>The file is plain-text JSON and uses one save slot. It is created after the first save. Delete it to start a fresh game.</p>
+
     <h2>What is saved</h2>
     <ul>
         <li>Day, time, season, and clock speed.</li>

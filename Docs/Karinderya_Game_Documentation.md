@@ -440,6 +440,38 @@ The game is designed to be played across real days. It auto-loads the last save 
 | Close Stall / End Day | Save after the new day begins |
 | Tutorial complete or skipped | Save requested |
 
+### How the save system works
+
+- `SaveManager` is the central save controller.
+- On save, `SaveManager.Capture()` asks the gameplay systems to write their state into a serializable `SaveData` object.
+- The object is converted to readable JSON with `JsonUtility.ToJson(data, true)`.
+- The JSON is written to a single file under `Application.persistentDataPath`.
+- On startup, `SaveManager.Preload()` reads the file before the gameplay scene loads.
+- Each manager then restores its own slice of the data, including time, coins, inventory, recipes, farm plots, crops, buffets, and missions.
+- Autosave runs every 20 seconds, and explicit saves happen on quit, pause, main menu, tutorial completion, and day close.
+
+### Where the save file lives
+
+The runtime path is:
+
+```text
+Application.persistentDataPath/karinderya_save.json
+```
+
+On Windows, with the project's current company/product settings, the full path is:
+
+```text
+%USERPROFILE%\AppData\LocalLow\DefaultCompany\Karinderya\karinderya_save.json
+```
+
+To open the folder, press **Win + R** and paste:
+
+```text
+%USERPROFILE%\AppData\LocalLow\DefaultCompany\Karinderya
+```
+
+The file is plain-text JSON and uses one save slot. It is created after the first save. Delete it to start a fresh game.
+
 ### What is saved
 
 - Day, time, season, and clock speed.

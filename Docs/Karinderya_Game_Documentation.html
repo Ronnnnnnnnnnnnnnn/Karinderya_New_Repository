@@ -390,7 +390,7 @@
         <tr><td>Trust</td><td>Recipe rewards, regulars, catering unlock</td></tr>
         <tr><td>Day/night</td><td>Clock, sunrise/day/dusk/night lighting, night tint</td></tr>
         <tr><td>Save</td><td>Auto-load, autosave, save on quit/main menu/day close</td></tr>
-        <tr><td>Presentation</td><td>Runtime request board, notebook UI, HUD rush/request strip, day summary</td></tr>
+        <tr><td>Presentation</td><td>Scene-authored request board, notebook, HUD rush/request strip, day summary</td></tr>
     </table>
 
     <div class="callout">
@@ -508,10 +508,10 @@
 
     <h2>Farm size</h2>
     <p>
-        The scene originally contained a very large field. The current build
-        activates the <strong>16 plots closest to the karinderya</strong> and
-        disables the rest at runtime. This makes the farm a deliberate garden
-        instead of a mass-production field.
+        The scene now contains <strong>16 authored farm plots</strong> arranged
+        as a deliberate garden. The intent is a small, readable farm where each
+        seed choice and watering decision matters, rather than a
+        mass-production field.
     </p>
 
     <h2>Crop reference</h2>
@@ -1044,8 +1044,8 @@
         </tr>
         <tr>
             <td>Missions UI</td>
-            <td>MissionBoard.cs, MissionNotebookUI.cs, MissionBootstrap.cs</td>
-            <td>Physical board, notebook cards, day summary overlay, runtime install.</td>
+            <td>MissionBoard.cs, MissionNotebookUI.cs, MissionCardView.cs</td>
+            <td>Scene-authored physical board, notebook cards, day summary overlay.</td>
         </tr>
         <tr>
             <td>Farming</td>
@@ -1092,6 +1092,18 @@
         <div class="step"><strong>Visuals follow</strong>DayNightCycle reads the same timestamp.</div>
     </div>
 
+    <h2>Scene authoring</h2>
+    <p>Core systems are authored in <span class="mono">PlayingScene</span> rather than spawned by bootstrap scripts:</p>
+    <ul>
+        <li><span class="mono">Game Systems</span> holds SaveManager, PlayerProgression, MissionManager, and TutorialManager, with child objects for cooking, HUD, farm timer, and day/night control.</li>
+        <li><span class="mono">MissionBoard</span> is a placed world object with its frame, paper, text, light, and collider visible in the scene.</li>
+        <li><span class="mono">MissionNotebookCanvas</span> contains the blocker, notebook, request cards, buttons, and day-summary panel.</li>
+        <li><span class="mono">HUD</span>, <span class="mono">FarmTimerPanel</span>, <span class="mono">RecipeBookPanel</span>, and <span class="mono">IngredientPanel</span> are authored under the main canvas with their components and references assigned in the Inspector.</li>
+        <li><span class="mono">DayNightOverlay</span> and its <span class="mono">NightTint</span> image are scene objects.</li>
+        <li><span class="mono">TutorialCanvas</span> is scene-authored; tutorial path markers remain runtime gameplay indicators.</li>
+    </ul>
+    <p>Runtime instantiation is limited to dynamic gameplay content such as customers, crops, servings, recipe rows, and notifications.</p>
+
     <h2>Save architecture</h2>
     <ul>
         <li>A JSON snapshot is written to the persistent data path.</li>
@@ -1131,7 +1143,7 @@
         <li>Catering is a large same-day order, not a multi-day catering contract.</li>
         <li>Regulars are probability-based customers, not named recurring characters yet.</li>
         <li>No staff, furniture upgrades, or decoration system yet.</li>
-        <li>The farm uses 16 active plots selected from a much larger scene field.</li>
+        <li>The farm uses 16 authored plots.</li>
         <li>Final balance and Play Mode QA still need a dedicated pass.</li>
         <li>UI uses a mix of legacy UI text and TextMeshPro; a full typography pass is planned.</li>
         <li>Localization, rebinding, and accessibility settings are not in yet.</li>
@@ -1211,7 +1223,7 @@
         <li>Clock-driven farming with different crop durations and water management.</li>
         <li>Trust rewards that change the actual game systems.</li>
         <li>Automatic save/Continue for daily play.</li>
-        <li>Runtime-generated board and notebook UI without fragile scene wiring.</li>
+        <li>Scene-authored board, notebook, HUD, cooking panels, and day/night overlay, inspectable in the Unity editor.</li>
     </ul>
 </section>
 

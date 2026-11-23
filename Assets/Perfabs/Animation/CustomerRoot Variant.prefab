@@ -115,6 +115,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7081321028289002757, guid: dd4569539b3df2d43825bad9ae244d8c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5647481832066984754}
+    - targetCorrespondingSourceObject: {fileID: 7081321028289002757, guid: dd4569539b3df2d43825bad9ae244d8c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5060938631525060927}
   m_SourcePrefab: {fileID: 100100000, guid: dd4569539b3df2d43825bad9ae244d8c, type: 3}
 --- !u!1 &7863717239894689049 stripped
 GameObject:
@@ -144,3 +147,17 @@ CapsuleCollider:
   m_Height: 3.5257273
   m_Direction: 1
   m_Center: {x: 0.0051962137, y: 1.7371573, z: -0.03896451}
+--- !u!114 &5060938631525060927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7863717239894689049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8e5e06bb2f43ff4e962238cdd4eb113, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomerAppearance
+  customerType: 0
+  tintColor: {r: 1, g: 1, b: 1, a: 1}

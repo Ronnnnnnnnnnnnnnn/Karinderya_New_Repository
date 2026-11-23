@@ -7,22 +7,7 @@ public class CookingUIManager : MonoBehaviour
 {
     public static CookingUIManager Instance { get; private set; }
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void AutoCreate()
-    {
-        EnsureInstance();
-    }
-
-    public static CookingUIManager EnsureInstance()
-    {
-        if (Instance != null)
-            return Instance;
-
-        GameObject go = new GameObject("CookingUIManager");
-        return go.AddComponent<CookingUIManager>();
-    }
-
-    [Header("Panels (optional — built at runtime if empty)")]
+    [Header("Panels")]
     public GameObject recipeBookPanel;
     public GameObject ingredientPanel;
 
@@ -48,93 +33,35 @@ public class CookingUIManager : MonoBehaviour
         }
 
         Instance = this;
-        EnsurePanelsExist();
+        WireButtons();
         HideAll();
     }
 
-    void EnsurePanelsExist()
+    void WireButtons()
     {
-        if (recipeBookPanel != null && ingredientPanel != null)
-            return;
+        if (closeButton != null)
+            closeButton.onClick.AddListener(CloseAll);
 
-        Canvas canvas = UIRoot.FindGameCanvas();
-        if (canvas == null)
+        if (startCookButton != null)
+            startCookButton.onClick.AddListener(OnStartCooking);
+
+        if (backButton != null)
+            backButton.onClick.AddListener(ShowRecipeBook);
+
+        if (recipeBookPanel != null)
         {
-            GameObject canvasObj = new GameObject("CookingCanvas");
-            canvas = canvasObj.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasObj.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasObj.AddComponent<GraphicRaycaster>();
+            Transform closeTransform =
+                recipeBookPanel.transform.Find("CloseButton");
+
+            if (closeTransform != null)
+            {
+                Button recipeClose =
+                    closeTransform.GetComponent<Button>();
+
+                if (recipeClose != null)
+                    recipeClose.onClick.AddListener(CloseAll);
+            }
         }
-
-        if (recipeBookPanel == null)
-            recipeBookPanel = BuildRecipeBookPanel(canvas.transform);
-
-        if (ingredientPanel == null)
-            ingredientPanel = BuildIngredientPanel(canvas.transform);
-    }
-
-    GameObject BuildRecipeBookPanel(Transform parent)
-    {
-        GameObject panel = CreatePanel(parent, "RecipeBookPanel", new Vector2(420, 480));
-
-        GameObject scrollObj = new GameObject("Scroll");
-        scrollObj.transform.SetParent(panel.transform, false);
-        RectTransform scrollRect = scrollObj.AddComponent<RectTransform>();
-        scrollRect.anchorMin = new Vector2(0.05f, 0.12f);
-        scrollRect.anchorMax = new Vector2(0.95f, 0.82f);
-        scrollRect.offsetMin = Vector2.zero;
-        scrollRect.offsetMax = Vector2.zero;
-
-        ScrollRect scroll = scrollObj.AddComponent<ScrollRect>();
-        scrollObj.AddComponent<RectMask2D>();
-
-        GameObject content = new GameObject("Content");
-        content.transform.SetParent(scrollObj.transform, false);
-        RectTransform contentRect = content.AddComponent<RectTransform>();
-        contentRect.anchorMin = new Vector2(0, 1);
-        contentRect.anchorMax = new Vector2(1, 1);
-        contentRect.pivot = new Vector2(0.5f, 1);
-        contentRect.sizeDelta = new Vector2(0, 0);
-        VerticalLayoutGroup layout = content.AddComponent<VerticalLayoutGroup>();
-        layout.childControlHeight = true;
-        layout.childForceExpandHeight = false;
-        layout.spacing = 6;
-        ContentSizeFitter fitter = content.AddComponent<ContentSizeFitter>();
-        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        scroll.content = contentRect;
-        scroll.viewport = scrollRect;
-        scroll.vertical = true;
-        scroll.horizontal = false;
-
-        recipeListParent = content.transform;
-
-        closeButton = CreateButton(panel.transform, "Close", new Vector2(0, -210), () => CloseAll());
-
-        return panel;
-    }
-
-    GameObject BuildIngredientPanel(Transform parent)
-    {
-        GameObject panel = CreatePanel(parent, "IngredientPanel", new Vector2(400, 360));
-
-        dishTitleText = CreateText(panel.transform, "Dish", 20, TextAnchor.UpperCenter,
-            new Vector2(0, -24), new Vector2(360, 36));
-
-        ingredientsListText = CreateText(panel.transform, "", 16, TextAnchor.UpperLeft,
-            new Vector2(0, -70), new Vector2(340, 160));
-        ingredientsListText.alignment = TextAnchor.UpperLeft;
-
-        startCookButton = CreateButton(panel.transform, "Start Cooking", new Vector2(0, -120),
-            () => OnStartCooking());
-
-        backButton = CreateButton(panel.transform, "Back", new Vector2(-90, -170),
-            () => ShowRecipeBook());
-
-        closeButton = CreateButton(panel.transform, "Close", new Vector2(90, -170),
-            () => CloseAll());
-
-        return panel;
     }
 
     public void OpenRecipeBook(Pot pot)
@@ -329,23 +256,13 @@ public class CookingUIManager : MonoBehaviour
             cameraMovement.RefreshCursorState();
     }
 
-    #region UI builders
-
-    static GameObject CreatePanel(Transform parent, string name, Vector2 size)
-    {
-        GameObject panel = new GameObject(name);
-        panel.transform.SetParent(parent, false);
-        RectTransform rect = panel.AddComponent<RectTransform>();
-        rect.sizeDelta = size;
-        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = Vector2.zero;
-        Image img = panel.AddComponent<Image>();
-        img.color = new Color(0.12f, 0.1f, 0.08f, 0.94f);
-        return panel;
-    }
-
-    static Text CreateText(Transform parent, string content, int fontSize, TextAnchor anchor,
-        Vector2 pos, Vector2 size)
+    static Text CreateText(
+        Transform parent,
+        string content,
+        int fontSize,
+        TextAnchor anchor,
+        Vector2 pos,
+        Vector2 size)
     {
         GameObject go = new GameObject("Text");
         go.transform.SetParent(parent, false);
@@ -361,22 +278,4 @@ public class CookingUIManager : MonoBehaviour
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         return text;
     }
-
-    static Button CreateButton(Transform parent, string label, Vector2 pos, UnityEngine.Events.UnityAction onClick)
-    {
-        GameObject go = new GameObject(label + "Button");
-        go.transform.SetParent(parent, false);
-        RectTransform rect = go.AddComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(160, 36);
-        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = pos;
-        Image img = go.AddComponent<Image>();
-        img.color = new Color(0.45f, 0.32f, 0.18f, 1f);
-        Button btn = go.AddComponent<Button>();
-        btn.onClick.AddListener(onClick);
-        CreateText(go.transform, label, 14, TextAnchor.MiddleCenter, Vector2.zero, rect.sizeDelta);
-        return btn;
-    }
-
-    #endregion
 }

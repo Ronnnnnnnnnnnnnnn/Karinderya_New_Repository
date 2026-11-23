@@ -65,11 +65,12 @@ public class TutorialManager : MonoBehaviour
 
     public bool IsFinished => finished;
 
-    GameObject tutorialCanvas;
-    Text titleText;
-    Text objectiveText;
-    Text hintText;
-    Text progressText;
+    [Header("Scene UI")]
+    public GameObject tutorialCanvas;
+    public Text titleText;
+    public Text objectiveText;
+    public Text hintText;
+    public Text progressText;
 
     GameObject markerRoot;
     Transform markerBeam;
@@ -560,6 +561,9 @@ public class TutorialManager : MonoBehaviour
 
     void BuildUI()
     {
+        if (tutorialCanvas != null)
+            return;
+
         tutorialCanvas = new GameObject("TutorialCanvas", typeof(RectTransform));
         tutorialCanvas.transform.SetParent(transform, false);
 

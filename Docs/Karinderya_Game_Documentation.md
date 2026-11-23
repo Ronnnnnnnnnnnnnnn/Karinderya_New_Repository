@@ -31,7 +31,7 @@ The design is built around a single daily rhythm:
 | Day/night | Clock-driven sun rotation, ambient light, dusk/night colors, screen tint |
 | Save/Continue | JSON save, auto-load, periodic autosave, save on quit/menu/day close, farm and kitchen state |
 | HUD | Clock, rush countdown, active request count, trust, farm timers, notifications |
-| Presentation | Runtime-built request board, notebook, day summary card, HUD strip |
+| Presentation | Scene-authored request board, notebook, day summary card, HUD strip |
 
 ---
 
@@ -149,7 +149,7 @@ Farming is the ingredient supply chain. Meat comes from a reusable kitchen picku
 
 ### Farm size
 
-The scene originally contained a very large field. The current build activates the **16 plots closest to the karinderya** and disables the rest at runtime. This turns the farm into a deliberate garden instead of a mass-production field.
+The scene now contains **16 authored farm plots** arranged as a deliberate garden. The intent is a small, readable farm where each seed choice and watering decision matters, rather than a mass-production field.
 
 ### Crop reference
 
@@ -539,7 +539,7 @@ The `TimeManager.timeScale` field can be raised in the Inspector to reach lunch 
 | Day/night | `DayNightCycle.cs` | Sun rotation, light color/intensity, ambient, night tint |
 | Customers | `CustomerSpawner.cs`, `CustomerAI.cs`, `CustomerOrder.cs`, `CustomerAppearance.cs` | Arrivals, counter assignment, orders, patience, service, type colors, regulars |
 | Missions | `MissionManager.cs`, `MissionDefinition.cs` | Daily generation, progress, trust, rewards, day summary, save data |
-| Missions UI | `MissionBoard.cs`, `MissionNotebookUI.cs`, `MissionBootstrap.cs` | Physical board, notebook cards, day summary overlay, runtime install |
+| Missions UI | `MissionBoard.cs`, `MissionNotebookUI.cs`, `MissionCardView.cs` | Scene-authored physical board, notebook cards, day summary overlay |
 | Farming | `LandManager.cs`, `Land.cs`, `CropBehaviour.cs`, `RegrowableHarvestBehaviour.cs` | 16 active plots, clock growth, water, harvest, regrow, save state |
 | Cooking | `Pot.cs`, `CookingUIManager.cs`, `RecipeData.cs`, `RecipeUnlockManager.cs` | Recipe selection, ingredient checks, cooking timer, unlocks |
 | Buffets | `BuffetContainer.cs` | Dish storage, 4 servings, serving retrieval, save state |
@@ -562,6 +562,19 @@ Clock tick
     -> Land grows crops, HUD refreshes, mission windows expire, day rolls over
     -> DayNightCycle reads the same timestamp for lighting
 ```
+
+### Scene authoring
+
+Core systems are authored in `PlayingScene` rather than spawned by bootstrap scripts:
+
+- `Game Systems` holds `SaveManager`, `PlayerProgression`, `MissionManager`, and `TutorialManager`, with child objects for cooking, HUD, farm timer, and day/night control.
+- `MissionBoard` is a placed world object with its frame, paper, text, light, and collider visible in the scene.
+- `MissionNotebookCanvas` contains the blocker, notebook, request cards, buttons, and day-summary panel.
+- `HUD`, `FarmTimerPanel`, `RecipeBookPanel`, and `IngredientPanel` are authored under the main canvas with their components and references assigned in the Inspector.
+- `DayNightOverlay` and its `NightTint` image are scene objects.
+- `TutorialCanvas` is scene-authored; tutorial path markers remain runtime gameplay indicators.
+
+Runtime instantiation is limited to dynamic gameplay content such as customers, crops, servings, recipe rows, and notifications.
 
 ### Save architecture
 
@@ -605,7 +618,7 @@ These are the honest boundaries of the current build.
 - Catering is a large same-day order, not a multi-day catering contract.
 - Regulars are probability-based customers, not named recurring characters yet.
 - No staff, furniture upgrades, or decoration system yet.
-- The farm uses 16 active plots selected from a much larger scene field.
+- The farm uses 16 authored plots.
 - Final balance and Play Mode QA still need a dedicated pass.
 - UI uses a mix of legacy UI text and TextMeshPro; a full typography pass is planned.
 - Localization, rebinding, and accessibility settings are not in yet.
@@ -667,7 +680,7 @@ A focused 15–20 minute demonstration that shows the loop, the systems, and the
 - Clock-driven farming with different crop durations and water management.
 - Trust rewards that change the actual game systems.
 - Automatic save/Continue for daily play.
-- Runtime-generated board and notebook UI without fragile scene wiring.
+- Scene-authored board, notebook, HUD, cooking panels, and day/night overlay, inspectable in the Unity editor.
 
 ---
 

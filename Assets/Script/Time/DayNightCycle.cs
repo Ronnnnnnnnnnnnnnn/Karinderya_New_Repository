@@ -34,13 +34,12 @@ public class DayNightCycle : MonoBehaviour
     public float dayAmbientIntensity = 1f;
     public float nightAmbientIntensity = 0.38f;
 
-    Canvas overlayCanvas;
-    Image overlayImage;
+    public Canvas overlayCanvas;
+    public Image overlayImage;
 
     void Start()
     {
         FindSunIfNeeded();
-        CreateOverlay();
         ApplyLighting();
     }
 
@@ -81,68 +80,6 @@ public class DayNightCycle : MonoBehaviour
                 sunLight = light;
             }
         }
-    }
-
-    void CreateOverlay()
-    {
-        if (overlayCanvas != null)
-            return;
-
-        GameObject canvasObject =
-            new GameObject(
-                "DayNightOverlay",
-                typeof(RectTransform)
-            );
-
-        overlayCanvas =
-            canvasObject.AddComponent<Canvas>();
-
-        overlayCanvas.renderMode =
-            RenderMode.ScreenSpaceOverlay;
-
-        overlayCanvas.sortingOrder = -100;
-
-        CanvasScaler scaler =
-            canvasObject.AddComponent<CanvasScaler>();
-
-        scaler.uiScaleMode =
-            CanvasScaler.ScaleMode.ScaleWithScreenSize;
-
-        scaler.referenceResolution =
-            new Vector2(1600f, 900f);
-
-        scaler.matchWidthOrHeight = 0.5f;
-
-        GameObject tintObject =
-            new GameObject(
-                "NightTint",
-                typeof(RectTransform)
-            );
-
-        tintObject.transform.SetParent(
-            canvasObject.transform,
-            false
-        );
-
-        RectTransform rect =
-            tintObject.GetComponent<RectTransform>();
-
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-
-        overlayImage = tintObject.AddComponent<Image>();
-        overlayImage.raycastTarget = false;
-        overlayImage.color =
-            new Color(
-                nightOverlayColor.r,
-                nightOverlayColor.g,
-                nightOverlayColor.b,
-                0f
-            );
-
-        overlayImage.enabled = false;
     }
 
     void ApplyLighting()

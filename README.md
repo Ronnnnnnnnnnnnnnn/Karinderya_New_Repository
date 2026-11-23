@@ -1,28 +1,53 @@
-# 👋 Welcome to Our Profile
+# Karinderya
 
-## 🎮 Current Project
-**[Karinderya](https://github.com/criscadondonc-cmd/Karinderya)** - A charming cooking strategy game where players manage their own food stall in a provincial village, combining farming, cooking, and business management elements.
+A 3D Filipino karinderya management game built in Unity 6. The player farms ingredients, cooks Filipino dishes, stocks buffet trays, serves lunch and dinner customers, completes daily requests, and grows the village's trust.
 
-### About Karinderya
-- **Genre:** Cooking Strategy Game (3D)
-- **Target Audience:** Age 12+
-- **Core Concept:** Start with a humble karinderya (local food stall) and grow it into the most popular establishment in the village
-- **Mechanics:**
-  - 🌾 **Farming Phase** - Plant crops and harvest ingredients from your farm
-  - 👨‍🍳 **Cooking Phase** - Create delicious dishes using harvested ingredients
-  - 💰 **Serving Phase** - Serve customers and earn money to expand your business
-  - 📈 **Growth System** - Unlock new crops, hire staff, and level up your farm
+## Requirements
 
-## 🚀 Skills & Interests
-- Game Development
-- Interactive Design
-- Problem-Solving
-- Creative Project Management
+- Unity `6000.3.9f1`
+- Universal Render Pipeline (URP)
+- Windows
 
-## 📊 GitHub Stats
-- 🔧 Building games and interactive experiences
-- 💡 Open to collaboration and feedback
+## Run the project
 
----
+1. Open the repository folder in Unity Hub.
+2. Open `Assets/Scenes/MainMenuScene.unity`.
+3. Press Play, then start the game from the main menu.
 
-**Let's create something amazing together!** Feel free to reach out, explore my projects, and don't hesitate to contribute.# Karinderya
+The gameplay scene is `Assets/Scenes/PlayingScene.unity`. Core managers and UI are authored directly in the scene and are visible in the Hierarchy and Inspector.
+
+## Controls
+
+| Input | Action |
+|---|---|
+| W A S D | Move |
+| Mouse | Look |
+| Left click | Interact / serve |
+| E | Context action |
+| I | Inventory |
+| B | Seed shop |
+| Esc | Close notebook / pause |
+| F1 | Skip tutorial |
+
+## Game loop
+
+1. Plant, water, and harvest vegetables.
+2. Cook dishes at the pots.
+3. Put cooked dishes on their matching buffet trays.
+4. Serve customers during the lunch and dinner rushes.
+5. Read daily requests from the request board.
+6. Close the stall, review the day summary, and continue the next morning.
+
+## Documentation
+
+- `Docs/Karinderya_Game_Documentation.md`
+- `Docs/Karinderya_Game_Documentation.html`
+- `Docs/Karinderya_Game_Documentation.pdf`
+
+The documentation covers the day loop, farming, cooking, buffets, customers, requests, trust progression, economy, save/continue, HUD, technical architecture, limitations, roadmap, and a professor demo script.
+
+## Notes
+
+- Saves are stored at `Application.persistentDataPath/karinderya_save.json`.
+- Delete that file to start a fresh game.
+- The core systems are scene-authored; dynamic gameplay objects such as customers, crops, and recipe rows are instantiated at runtime.

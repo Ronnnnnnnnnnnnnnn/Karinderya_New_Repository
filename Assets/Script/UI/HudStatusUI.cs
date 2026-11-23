@@ -3,103 +3,23 @@ using UnityEngine.UI;
 
 public class HudStatusUI : MonoBehaviour
 {
-    GameObject panel;
-    Text phaseText;
-    Text missionText;
+    public GameObject panel;
+    public Text phaseText;
+    public Text missionText;
+
     float refreshTimer;
     TutorialManager tutorial;
 
     void Start()
     {
         tutorial = FindFirstObjectByType<TutorialManager>();
-        Build();
-    }
-
-    void Build()
-    {
-        Canvas canvas = UIRoot.FindGameCanvas();
-
-        if (canvas == null)
-            return;
-
-        panel = new GameObject("RushStatus", typeof(RectTransform));
-        panel.transform.SetParent(canvas.transform, false);
-
-        RectTransform rect = panel.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 1f);
-        rect.anchorMax = new Vector2(0.5f, 1f);
-        rect.pivot = new Vector2(0.5f, 1f);
-        rect.anchoredPosition = new Vector2(0f, -116f);
-        rect.sizeDelta = new Vector2(560f, 74f);
-
-        Image background = panel.AddComponent<Image>();
-        background.color = new Color(0.08f, 0.1f, 0.07f, 0.84f);
-        background.raycastTarget = false;
-
-        phaseText = CreateText(
-            panel.transform,
-            "Phase",
-            22,
-            new Vector2(0f, -8f),
-            new Vector2(520f, 28f),
-            new Color(0.96f, 0.76f, 0.28f, 1f)
-        );
-
-        missionText = CreateText(
-            panel.transform,
-            "Missions",
-            16,
-            new Vector2(0f, -38f),
-            new Vector2(520f, 24f),
-            new Color(0.94f, 0.88f, 0.72f, 1f)
-        );
-
         Refresh();
-    }
-
-    Text CreateText(
-        Transform parent,
-        string name,
-        int size,
-        Vector2 position,
-        Vector2 dimensions,
-        Color color)
-    {
-        GameObject go = new GameObject(name, typeof(RectTransform));
-        go.transform.SetParent(parent, false);
-
-        RectTransform rect = go.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 1f);
-        rect.anchorMax = new Vector2(0.5f, 1f);
-        rect.pivot = new Vector2(0.5f, 1f);
-        rect.anchoredPosition = position;
-        rect.sizeDelta = dimensions;
-
-        Text text = go.AddComponent<Text>();
-        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        text.fontSize = size;
-        text.alignment = TextAnchor.MiddleCenter;
-        text.color = color;
-        text.raycastTarget = false;
-        text.horizontalOverflow = HorizontalWrapMode.Wrap;
-        text.verticalOverflow = VerticalWrapMode.Overflow;
-
-        Shadow shadow = go.AddComponent<Shadow>();
-        shadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
-        shadow.effectDistance = new Vector2(1f, -1f);
-
-        return text;
     }
 
     void Update()
     {
         if (panel == null)
-        {
-            Build();
-
-            if (panel == null)
-                return;
-        }
+            return;
 
         if (tutorial == null)
             tutorial = FindFirstObjectByType<TutorialManager>();

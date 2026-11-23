@@ -25,48 +25,6 @@ public class FarmTimerUIManager : MonoBehaviour
         }
 
         Instance = this;
-        EnsurePanelExists();
-    }
-
-    void EnsurePanelExists()
-    {
-        if (timerPanel != null && timerListText != null)
-            return;
-
-        Canvas canvas = UIRoot.FindGameCanvas();
-        if (canvas == null)
-            return;
-
-        timerPanel = new GameObject("FarmTimerPanel", typeof(RectTransform));
-        timerPanel.transform.SetParent(canvas.transform, false);
-        RectTransform rect = timerPanel.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(1f, 1f);
-        rect.anchorMax = new Vector2(1f, 1f);
-        rect.pivot = new Vector2(1f, 1f);
-        rect.anchoredPosition = new Vector2(-250, -140);
-        rect.sizeDelta = new Vector2(360, 230);
-        Image bg = timerPanel.AddComponent<Image>();
-        bg.color = new Color(0.08f, 0.12f, 0.08f, 0.86f);
-        bg.raycastTarget = false;
-
-        GameObject textObj = new GameObject("Text");
-        textObj.transform.SetParent(timerPanel.transform, false);
-        RectTransform textRect = textObj.AddComponent<RectTransform>();
-        textRect.anchorMin = Vector2.zero;
-        textRect.anchorMax = Vector2.one;
-        textRect.offsetMin = new Vector2(10, 8);
-        textRect.offsetMax = new Vector2(-10, -8);
-        timerListText = textObj.AddComponent<Text>();
-        timerListText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        timerListText.fontSize = 24;
-        timerListText.alignment = TextAnchor.UpperLeft;
-        timerListText.color = new Color(1f, 0.96f, 0.88f);
-        timerListText.raycastTarget = false;
-
-        Shadow textShadow = textObj.AddComponent<Shadow>();
-        textShadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
-        textShadow.effectDistance = new Vector2(1f, -1f);
-
         ApplyResponsiveLayout();
     }
 
@@ -99,7 +57,7 @@ public class FarmTimerUIManager : MonoBehaviour
             rect.anchorMin = new Vector2(1f, 1f);
             rect.anchorMax = new Vector2(1f, 1f);
             rect.pivot = new Vector2(1f, 1f);
-            rect.anchoredPosition = new Vector2(-250f, -140f);
+            rect.anchoredPosition = new Vector2(-16f, -140f);
         }
 
         rect.sizeDelta = new Vector2(360f, 230f);

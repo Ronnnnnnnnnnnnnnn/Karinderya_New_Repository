@@ -96,7 +96,8 @@ public class Pot : MonoBehaviour
 
         if (cooking) return;
 
-        CookingUIManager.EnsureInstance().OpenRecipeBook(this);
+        if (CookingUIManager.Instance != null)
+            CookingUIManager.Instance.OpenRecipeBook(this);
     }
 
     public bool TryStartCooking(RecipeData recipeToCook)

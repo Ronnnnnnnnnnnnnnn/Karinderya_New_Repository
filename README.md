@@ -38,14 +38,6 @@ The gameplay scene is `Assets/Scenes/PlayingScene.unity`. Core managers and UI a
 5. Read daily requests from the request board.
 6. Close the stall, review the day summary, and continue the next morning.
 
-## Documentation
-
-- `Docs/Karinderya_Game_Documentation.md`
-- `Docs/Karinderya_Game_Documentation.html`
-- `Docs/Karinderya_Game_Documentation.pdf`
-
-The documentation covers the day loop, farming, cooking, buffets, customers, requests, trust progression, economy, save/continue, HUD, technical architecture, limitations, roadmap, and a professor demo script.
-
 ## Notes
 
 - Saves are stored at `Application.persistentDataPath/karinderya_save.json`.

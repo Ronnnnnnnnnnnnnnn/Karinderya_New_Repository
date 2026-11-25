@@ -30,7 +30,7 @@ public class CurrencyManager : MonoBehaviour
             coins
         );
 
-        UIManager.Instance.UpdateCoinUI(coins);
+        RefreshCoinUI();
     }
 
     public bool SpendCoins(int amount)
@@ -49,7 +49,7 @@ public class CurrencyManager : MonoBehaviour
                 coins
             );
 
-            UIManager.Instance.UpdateCoinUI(coins);
+            RefreshCoinUI();
 
             return true;
         }
@@ -71,6 +71,12 @@ public class CurrencyManager : MonoBehaviour
         Debug.Log("[MONEY] Added Coins: " + amount);
         Debug.Log("[MONEY] Total Coins: " + coins);
 
-        UIManager.Instance.UpdateCoinUI(coins);
+        RefreshCoinUI();
+    }
+
+    void RefreshCoinUI()
+    {
+        if (UIManager.Instance != null)
+            UIManager.Instance.UpdateCoinUI(coins);
     }
 }

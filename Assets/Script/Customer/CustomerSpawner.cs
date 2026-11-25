@@ -69,11 +69,11 @@ public class CustomerSpawner : MonoBehaviour
     public int lateNightEndHour = 6;
 
     [Header("Customers Per Phase")]
-    [Tooltip("Most customers during lunch. The lunch rush usually fills both counters.")]
+    [Tooltip("Most customers during lunch. Keeps both counters busy without a crowd.")]
     public int lunchMaxCustomers = 2;
 
-    [Tooltip("Most customers during dinner. The wide front can hold three.")]
-    public int dinnerMaxCustomers = 3;
+    [Tooltip("Most customers during dinner. Two at a time keeps the rush fun instead of overwhelming.")]
+    public int dinnerMaxCustomers = 2;
 
     [Tooltip("Most customers outside rush hours.")]
     public int normalMaxCustomers = 2;
@@ -82,17 +82,22 @@ public class CustomerSpawner : MonoBehaviour
     public int lateNightMaxCustomers = 1;
 
     [Header("Arrival Timing")]
-    [Tooltip("Seconds between arrival checks outside rush hours.")]
-    public float normalDelayMin = 9f;
-    public float normalDelayMax = 15f;
+    [Tooltip("Seconds between customer arrivals outside rush hours.")]
+    public float normalDelayMin = 14f;
+    public float normalDelayMax = 20f;
 
-    [Tooltip("Seconds between arrival checks during lunch and dinner.")]
-    public float rushDelayMin = 3.5f;
-    public float rushDelayMax = 6.5f;
+    [Tooltip("Seconds between customer arrivals during lunch and dinner.")]
+    public float rushDelayMin = 8f;
+    public float rushDelayMax = 12f;
 
-    [Tooltip("Seconds between arrival checks late at night.")]
-    public float lateDelayMin = 16f;
-    public float lateDelayMax = 24f;
+    [Tooltip("Seconds between customer arrivals late at night.")]
+    public float lateDelayMin = 22f;
+    public float lateDelayMax = 30f;
+
+    [Tooltip("Absolute minimum seconds between two customer arrivals, " +
+             "no matter the phase or player level. Keeps the player from being swarmed.")]
+    [Min(1f)]
+    public float minimumArrivalInterval = 6f;
 
     [Range(0f, 1f)]
     [Tooltip("Chance that a phase reaches its full customer cap instead of one fewer.")]
@@ -170,19 +175,11 @@ public class CustomerSpawner : MonoBehaviour
             if (desired > occupied &&
                 activeCustomers.Count < GetMaxConcurrentCustomers())
             {
-                CustomerOrder spawned = SpawnCustomer();
-
-                if (spawned != null)
-                {
-
-                    yield return new WaitForSeconds(
-                        UnityEngine.Random.Range(0.9f, 1.8f)
-                    );
-
-                    continue;
-                }
+                SpawnCustomer();
             }
 
+            // Wait the full phase interval after every arrival check. This
+            // spaces customers out instead of filling all counters instantly.
             yield return new WaitForSeconds(
                 GetCheckDelay(phase)
             );
@@ -552,7 +549,13 @@ public class CustomerSpawner : MonoBehaviour
             );
         }
 
-        return UnityEngine.Random.Range(min, max) * speed;
+        float delay =
+            UnityEngine.Random.Range(min, max) * speed;
+
+        return Mathf.Max(
+            minimumArrivalInterval,
+            delay
+        );
     }
 
     void AnnouncePhase(ServicePhase phase)

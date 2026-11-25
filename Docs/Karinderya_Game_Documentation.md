@@ -113,7 +113,7 @@ A full day runs from 6:00 AM to the next morning. At the default clock speed, on
 | Dawn / morning | 6:00–11:00 | 1–2 | Prep time. Normal arrival delays. |
 | Lunch rush | 11:00–14:00 | 2 | Faster arrivals, +25% customer pay. |
 | Afternoon | 14:00–17:00 | 1–2 | Restock, farm, finish requests. |
-| Dinner rush | 17:00–21:00 | 3 | Largest crowd, +25% customer pay. |
+| Dinner rush | 17:00–21:00 | 2 | Faster arrivals, +25% customer pay. |
 | Late evening | 21:00–22:00 | 1–2 | Closing window. |
 | Late night | 22:00–6:00 | 1 | Slow traffic. Dark world. |
 
@@ -266,9 +266,11 @@ Customers arrive from the village-side entrances and take one of the three servi
 | Rush | Window | Max customers | Bonus |
 |---|---|---|---|
 | Lunch | 11:00–14:00 | 2 | +25% customer pay |
-| Dinner | 17:00–21:00 | 3 | +25% customer pay |
+| Dinner | 17:00–21:00 | 2 | +25% customer pay |
 
 Off-peak hours usually have one customer, with a chance of a second. Late night has one customer and much slower arrivals.
+
+**Arrival pacing:** a new customer is considered every 14–20 s off-peak, 8–12 s during rushes, and 22–30 s late at night (shortened by player level). No two arrivals are ever closer than 6 s (`minimumArrivalInterval`), so counters fill gradually instead of all at once.
 
 ### Customer types
 
@@ -493,7 +495,7 @@ The file is plain-text JSON and uses one save slot. It is created after the firs
 
 **Save file:** `Application.persistentDataPath/karinderya_save.json`
 
-There is one save slot. To start a fresh game, quit the game and delete this file. A New Game button is a planned menu addition.
+There is one save slot. To start a fresh game, press **New Game** on the title screen. If a save exists, the button asks for a second click within four seconds before it erases the save. **New Game** is hidden while the menu is opened from the pause screen. The title-screen **Play** button reads **Continue** when a save exists.
 
 ### Continue flow
 
@@ -643,7 +645,7 @@ Runtime instantiation is limited to dynamic gameplay content such as customers, 
 These are the honest boundaries of the current build.
 
 - One save slot. No cloud save or profile menu.
-- No New Game button yet; delete the save file to reset.
+- New Game erases the single save slot (after a confirm click); there is no multi-slot menu.
 - Customers in the scene are not saved; they respawn after load.
 - Player position, camera, and open menus are not saved.
 - No seven-day festival or ending yet.
@@ -668,7 +670,7 @@ These are the honest boundaries of the current build.
 
 ### Next priorities
 
-1. **New Game / Continue menu** with a clear save-slot UI.
+1. **Multi-slot save menu** with a clear save-slot UI (New Game / Continue already exist for one slot).
 2. **Named regulars** with preferences and standing orders.
 3. **Multi-day catering** and a seven-day festival arc.
 4. **Upgrades and decorations**: more trays, a second pot, seating, paint, plants.
@@ -729,7 +731,7 @@ A focused 15–20 minute demonstration that shows the loop, the systems, and the
 - [ ] Reach 40 trust and confirm the regular star, tip, and patience bonus.
 - [ ] Reach 60 trust and confirm the catering request appears on cycle 2.
 - [ ] End a day and confirm the summary card, stall fee, and autosave.
-- [ ] Delete the save file and confirm a clean new game.
+- [ ] Press New Game (confirm the second click) and confirm a clean new game.
 
 ### Quick tuning reference
 
@@ -744,7 +746,7 @@ A focused 15–20 minute demonstration that shows the loop, the systems, and the
 | Lunch rush | 11:00–14:00 |
 | Dinner rush | 17:00–21:00 |
 | Lunch customer cap | 2 |
-| Dinner customer cap | 3 |
+| Dinner customer cap | 2 |
 | Active farm plots | 16 |
 | Buffet servings | 4 |
 | Customer patience | 60 seconds |

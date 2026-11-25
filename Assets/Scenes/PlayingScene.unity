@@ -121897,6 +121897,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1049042428}
   - component: {fileID: 1049042429}
+  - component: {fileID: 1049042430}
   m_Layer: 0
   m_Name: Board Light
   m_TagString: Untagged
@@ -121984,6 +121985,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1049042430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049042427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1062924506 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7088482287727209845, guid: 59b8cb714e254c1479c0c4cc39236a9a, type: 3}
@@ -131179,10 +131209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bacc43348bb0a8646967aa72b22e5ce7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MissionBoard
-  frameColor: {r: 0.24, g: 0.12, b: 0.05, a: 1}
-  paperColor: {r: 0.86, g: 0.78, b: 0.6, a: 1}
-  textColor: {r: 0.16, g: 0.08, b: 0.03, a: 1}
-  built: 1
 --- !u!4 &1225652306
 Transform:
   m_ObjectHideFlags: 0
@@ -133505,9 +133531,9 @@ Transform:
   m_GameObject: {fileID: 1295017570}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.73, z: -0.11}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 2.85, z: -0.11}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1225652306}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -148251,7 +148277,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c3f6a7b81459607d2e5f9a0b1c2d3e4f, type: 2}
   - {fileID: 11400000, guid: 8d97b8ee485e6bc45a2253c0198fae84, type: 2}
   - {fileID: 11400000, guid: d4a7b8c92560718e3f6a0b1c2d3e4f5a, type: 2}
-  initialSpawnDelay: 5
+  initialSpawnDelay: 8
   maxCustomers: 3
   spawnSpread: 0.35
   useTimeOfDay: 1
@@ -148262,17 +148288,18 @@ MonoBehaviour:
   lateNightStartHour: 22
   lateNightEndHour: 6
   lunchMaxCustomers: 2
-  dinnerMaxCustomers: 3
+  dinnerMaxCustomers: 2
   normalMaxCustomers: 2
   lateNightMaxCustomers: 1
-  normalDelayMin: 9
-  normalDelayMax: 15
-  rushDelayMin: 3.5
-  rushDelayMax: 6.5
-  lateDelayMin: 16
-  lateDelayMax: 24
+  normalDelayMin: 14
+  normalDelayMax: 20
+  rushDelayMin: 8
+  rushDelayMax: 12
+  lateDelayMin: 22
+  lateDelayMax: 30
+  minimumArrivalInterval: 6
   rushMaxChance: 0.8
-  offPeakSecondCustomerChance: 0.3
+  offPeakSecondCustomerChance: 0.2
   rushRewardMultiplier: 1.25
 --- !u!4 &1452126975
 Transform:
@@ -209497,7 +209524,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 8a2b9e2a607dd2143b58c44bc32410b4, type: 3}
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 30
     m_FontStyle: 0
     m_BestFit: 0
@@ -216688,8 +216715,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
-  m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -247665,6 +247692,8 @@ MonoBehaviour:
   itemNameText: {fileID: 279523699}
   itemDescriptionText: {fileID: 228951804}
   coinText: {fileID: 1840391370}
+  coinIcon: {fileID: 0}
+  coinSprite: {fileID: 21300000, guid: e1c02adcdb6933843a656d6d461cca33, type: 3}
   shopPanel: {fileID: 2092427751}
 --- !u!114 &1984504565
 MonoBehaviour:

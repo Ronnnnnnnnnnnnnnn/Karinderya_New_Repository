@@ -28,6 +28,8 @@ public class UIManager : MonoBehaviour, ITimeTracker
 
     [Header("Currency")]
     public Text coinText;
+    public Image coinIcon;
+    public Sprite coinSprite;
 
     [Header("Shop")]
     public GameObject shopPanel;
@@ -49,10 +51,12 @@ public class UIManager : MonoBehaviour, ITimeTracker
         RenderInventory();
         AssignSlotIndexes();
         EnsureTimeDisplay();
+        EnsureCurrencyDisplay();
 
         TimeManager.Instance.RegisterTracker(this);
 
-        UpdateCoinUI(CurrencyManager.Instance.coins);
+        if (CurrencyManager.Instance != null)
+            UpdateCoinUI(CurrencyManager.Instance.coins);
     }
 
     void EnsureTimeDisplay()
@@ -357,9 +361,292 @@ public class UIManager : MonoBehaviour, ITimeTracker
 
     }
 
+    const float CurrencyPanelWidth = 236f;
+    const float CurrencyPanelHeight = 60f;
+
+    static Sprite currencyPanelSprite;
+    static Sprite fallbackCoinSprite;
+
+    void EnsureCurrencyDisplay()
+    {
+        Canvas canvas = UIRoot.FindGameCanvas();
+
+        if (canvas == null)
+            return;
+
+        Transform existing = canvas.transform.Find("CurrencyHUD");
+
+        if (existing != null)
+        {
+            if (coinText == null)
+                coinText = existing.GetComponentInChildren<Text>();
+
+            if (coinIcon == null)
+            {
+                Transform icon = existing.Find("Coin Icon");
+
+                if (icon != null)
+                    coinIcon = icon.GetComponent<Image>();
+            }
+
+            StyleCoinText();
+            return;
+        }
+
+        GameObject panel =
+            new GameObject("CurrencyHUD", typeof(RectTransform));
+
+        panel.transform.SetParent(canvas.transform, false);
+
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0f, 1f);
+        panelRect.anchorMax = new Vector2(0f, 1f);
+        panelRect.pivot = new Vector2(0f, 1f);
+        panelRect.anchoredPosition = new Vector2(18f, -18f);
+        panelRect.sizeDelta =
+            new Vector2(CurrencyPanelWidth, CurrencyPanelHeight);
+
+        Image background = panel.AddComponent<Image>();
+        background.sprite = GetCurrencyPanelSprite();
+        background.type = Image.Type.Sliced;
+        background.color = new Color(0.08f, 0.06f, 0.04f, 0.86f);
+        background.raycastTarget = false;
+
+        if (coinIcon == null)
+        {
+            GameObject iconGo =
+                new GameObject("Coin Icon", typeof(RectTransform));
+
+            iconGo.transform.SetParent(panel.transform, false);
+            coinIcon = iconGo.AddComponent<Image>();
+        }
+        else
+        {
+            coinIcon.transform.SetParent(panel.transform, false);
+        }
+
+        RectTransform iconRect = coinIcon.rectTransform;
+        iconRect.anchorMin = new Vector2(0f, 0.5f);
+        iconRect.anchorMax = new Vector2(0f, 0.5f);
+        iconRect.pivot = new Vector2(0f, 0.5f);
+        iconRect.anchoredPosition = new Vector2(14f, 0f);
+        iconRect.sizeDelta = new Vector2(38f, 38f);
+
+        coinIcon.sprite = GetCoinSprite();
+        coinIcon.preserveAspect = true;
+        coinIcon.raycastTarget = false;
+        coinIcon.color = Color.white;
+
+        if (coinText == null)
+        {
+            coinText = CreateHudText(
+                panel.transform,
+                "Coin Amount",
+                30,
+                TextAnchor.MiddleLeft,
+                Vector2.zero,
+                new Vector2(CurrencyPanelWidth - 72f, 44f),
+                new Color(1f, 0.93f, 0.62f)
+            );
+        }
+        else
+        {
+            coinText.transform.SetParent(panel.transform, false);
+        }
+
+        StyleCoinText();
+    }
+
+    void StyleCoinText()
+    {
+        if (coinText == null)
+            return;
+
+        RectTransform rect = coinText.rectTransform;
+        rect.anchorMin = new Vector2(0f, 0.5f);
+        rect.anchorMax = new Vector2(0f, 0.5f);
+        rect.pivot = new Vector2(0f, 0.5f);
+        rect.anchoredPosition = new Vector2(60f, 0f);
+        rect.sizeDelta = new Vector2(CurrencyPanelWidth - 74f, 44f);
+
+        Font hudFont =
+            timeText != null && timeText.font != null
+                ? timeText.font
+                : Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+        if (hudFont != null)
+            coinText.font = hudFont;
+
+        coinText.alignment = TextAnchor.MiddleLeft;
+        coinText.fontSize = 30;
+        coinText.fontStyle = FontStyle.Bold;
+        coinText.color = new Color(1f, 0.93f, 0.62f);
+        coinText.raycastTarget = false;
+        coinText.horizontalOverflow = HorizontalWrapMode.Overflow;
+        coinText.verticalOverflow = VerticalWrapMode.Overflow;
+
+        Shadow shadow = coinText.GetComponent<Shadow>();
+
+        if (shadow == null)
+            shadow = coinText.gameObject.AddComponent<Shadow>();
+
+        shadow.effectColor = new Color(0f, 0f, 0f, 0.85f);
+        shadow.effectDistance = new Vector2(1f, -1f);
+    }
+
+    Sprite GetCoinSprite()
+    {
+        if (coinIcon != null && coinIcon.sprite != null)
+            return coinIcon.sprite;
+
+        if (coinSprite != null)
+            return coinSprite;
+
+        coinSprite = Resources.Load<Sprite>("coin_sprite");
+
+        if (coinSprite == null)
+            coinSprite = CreateFallbackCoinSprite(64);
+
+        return coinSprite;
+    }
+
+    static Sprite GetCurrencyPanelSprite()
+    {
+        if (currencyPanelSprite != null)
+            return currencyPanelSprite;
+
+        const int size = 64;
+        const int border = 20;
+        const float cornerRadius = 20f;
+
+        Texture2D texture =
+            new Texture2D(size, size, TextureFormat.RGBA32, false);
+
+        texture.name = "CurrencyPanel";
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.filterMode = FilterMode.Bilinear;
+        texture.hideFlags = HideFlags.HideAndDontSave;
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float px = x + 0.5f;
+                float py = y + 0.5f;
+
+                float cx = Mathf.Clamp(px, cornerRadius, size - cornerRadius);
+                float cy = Mathf.Clamp(py, cornerRadius, size - cornerRadius);
+
+                float distance =
+                    Vector2.Distance(
+                        new Vector2(px, py),
+                        new Vector2(cx, cy)
+                    );
+
+                float alpha =
+                    Mathf.Clamp01(cornerRadius - distance + 0.5f);
+
+                texture.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+            }
+        }
+
+        texture.Apply();
+
+        currencyPanelSprite = Sprite.Create(
+            texture,
+            new Rect(0f, 0f, size, size),
+            new Vector2(0.5f, 0.5f),
+            100f,
+            0,
+            SpriteMeshType.FullRect,
+            new Vector4(border, border, border, border)
+        );
+
+        currencyPanelSprite.name = "CurrencyPanel";
+        currencyPanelSprite.hideFlags = HideFlags.HideAndDontSave;
+
+        return currencyPanelSprite;
+    }
+
+    static Sprite CreateFallbackCoinSprite(int size)
+    {
+        if (fallbackCoinSprite != null)
+            return fallbackCoinSprite;
+
+        Texture2D texture =
+            new Texture2D(size, size, TextureFormat.RGBA32, false);
+
+        texture.name = "CoinFallback";
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.filterMode = FilterMode.Bilinear;
+        texture.hideFlags = HideFlags.HideAndDontSave;
+
+        Color clear = new Color(0f, 0f, 0f, 0f);
+        Color rim = new Color(0.56f, 0.37f, 0.08f, 1f);
+        Color face = new Color(0.98f, 0.78f, 0.24f, 1f);
+        Color shine = new Color(1f, 0.94f, 0.64f, 1f);
+
+        float radius = size * 0.5f;
+        Vector2 center = new Vector2(radius, radius);
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                Vector2 pixel = new Vector2(x + 0.5f, y + 0.5f);
+                float distance = Vector2.Distance(pixel, center);
+
+                Color color;
+
+                if (distance > radius - 0.5f)
+                {
+                    color = clear;
+                }
+                else if (distance > radius * 0.8f)
+                {
+                    color = rim;
+                }
+                else if (distance > radius * 0.7f)
+                {
+                    color = face;
+                }
+                else
+                {
+                    color =
+                        Color.Lerp(
+                            face,
+                            shine,
+                            1f - distance / (radius * 0.7f)
+                        );
+                }
+
+                texture.SetPixel(x, y, color);
+            }
+        }
+
+        texture.Apply();
+
+        fallbackCoinSprite = Sprite.Create(
+            texture,
+            new Rect(0f, 0f, size, size),
+            new Vector2(0.5f, 0.5f),
+            size
+        );
+
+        fallbackCoinSprite.name = "CoinFallback";
+        fallbackCoinSprite.hideFlags = HideFlags.HideAndDontSave;
+
+        return fallbackCoinSprite;
+    }
+
     public void UpdateCoinUI(int amount)
     {
-        coinText.text = "₱ " + amount.ToString();
+        EnsureCurrencyDisplay();
+
+        if (coinText == null)
+            return;
+
+        coinText.text = "₱ " + amount.ToString("N0");
     }
 
     void Update()

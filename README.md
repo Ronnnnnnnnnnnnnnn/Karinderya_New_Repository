@@ -50,5 +50,5 @@ The documentation covers the day loop, farming, cooking, buffets, customers, req
 
 - Saves are stored at `Application.persistentDataPath/karinderya_save.json`.
 - On Windows, the folder is `%USERPROFILE%\AppData\LocalLow\DefaultCompany\Karinderya`.
-- Delete `karinderya_save.json` to start a fresh game.
+- Press **New Game** on the title screen to start fresh (or delete `karinderya_save.json`).
 - The core systems are scene-authored; dynamic gameplay objects such as customers, crops, and recipe rows are instantiated at runtime.

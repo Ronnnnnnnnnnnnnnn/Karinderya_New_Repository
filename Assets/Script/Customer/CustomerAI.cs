@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class CustomerAI : MonoBehaviour
 {
@@ -10,6 +11,15 @@ public class CustomerAI : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 2f;
     public float stoppingDistance = 0.2f;
+
+    [Header("Pathing")]
+    [Tooltip("Follow the baked NavMesh so customers go around the house walls " +
+             "instead of straight through them. Falls back to a straight line " +
+             "when no NavMesh is baked.")]
+    public bool useNavMesh = true;
+
+    [Tooltip("How far from the customer or target to look for NavMesh.")]
+    public float navSampleDistance = 3f;
 
     [Header("Visual")]
     public Transform visualModel;
@@ -28,6 +38,8 @@ public class CustomerAI : MonoBehaviour
     bool releasedServiceSpot;
     CustomerOrder order;
     Collider interactionCollider;
+    Vector3[] pathCorners;
+    int pathIndex;
 
     void Start()
     {
@@ -35,9 +47,79 @@ public class CustomerAI : MonoBehaviour
         order = GetComponent<CustomerOrder>();
         interactionCollider = GetComponent<Collider>();
 
-        targetPoint = counterPoint;
+        SetTarget(counterPoint);
 
         Debug.Log("[AI] Walking to counter");
+    }
+
+    void SetTarget(Transform target)
+    {
+        targetPoint = target;
+        BuildPath();
+    }
+
+    void BuildPath()
+    {
+        pathCorners = null;
+        pathIndex = 0;
+
+        if (!useNavMesh || targetPoint == null)
+            return;
+
+        if (!NavMesh.SamplePosition(
+                transform.position,
+                out NavMeshHit startHit,
+                navSampleDistance,
+                NavMesh.AllAreas))
+        {
+            return;
+        }
+
+        if (!NavMesh.SamplePosition(
+                targetPoint.position,
+                out NavMeshHit endHit,
+                navSampleDistance,
+                NavMesh.AllAreas))
+        {
+            return;
+        }
+
+        NavMeshPath path = new NavMeshPath();
+
+        if (!NavMesh.CalculatePath(
+                startHit.position,
+                endHit.position,
+                NavMesh.AllAreas,
+                path))
+        {
+            return;
+        }
+
+        // A partial path would stop short of the goal; walk straight instead.
+        if (path.status != NavMeshPathStatus.PathComplete ||
+            path.corners.Length < 2)
+        {
+            return;
+        }
+
+        pathCorners = path.corners;
+        pathIndex = 1;
+    }
+
+    Vector3 CurrentDestination()
+    {
+        while (pathCorners != null && pathIndex < pathCorners.Length - 1)
+        {
+            Vector3 flat = pathCorners[pathIndex] - transform.position;
+            flat.y = 0f;
+
+            if (flat.magnitude > stoppingDistance)
+                return pathCorners[pathIndex];
+
+            pathIndex++;
+        }
+
+        return targetPoint.position;
     }
 
     void OnDestroy()
@@ -59,7 +141,7 @@ public class CustomerAI : MonoBehaviour
     void MoveToTarget()
     {
         Vector3 direction =
-            targetPoint.position -
+            CurrentDestination() -
             transform.position;
 
         direction.y = 0f;
@@ -173,7 +255,7 @@ public class CustomerAI : MonoBehaviour
 
         ReleaseServiceSpot();
 
-        targetPoint = exitPoint;
+        SetTarget(exitPoint);
     }
 
     public void LeaveAngry()
@@ -200,7 +282,7 @@ public class CustomerAI : MonoBehaviour
 
         ReleaseServiceSpot();
 
-        targetPoint = exitPoint;
+        SetTarget(exitPoint);
     }
 
     void ReleaseServiceSpot()
